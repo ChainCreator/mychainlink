@@ -759,7 +759,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
     </figure>
 
   </div>
-  <div class="landing-foot">Built in Canada · © My Chain Link 2026 · Kendal Symes</div>
+  <div class="landing-foot">Built in Canada · © My Chain Link 2026 · Kendal Symes<br><a href="privacy.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Privacy</a>·<a href="terms.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Terms</a>·<a href="about.html" style="color:var(--gold);text-decoration:none;margin:0 6px">About</a></div>
 </div>
 
 <style>
@@ -1065,6 +1065,7 @@ window.showAuth = function(tab) {
     <div class="menu-item" onclick="shareApp();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg> Share</div>
     <div class="menu-item" onclick="showAbout();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> About Us</div>
     <div class="menu-item" onclick="showHelp();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Need Help?</div>
+    <div class="menu-item" onclick="showSwitchAccount();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Switch Account</div>
     <div class="menu-sep"></div>
     <div class="menu-item menu-danger" onclick="lo();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Sign Out</div>
   </div>
@@ -1480,6 +1481,8 @@ window.showAuth = function(tab) {
 
 <div class="modal-overlay" id="m-tut" onclick="if(event.target===this)closeModal('m-tut')"><div class="modal-box" style="max-width:360px;text-align:center"><div id="tut-content"><div class="tut-slide active"><div style="font-size:48px;margin-bottom:12px">🔗</div><h3 style="color:#FFD700">Welcome to MyChainLink</h3><p>A smaller, warmer social space. No filters. No fake highlight reels.</p></div><div class="tut-slide"><div style="font-size:48px;margin-bottom:12px">📸</div><h3 style="color:#FFD700">Real Photos Only</h3><p>Camera capture only — no gallery uploads. What the camera sees is what everyone gets.</p></div><div class="tut-slide"><div style="font-size:48px;margin-bottom:12px">🤝</div><h3 style="color:#FFD700">Build Your Chain</h3><p>Connect with people. Message anyone in your chain. Support creators you love.</p></div><div class="tut-slide"><div style="font-size:48px;margin-bottom:12px">📍</div><h3 style="color:#FFD700">Share Your World</h3><p>Tag your real location. Go live. Let people see where you are and what you're doing.</p></div></div><div style="display:flex;justify-content:center;gap:6px;margin:16px 0" id="tut-dots"><span class="tut-dot active"></span><span class="tut-dot"></span><span class="tut-dot"></span><span class="tut-dot"></span></div><div class="modal-row"><button class="btn btn-outline" style="flex:1" onclick="closeModal('m-tut');localStorage.setItem('cl_tutorial_seen','1')">Skip</button><button class="btn btn-primary" style="flex:1" id="tut-next" onclick="nextTut()">Next</button></div></div></div>
 
+<div class="modal-overlay" id="m-switch-acct" onclick="if(event.target===this)closeModal('m-switch-acct')"><div class="modal-box"><h3>Switch Account</h3><div id="switch-acct-list" style="max-height:50vh;overflow-y:auto;margin:12px 0"></div><div class="modal-row"><button class="btn btn-outline" style="flex:1" onclick="closeModal('m-switch-acct')">Cancel</button><button class="btn btn-primary" style="flex:1" onclick="closeModal('m-switch-acct');showAuth('in')">Add Account</button></div></div></div>
+
   <script>
 // ==================== SUPABASE ====================
 var SURL='https://pvtliggkbiwdzedmguag.supabase.co';
@@ -1863,7 +1866,7 @@ window.su=async function(){
         if(r.error.message&&r.error.message.indexOf('network')>-1){console.log('Supabase network error, falling back to local')}
         else{throw r.error}
       }else{
-        supabaseOk=true;cu=r.data.user;svu();
+        supabaseOk=true;cu=r.data.user;svu();saveAccount(cu);
         var meta2=cu.user_metadata||{};
         if(r.data.session){
           // Only possible with an active session; the DB trigger covers the rest.
@@ -1895,7 +1898,7 @@ window.su=async function(){
     var newUser={id:uid(),name:n,email:e,password:p,handle:handle,bio:'',avatar:'',location:loc,
                  birthday:bd,securityQuestion:sq,securityAnswer:saH,securityQuestion2:sq2,securityAnswer2:sa2H,twoFactorPIN:fa||''};
     saveLocalUser(newUser);
-    cu=syncLocalUserToCu(newUser);svu();
+    cu=syncLocalUserToCu(newUser);svu();saveAccount(cu);
     claimPendingPayPal();
     $('su-s').classList.remove('show');
     showApp();showToast('Welcome to your chain.');
@@ -1988,6 +1991,10 @@ window.sendReset=async function(){
 };
 
 window.lo=async function(){if(sb)await sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');$('ma').style.display='none';$('auth-page').classList.remove('hidden');posts=[];localStorage.removeItem('cl_posts');showToast('Signed out')};
+window.saveAccount=function(user){if(!user||!user.id)return;var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var idx=saved.findIndex(function(a){return a.id===user.id});var acc={id:user.id,email:user.email||'',name:user.user_metadata&&user.user_metadata.display_name?user.user_metadata.display_name:'User',avatar:user.user_metadata&&user.user_metadata.avatar?user.user_metadata.avatar:'',handle:user.user_metadata&&user.user_metadata.handle?user.user_metadata.handle:'@user'};if(idx>-1){saved[idx]=acc}else{saved.push(acc)}localStorage.setItem('cl_savedAccounts',JSON.stringify(saved))};
+window.showSwitchAccount=function(){var list=$('switch-acct-list');var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');if(!saved.length){list.innerHTML='<div style="text-align:center;padding:20px;color:#888">No saved accounts</div>';$('m-switch-acct').classList.add('on');return}var h='';saved.forEach(function(a){h+='<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1C1C1C;border-radius:12px;margin-bottom:8px;cursor:pointer" onclick="switchToAccount(\''+a.id+'\')">';h+='<div class="av" style="width:40px;height:40px;font-size:16px">'+(a.avatar?'<img src="'+a.avatar+'" style="width:100%;height:100%;object-fit:cover">':(a.name?a.name[0].toUpperCase():'?'))+'</div>';h+='<div style="flex:1"><div style="font-weight:700;font-size:14px">'+esc(a.name)+'</div><div style="font-size:12px;color:#888">'+esc(a.handle)+'</div></div>';h+='<button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:11px" onclick="event.stopPropagation();removeSavedAccount(\''+a.id+'\')">Remove</button>';h+='</div>'});list.innerHTML=h;$('m-switch-acct').classList.add('on')};
+window.switchToAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var acc=saved.find(function(a){return a.id===id});if(!acc){showToast('Account not found');return}closeModal('m-switch-acct');showToast('Switching...');setTimeout(function(){showAuth('in');$('li-e').value=acc.email||''},300)};
+window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
 
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
