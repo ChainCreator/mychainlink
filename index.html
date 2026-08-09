@@ -2105,21 +2105,17 @@ window.loadPayPalSDK=function(cb){
 window.renderPayPalButtons=function(){
   if(!cu){showToast('Sign in to subscribe');return}
   if(!vu){showToast('No user selected');return}
-  var creatorPaypal=localStorage.getItem('cl_paypal_email_'+vu.id);
-  if(!creatorPaypal){showToast('This creator has not set up PayPal yet');return}
   if(typeof paypal==='undefined'||!paypal.Buttons){showToast('Loading PayPal...');loadPayPalSDK(function(){renderPayPalButtons()});return}
   var container=$('paypal-button-container');
   if(!container)return;
   container.innerHTML='';
   
-  // Calculate amounts
   var baseAmount=parseFloat($('sub-amount')?($('sub-amount').value||'10'):'10');
   if(isNaN(baseAmount)||baseAmount<1)baseAmount=10;
   var platformFee=Math.round(baseAmount*(PLATFORM_FEE_PERCENT/100)*100)/100;
   var creatorAmount=Math.round((baseAmount-platformFee)*100)/100;
   var totalAmount=baseAmount;
   
-  // Show breakdown
   var breakdownDiv=$('pp-fee-breakdown');
   if(!breakdownDiv){
     breakdownDiv=document.createElement('div');
@@ -2136,43 +2132,33 @@ window.renderPayPalButtons=function(){
   paypal.Buttons({
     style:{layout:'vertical',color:'gold',shape:'rect',label:'pay'},
     createOrder:function(data,actions){
-      return actions.order.create({
-        purchase_units:[{
-          amount:{
-            value:totalAmount.toFixed(2),
-            currency_code:'CAD',
-            breakdown:{
-              item_total:{value:creatorAmount.toFixed(2),currency_code:'CAD'},
-              handling:{value:platformFee.toFixed(2),currency_code:'CAD'}
-            }
-          },
-          description:'Support '+esc(vu.name||'Creator')+' on MyChainLink',
-          payee:{email_address:creatorPaypal}
-        }]
-      });
+      return fetch('/api/paypal/create-order',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+(window.sb&&window.sb.auth?window.sb.auth.session()?.access_token:'')
+        },
+        body:JSON.stringify({creator_id:vu.id,amount:totalAmount})
+      }).then(function(res){return res.json()}).then(function(data){return data.order_id});
     },
     onApprove:function(data,actions){
-      return actions.order.capture().then(async function(details){
-        showToast('Payment successful! Thank you for supporting '+esc(vu.name||'Creator'));
-        // Record transaction
-        if(sb&&supabaseOnline){
-          try{
-            await sb.from('transactions').insert({
-              payer_id:cu.id,
-              creator_id:vu.id,
-              amount:totalAmount,
-              platform_fee:platformFee,
-              creator_amount:creatorAmount,
-              paypal_order_id:details.id,
-              status:'completed'
-            });
-          }catch(e){console.log('Transaction record error',e)}
+      return fetch('/api/paypal/capture-order',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+(window.sb&&window.sb.auth?window.sb.auth.session()?.access_token:'')
+        },
+        body:JSON.stringify({order_id:data.orderID})
+      }).then(function(res){return res.json()}).then(function(result){
+        if(result.success){
+          showToast('Payment successful! Thank you for supporting '+esc(vu.name||'Creator'));
+          if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};
+          follows[vu.id].subscribed=true;
+          svf();
+          closeModal('m-pp-checkout');
+        }else{
+          showToast('Payment failed: '+(result.error||'Unknown error'));
         }
-        // Mark as subscribed locally
-        if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};
-        follows[vu.id].subscribed=true;
-        svf();
-        closeModal('m-pp-checkout');
       });
     },
     onError:function(err){console.log('PayPal error',err);showToast('Payment failed. Please try again.');},

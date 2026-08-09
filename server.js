@@ -747,6 +747,131 @@ app.get('/', (req, res) => {
   });
 });
 
+// ============================================================
+// PAYPAL — OPTION B: Platform collects, then pays creators
+// ============================================================
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
+const PAYPAL_API = process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com'; // sandbox for testing
+
+async function getPayPalAccessToken() {
+  const response = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET}`).toString('base64'),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'grant_type=client_credentials'
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
+// Create order — fan pays PLATFORM
+app.post('/api/paypal/create-order', authMiddleware, async (req, res) => {
+  const { creator_id, amount } = req.body;
+  if (!creator_id || !amount || amount < 1) {
+    return res.status(400).json({ error: 'creator_id and amount required' });
+  }
+
+  try {
+    const accessToken = await getPayPalAccessToken();
+    const platformFee = Math.round(amount * 0.15 * 100) / 100;
+    const creatorAmount = Math.round((amount - platformFee) * 100) / 100;
+
+    const response = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        intent: 'CAPTURE',
+        purchase_units: [{
+          amount: {
+            currency_code: 'CAD',
+            value: amount.toFixed(2)
+          },
+          description: `Support creator on MyChainLink`,
+          custom_id: JSON.stringify({ creator_id, fan_id: req.user.id, platform_fee: platformFee, creator_amount: creatorAmount })
+        }]
+      })
+    });
+
+    const order = await response.json();
+    res.json({ order_id: order.id, status: order.status });
+  } catch (error) {
+    console.error('PayPal create order error:', error);
+    res.status(500).json({ error: 'Failed to create PayPal order' });
+  }
+});
+
+// Capture order — payment completed
+app.post('/api/paypal/capture-order', authMiddleware, async (req, res) => {
+  const { order_id } = req.body;
+  if (!order_id) return res.status(400).json({ error: 'order_id required' });
+
+  try {
+    const accessToken = await getPayPalAccessToken();
+    const response = await fetch(`${PAYPAL_API}/v2/checkout/orders/${order_id}/capture`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const capture = await response.json();
+    if (capture.status === 'COMPLETED') {
+      // Parse custom data
+      const customData = JSON.parse(capture.purchase_units[0].payments.captures[0].custom_id || '{}');
+      const { creator_id, fan_id, platform_fee, creator_amount } = customData;
+
+      // Record transaction in Supabase
+      await supabase.from('transactions').insert({
+        payer_id: fan_id,
+        creator_id: creator_id,
+        amount: parseFloat(capture.purchase_units[0].amount.value),
+        platform_fee: platform_fee,
+        creator_amount: creator_amount,
+        paypal_order_id: order_id,
+        status: 'completed'
+      });
+
+      // Update creator's pending balance
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('pending_balance')
+        .eq('id', creator_id)
+        .single();
+
+      const newBalance = (profile?.pending_balance || 0) + creator_amount;
+      await supabase.from('profiles')
+        .update({ pending_balance: newBalance })
+        .eq('id', creator_id);
+
+      res.json({ success: true, message: 'Payment captured and recorded' });
+    } else {
+      res.status(400).json({ error: 'Payment not completed', status: capture.status });
+    }
+  } catch (error) {
+    console.error('PayPal capture error:', error);
+    res.status(500).json({ error: 'Failed to capture payment' });
+  }
+});
+
+// Get creator's pending balance
+app.get('/api/balance', authMiddleware, async (req, res) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('pending_balance, paypal_email')
+    .eq('id', req.user.id)
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ balance: data?.pending_balance || 0, paypal_email: data?.paypal_email || null });
+});
+
 // Serve index.html for any non-API route (SPA fallback)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
