@@ -1,0 +1,36 @@
+Feature,Free User,Premium User ($4.99/mo),Creator (Premium + PayPal),Platform (You)
+Post text + photos,YES,YES,YES,N/A
+View feed,YES,YES,YES,N/A
+Message text only,YES,YES,YES,N/A
+Follow/Connect,YES,YES,YES,N/A
+Profile songs,LOCKED,YES (can set),YES (can set),N/A
+Font colors,LOCKED,YES,YES,N/A
+Live streaming,LOCKED,YES,YES,N/A
+Media in messages,LOCKED,YES,YES,N/A
+Receive tips from fans,NO,NO,YES (85%),YES (15%)
+Premium badge,NO,YES,YES,N/A
+Subscriber-only posts,NO,YES (can create),YES (can create),N/A
+
+Revenue Stream,Who Pays,Amount,You Get,Creator Gets
+Premium subscription,Fan,$4.99/mo,$4.99,$0
+Creator tip/support,Fan,$1 - $100+,15%,85%
+
+Monthly Projections,Creators,Avg Tip,Your Monthly Income
+Small,10,$10,$15
+Medium,50,$10,$75
+Large,100,$10,$150
+Scaling,500,$10,$750
+Killing it,1000,$10,"$1,500"
+
+Payment Method,Needs Account?,Works For,Setup Time
+PayPal balance,YES,All fans,Instant
+Credit/Debit card,NO,All fans,Instant
+Apple Pay,MAYBE,Mobile fans,Automatic
+
+To-Do Item,Status,Time Needed
+PayPal Business account,NOT DONE,10 min
+Get PayPal Client ID,NOT DONE,5 min
+Update code with real Client ID,NOT DONE,2 min
+Run transactions SQL in Supabase,NOT DONE,2 min
+Test $1 payment,NOT DONE,5 min
+Invoice creators for 15%,NOT DONE,Ongoing
