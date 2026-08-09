@@ -1450,7 +1450,7 @@ window.showAuth = function(tab) {
 <div class="modal-overlay" id="m-pp-setup" onclick="if(event.target===this)closeModal('m-pp-setup')"><div class="modal-box"><h3>Connect PayPal</h3><p>Enter your PayPal email to receive subscription payments.</p><div class="fg"><label>PayPal Email</label><input type="email" id="pp-email" placeholder="you@example.com"></div><div class="modal-row"><button class="btn btn-outline" style="flex:1" onclick="closeModal('m-pp-setup')">Cancel</button><button class="btn btn-primary" style="flex:1" onclick="savePayPalEmail()">Connect</button></div></div></div>
 
 <!-- PAYPAL CHECKOUT MODAL -->
-<div class="modal-overlay" id="m-pp-checkout" onclick="if(event.target===this)closeModal('m-pp-checkout')"><div class="modal-box pp-box"><h3>Subscribe to <span id="sub-to-name">Creator</span></h3><p>Support this creator with a monthly subscription.</p><div style="background:#222;border-radius:12px;padding:16px;margin:16px 0;text-align:left"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="av" id="sub-to-av" style="width:48px;height:48px">?</div><div><div style="font-weight:700" id="sub-to-n">User</div><div style="font-size:12px;color:#888">Creator</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #333"><span style="color:#888">Monthly</span><span style="font-weight:700;color:#FFD700">$4.99 CAD</span></div></div><div id="paypal-container-8L8HY2ULYKSFL" style="margin:16px 0"></div><div class="modal-row"><button class="btn btn-outline" style="flex:1" onclick="closeModal('m-pp-checkout')">Cancel</button></div><p style="font-size:11px;color:#666;margin-top:12px">Powered by PayPal · Cancel anytime</p></div></div>
+<div class="modal-overlay" id="m-pp-checkout" onclick="if(event.target===this)closeModal('m-pp-checkout')"><div class="modal-box pp-box"><h3>Support <span id="sub-to-name">Creator</span></h3><p>Choose an amount to support this creator.</p><div style="background:#222;border-radius:12px;padding:16px;margin:16px 0;text-align:left"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="av" id="sub-to-av" style="width:48px;height:48px">?</div><div><div style="font-weight:700" id="sub-to-n">User</div><div style="font-size:12px;color:#888">Creator</div></div></div><div class="fg" style="margin-top:12px"><label>Amount (CAD)</label><input type="number" id="sub-amount" value="10" min="1" step="1" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:16px;width:100%"></div></div><div id="paypal-button-container" style="margin:16px 0"></div><div class="modal-row"><button class="btn btn-outline" style="flex:1" onclick="closeModal('m-pp-checkout')">Cancel</button></div><p style="font-size:11px;color:#666;margin-top:12px">MyChainLink keeps 15% to maintain the platform. Creator gets 85%.</p></div></div>
 
 <!-- VIDEO CALL OVERLAY -->
 <div class="call-wrap" id="call-o">
@@ -1807,7 +1807,7 @@ function resetForgotForm(){
 }
 window.showTerms=function(){$('m-terms').classList.add('on')};
 window.showHarassment=function(){$('m-harass').classList.add('on')};
-window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-pp-checkout'&&ppHostedButton){try{ppHostedButton.close()}catch(e){}var btnContainer=$('paypal-container-8L8HY2ULYKSFL');if(btnContainer)btnContainer.innerHTML=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
+window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-pp-checkout'){var feeDiv=$('pp-fee-breakdown');if(feeDiv)feeDiv.innerHTML='';var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
 
 window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}$('li-s').classList.remove('show');showApp();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
 
@@ -2084,8 +2084,101 @@ window.toggleBlock=function(){if(!cu||!vu)return;var i=blocks.indexOf(vu.id);if(
 window.showFollowers=async function(){if(!cu)return;$('flw-t').textContent='Connects';$('m-flw').classList.add('on');$('flw-l').innerHTML='<div style="text-align:center;padding:20px"><div class="spin show"></div></div>';var ids=[];if(sb&&supabaseOnline){try{var r=await sb.from('follows').select('*').eq('following_id',cu.id);(r.data||[]).forEach(function(f){ids.push(f.follower_id)});var localFl=JSON.parse(localStorage.getItem('cl_followers')||'{}');localFl[cu.id]=ids;localStorage.setItem('cl_followers',JSON.stringify(localFl))}catch(e){ids=(JSON.parse(localStorage.getItem('cl_followers')||'{}')[cu.id]||[])}}else{ids=(JSON.parse(localStorage.getItem('cl_followers')||'{}')[cu.id]||[])}var missingIds=ids.filter(function(id){return!getUserData(id)});if(missingIds.length&&sb&&supabaseOnline){try{var {data:profiles}=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio,email').in('id',missingIds);if(profiles){var allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');profiles.forEach(function(u){if(!allUsersStore.find(function(x){return x.id===u.id})){allUsersStore.push({id:u.id,email:u.email||'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore))}}catch(e){}}var h='';if(!ids.length){h='<div style="text-align:center;padding:20px;color:#666">No connects yet</div>'}else{ids.forEach(function(id){var u=getUserData(id);if(!u)return;h+='<div class="p-card" style="margin-bottom:8px;cursor:pointer" onclick="viewUserFromModal(this)" data-uid="'+id+'">';h+='<div class="av" style="width:40px;height:40px">'+(u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?'))+'</div>';h+='<div class="info"><div class="n">'+esc(u.name)+'</div><div class="h">'+esc(u.handle)+'</div></div>';h+='</div>'})}$('flw-l').innerHTML=h};
 window.viewUserFromModal=function(el){var id=el.getAttribute('data-uid');if(id){closeModal('m-flw');viewUser(id)}};window.showFollowing=async function(){if(!cu)return;$('flw-t').textContent='Connected to';$('m-flw').classList.add('on');$('flw-l').innerHTML='<div style="text-align:center;padding:20px"><div class="spin show"></div></div>';var followingIds=Object.keys(follows).filter(function(k){return follows[k]&&follows[k].following});var missingIds=followingIds.filter(function(id){return!getUserData(id)});if(missingIds.length&&sb&&supabaseOnline){try{var {data:profiles}=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio,email').in('id',missingIds);if(profiles){var allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');profiles.forEach(function(u){if(!allUsersStore.find(function(x){return x.id===u.id})){allUsersStore.push({id:u.id,email:u.email||'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore))}}catch(e){}}var h='';if(!followingIds.length){h='<div style="text-align:center;padding:20px;color:#666">Not connected to anyone yet</div>'}else{followingIds.forEach(function(id){var u=getUserData(id);if(!u)return;h+='<div class="p-card" style="margin-bottom:8px;cursor:pointer" onclick="viewUserFromModal(this)" data-uid="'+id+'">';h+='<div class="av" style="width:40px;height:40px">'+(u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?'))+'</div>';h+='<div class="info"><div class="n">'+esc(u.name)+'</div><div class="h">'+esc(u.handle)+'</div></div>';h+='</div>'})}$('flw-l').innerHTML=h};
 
-// ==================== SUBSCRIBE ====================
-window.openSubModal=function(){$('m-pp-checkout').classList.add('on');var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML='';setTimeout(function(){processRealSub()},300)};window.openSubVU=function(){if(!vu){showToast('No user selected');return}var u=getUserData(vu.id);if(!u)return;$('sub-to-name').textContent=u.name||'Creator';$('sub-to-n').textContent=u.name||'User';$('sub-to-av').innerHTML=u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?');$('m-pp-checkout').classList.add('on');var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML='';setTimeout(function(){processRealSub()},300)};window.ppHostedButton=null;window.paypalLoaded=false;window.loadPayPalSDK=function(cb){if(window.paypalLoaded||typeof paypal!=='undefined'){window.paypalLoaded=true;if(cb)cb();return}var s=document.createElement('script');s.src='https://www.paypal.com/sdk/js?client-id=sb&components=hosted-buttons&disable-funding=venmo&currency=CAD';s.onload=function(){window.paypalLoaded=true;if(cb)cb()};s.onerror=function(){showToast('PayPal failed to load')};document.head.appendChild(s)};window.processRealSub=function(){if(!cu){showToast('Sign in to subscribe');return}if(!vu){showToast('No user selected');return}var creatorPaypal=localStorage.getItem('cl_paypal_email_'+vu.id);if(!creatorPaypal){showToast('This creator has not set up PayPal yet');return}if(typeof paypal==='undefined'||!paypal.HostedButtons){showToast('Loading PayPal...');loadPayPalSDK(function(){processRealSub()});return}var container=$('paypal-container-8L8HY2ULYKSFL');if(!container)return;if(ppHostedButton){try{ppHostedButton.close()}catch(e){}}container.innerHTML='';ppHostedButton=paypal.HostedButtons({hostedButtonId:'8L8HY2ULYKSFL'});ppHostedButton.render('#paypal-container-8L8HY2ULYKSFL')};
+// ==================== SUBSCRIBE / PAYPAL ====================
+// CONFIG: Replace with your real PayPal Client ID from developer.paypal.com
+const PAYPAL_CLIENT_ID = 'sb'; // TODO: Replace with real Client ID
+const PLATFORM_FEE_PERCENT = 15; // You keep 15%
+const CREATOR_PERCENT = 85;      // Creator gets 85%
+
+window.openSubModal=function(){$('m-pp-checkout').classList.add('on');var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML='';setTimeout(function(){renderPayPalButtons()},300)};
+window.openSubVU=function(){if(!vu){showToast('No user selected');return}var u=getUserData(vu.id);if(!u)return;$('sub-to-name').textContent=u.name||'Creator';$('sub-to-n').textContent=u.name||'User';$('sub-to-av').innerHTML=u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?');$('m-pp-checkout').classList.add('on');var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML='';setTimeout(function(){renderPayPalButtons()},300)};
+
+window.paypalLoaded=false;
+window.loadPayPalSDK=function(cb){
+  if(window.paypalLoaded||typeof paypal!=='undefined'){window.paypalLoaded=true;if(cb)cb();return}
+  var s=document.createElement('script');
+  s.src='https://www.paypal.com/sdk/js?client-id='+PAYPAL_CLIENT_ID+'&currency=CAD';
+  s.onload=function(){window.paypalLoaded=true;if(cb)cb()};
+  s.onerror=function(){showToast('PayPal failed to load')};document.head.appendChild(s)
+};
+
+window.renderPayPalButtons=function(){
+  if(!cu){showToast('Sign in to subscribe');return}
+  if(!vu){showToast('No user selected');return}
+  var creatorPaypal=localStorage.getItem('cl_paypal_email_'+vu.id);
+  if(!creatorPaypal){showToast('This creator has not set up PayPal yet');return}
+  if(typeof paypal==='undefined'||!paypal.Buttons){showToast('Loading PayPal...');loadPayPalSDK(function(){renderPayPalButtons()});return}
+  var container=$('paypal-button-container');
+  if(!container)return;
+  container.innerHTML='';
+  
+  // Calculate amounts
+  var baseAmount=parseFloat($('sub-amount')?($('sub-amount').value||'10'):'10');
+  if(isNaN(baseAmount)||baseAmount<1)baseAmount=10;
+  var platformFee=Math.round(baseAmount*(PLATFORM_FEE_PERCENT/100)*100)/100;
+  var creatorAmount=Math.round((baseAmount-platformFee)*100)/100;
+  var totalAmount=baseAmount;
+  
+  // Show breakdown
+  var breakdownDiv=$('pp-fee-breakdown');
+  if(!breakdownDiv){
+    breakdownDiv=document.createElement('div');
+    breakdownDiv.id='pp-fee-breakdown';
+    breakdownDiv.style.cssText='background:#1C1C1C;border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px';
+    container.parentElement.insertBefore(breakdownDiv,container);
+  }
+  breakdownDiv.innerHTML=
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#888">Support Amount</span><span style="color:#F0F0F0">$'+creatorAmount.toFixed(2)+' CAD</span></div>'+
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#888">Platform Fee ('+PLATFORM_FEE_PERCENT+'%)</span><span style="color:#FFD700">$'+platformFee.toFixed(2)+' CAD</span></div>'+
+    '<div style="border-top:1px solid #3A3A3A;margin:8px 0"></div>'+
+    '<div style="display:flex;justify-content:space-between;font-weight:700"><span style="color:#F0F0F0">Total</span><span style="color:#FFD700">$'+totalAmount.toFixed(2)+' CAD</span></div>';
+  
+  paypal.Buttons({
+    style:{layout:'vertical',color:'gold',shape:'rect',label:'pay'},
+    createOrder:function(data,actions){
+      return actions.order.create({
+        purchase_units:[{
+          amount:{
+            value:totalAmount.toFixed(2),
+            currency_code:'CAD',
+            breakdown:{
+              item_total:{value:creatorAmount.toFixed(2),currency_code:'CAD'},
+              handling:{value:platformFee.toFixed(2),currency_code:'CAD'}
+            }
+          },
+          description:'Support '+esc(vu.name||'Creator')+' on MyChainLink',
+          payee:{email_address:creatorPaypal}
+        }]
+      });
+    },
+    onApprove:function(data,actions){
+      return actions.order.capture().then(async function(details){
+        showToast('Payment successful! Thank you for supporting '+esc(vu.name||'Creator'));
+        // Record transaction
+        if(sb&&supabaseOnline){
+          try{
+            await sb.from('transactions').insert({
+              payer_id:cu.id,
+              creator_id:vu.id,
+              amount:totalAmount,
+              platform_fee:platformFee,
+              creator_amount:creatorAmount,
+              paypal_order_id:details.id,
+              status:'completed'
+            });
+          }catch(e){console.log('Transaction record error',e)}
+        }
+        // Mark as subscribed locally
+        if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};
+        follows[vu.id].subscribed=true;
+        svf();
+        closeModal('m-pp-checkout');
+      });
+    },
+    onError:function(err){console.log('PayPal error',err);showToast('Payment failed. Please try again.');},
+    onCancel:function(){showToast('Payment cancelled');}
+  }).render('#paypal-button-container');
+};
 
 // ==================== GO LIVE ====================
 window.goLive = async function() {
