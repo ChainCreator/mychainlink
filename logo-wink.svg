@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" width="400" height="80">
+  <defs>
+    <style>
+      @keyframes wink {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(0.1); }
+      }
+      .chain-wink {
+        transform-origin: center;
+        animation: wink 0.4s ease-in-out 3;
+      }
+    </style>
+  </defs>
+  <rect width="400" height="80" fill="#0F0F0F" rx="12"/>
+  <text x="30" y="48" font-family="Inter, -apple-system, sans-serif" font-size="36" font-weight="800" fill="#FFFFFF">My Chain</text>
+  <text x="200" y="48" font-family="Inter, -apple-system, sans-serif" font-size="36" font-weight="800" fill="#E6C96A" class="chain-wink">Link</text>
+  <text x="30" y="68" font-family="Inter, -apple-system, sans-serif" font-size="10" font-weight="400" fill="#888" letter-spacing="2">get connected. stay connected.</text>
+</svg>
