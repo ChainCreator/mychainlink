@@ -722,6 +722,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
+
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block;transition:all .3s}
+.step-dot.a{background:var(--gold);transform:scale(1.2)}
 </style>
 </head>
 <body>
@@ -919,111 +922,128 @@ window.showAuth = function(tab) {
 
     <!-- ============ CREATE ACCOUNT ============ -->
     <div class="auth-form" id="form-up">
-      <h2>Create your account</h2>
-      <p>Join the chain</p>
+      <h2 id="su-title">Create your account</h2>
+      <p id="su-subtitle">Join the chain</p>
 
-      <!-- 1. About you -->
-      <div class="sect" style="margin-top:6px">
-        <div class="num">1</div>
-        <div><div class="st">About you</div><div class="sd">How people will find you</div></div>
-      </div>
-      <div class="sect-line"></div>
-
-      <div class="fg"><label for="su-n">Full name</label><input type="text" id="su-n" autocomplete="name" placeholder="Your name" oninput="if($('su-p').value)checkPwStrength()"></div>
-      <div class="fg"><label for="su-h">Username</label><input type="text" id="su-h" autocomplete="username" placeholder="Choose a username" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'').toLowerCase()"></div>
-      <div class="fg"><label for="su-e">Email</label><input type="email" id="su-e" autocomplete="email" placeholder="you@example.com" oninput="if($('su-p').value)checkPwStrength()"></div>
-      <div class="fg">
-        <label for="su-b">Birthday</label>
-        <input type="date" id="su-b" autocomplete="bday" min="1900-01-01" oninput="checkBirthday()">
-        <div class="hint" id="bd-hint">Must be 13 or older. Only day and month are shown publicly.</div>
+      <!-- Step indicators -->
+      <div class="step-dots" id="su-steps" style="display:flex;justify-content:center;gap:8px;margin:16px 0">
+        <span class="step-dot a" data-step="1"></span>
+        <span class="step-dot" data-step="2"></span>
+        <span class="step-dot" data-step="3"></span>
+        <span class="step-dot" data-step="4"></span>
+        <span class="step-dot" data-step="5"></span>
       </div>
 
-      <!-- 2. Password -->
-      <div class="sect">
-        <div class="num">2</div>
-        <div><div class="st">Create password</div><div class="sd">12+ characters recommended</div></div>
-      </div>
-      <div class="sect-line"></div>
-
-      <div class="fg" style="margin-bottom:8px">
-        <label for="su-p">Password</label>
-        <input type="password" id="su-p" autocomplete="new-password" placeholder="At least 12 characters" oninput="checkPwStrength()">
-        <div class="pw-meter" id="pw-meter" data-score="0" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="pw-label"><span class="pl">Strength</span><span class="pv" id="pw-verdict">Nothing yet</span></div>
-        <div class="pw-reqs" id="pw-rules">
-          <div class="pw-req" data-req="len"><span class="dot"></span>12+ characters</div>
-          <div class="pw-req" data-req="upper"><span class="dot"></span>Uppercase letter</div>
-          <div class="pw-req" data-req="lower"><span class="dot"></span>Lowercase letter</div>
-          <div class="pw-req" data-req="num"><span class="dot"></span>Number</div>
-          <div class="pw-req" data-req="sym"><span class="dot"></span>Symbol (!&nbsp;?&nbsp;#&nbsp;&amp;)</div>
-          <div class="pw-req" data-req="safe"><span class="dot"></span>Not easy to guess</div>
+      <!-- STEP 1: Name -->
+      <div class="su-step" data-step="1">
+        <div class="fg" style="margin-top:20px">
+          <label for="su-n" style="font-size:16px">What's your name?</label>
+          <input type="text" id="su-n" autocomplete="name" placeholder="Full name" style="font-size:16px;padding:14px 16px">
         </div>
       </div>
-      <div class="fg" style="margin-bottom:6px"><label for="su-p2">Confirm password</label><input type="password" id="su-p2" autocomplete="new-password" placeholder="Type it once more" oninput="checkPwMatch()"><div class="hint" id="pw-match"></div></div>
-      <div class="reveal-row" id="rv-su" role="button" tabindex="0" aria-pressed="false" onclick="toggleReveal('su')" onkeydown="revealKey(event,'su')">
-        <span class="rl">
-          <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>
-          <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span class="rt">Show passwords</span>
-        </span>
-        <span class="rs" id="rv-su-s">Off</span>
-        <div class="toggle sm" id="rv-su-t"></div>
+
+      <!-- STEP 2: Username -->
+      <div class="su-step" data-step="2" style="display:none">
+        <div class="fg" style="margin-top:20px">
+          <label for="su-h" style="font-size:16px">Choose a username</label>
+          <input type="text" id="su-h" autocomplete="username" placeholder="@username" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'').toLowerCase()" style="font-size:16px;padding:14px 16px">
+          <div class="hint">Letters, numbers, and underscores only</div>
+        </div>
       </div>
 
-      <!-- 3. Recovery -->
-      <div class="sect">
-        <div class="num">3</div>
-        <div><div class="st">Account recovery</div><div class="sd">Security questions if you get locked out</div></div>
-      </div>
-      <div class="sect-line"></div>
-
-      <div class="fg">
-        <label for="su-sq">Security question 1</label>
-        <select id="su-sq" onchange="syncSecurityQuestions()">
-          <option value="">Choose a question...</option>
-        </select>
-        <input type="password" id="su-sa" autocomplete="off" placeholder="Your answer" style="margin-top:8px">
-      </div>
-      <div class="fg" style="margin-bottom:6px">
-        <label for="su-sq2">Security question 2</label>
-        <select id="su-sq2" onchange="syncSecurityQuestions()">
-          <option value="">Choose a different question...</option>
-        </select>
-        <input type="password" id="su-sa2" autocomplete="off" placeholder="Your answer" style="margin-top:8px">
-        <div class="hint">Answers are hashed — no one can read them back.</div>
-      </div>
-      <div class="reveal-row" id="rv-sq" role="button" tabindex="0" aria-pressed="false" onclick="toggleReveal('sq')" onkeydown="revealKey(event,'sq')">
-        <span class="rl">
-          <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>
-          <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span class="rt">Show answers</span>
-        </span>
-        <span class="rs" id="rv-sq-s">Off</span>
-        <div class="toggle sm" id="rv-sq-t"></div>
+      <!-- STEP 3: Email -->
+      <div class="su-step" data-step="3" style="display:none">
+        <div class="fg" style="margin-top:20px">
+          <label for="su-e" style="font-size:16px">What's your email?</label>
+          <input type="email" id="su-e" autocomplete="email" placeholder="you@example.com" style="font-size:16px;padding:14px 16px">
+        </div>
+        <div class="fg">
+          <label for="su-b" style="font-size:16px">Birthday</label>
+          <input type="date" id="su-b" autocomplete="bday" min="1900-01-01" oninput="checkBirthday()" style="font-size:16px;padding:14px 16px">
+          <div class="hint" id="bd-hint">Must be 13 or older</div>
+        </div>
       </div>
 
-      <div class="fg" style="margin-top:14px">
-        <label for="su-2fa">Two-factor PIN <span style="color:var(--ink-4);font-weight:400">(optional)</span></label>
-        <input type="password" id="su-2fa" inputmode="numeric" placeholder="6 digits for extra security" maxlength="6">
+      <!-- STEP 4: Password -->
+      <div class="su-step" data-step="4" style="display:none">
+        <div class="fg" style="margin-top:20px">
+          <label for="su-p" style="font-size:16px">Create a password</label>
+          <input type="password" id="su-p" autocomplete="new-password" placeholder="At least 12 characters" oninput="checkPwStrength()" style="font-size:16px;padding:14px 16px">
+          <div class="pw-meter" id="pw-meter" data-score="0" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="pw-label"><span class="pl">Strength</span><span class="pv" id="pw-verdict">Nothing yet</span></div>
+          <div class="pw-reqs" id="pw-rules">
+            <div class="pw-req" data-req="len"><span class="dot"></span>12+ characters</div>
+            <div class="pw-req" data-req="upper"><span class="dot"></span>Uppercase letter</div>
+            <div class="pw-req" data-req="lower"><span class="dot"></span>Lowercase letter</div>
+            <div class="pw-req" data-req="num"><span class="dot"></span>Number</div>
+            <div class="pw-req" data-req="sym"><span class="dot"></span>Symbol (!&nbsp;?&nbsp;#&nbsp;&amp;)</div>
+            <div class="pw-req" data-req="safe"><span class="dot"></span>Not easy to guess</div>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:6px">
+          <label for="su-p2" style="font-size:16px">Confirm password</label>
+          <input type="password" id="su-p2" autocomplete="new-password" placeholder="Type it once more" oninput="checkPwMatch()" style="font-size:16px;padding:14px 16px">
+          <div class="hint" id="pw-match"></div>
+        </div>
+        <div class="reveal-row" id="rv-su" role="button" tabindex="0" aria-pressed="false" onclick="toggleReveal('su')" onkeydown="revealKey(event,'su')">
+          <span class="rl">
+            <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>
+            <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="rt">Show passwords</span>
+          </span>
+          <span class="rs" id="rv-su-s">Off</span>
+          <div class="toggle sm" id="rv-su-t"></div>
+        </div>
       </div>
 
-      <div class="paypal-row show" id="pp-row">
-        <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px">Want to accept payments? Link PayPal now or do it later in Settings.</p>
-        <button class="btn btn-gold btn-sm" style="margin:0 auto" onclick="connectPayPal()" id="pp-btn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
-          Connect PayPal
-        </button>
-        <p style="font-size:12px;color:var(--ink-3);margin-top:8px" id="pp-status">Optional — skip if you don't want subscriptions</p>
+      <!-- STEP 5: Security Questions -->
+      <div class="su-step" data-step="5" style="display:none">
+        <div class="fg" style="margin-top:20px">
+          <label for="su-sq" style="font-size:16px">Security question 1</label>
+          <select id="su-sq" onchange="syncSecurityQuestions()" style="font-size:15px;padding:12px 14px">
+            <option value="">Choose a question...</option>
+          </select>
+          <input type="password" id="su-sa" autocomplete="off" placeholder="Your answer" style="margin-top:8px;font-size:16px;padding:14px 16px">
+        </div>
+        <div class="fg" style="margin-bottom:6px">
+          <label for="su-sq2" style="font-size:16px">Security question 2</label>
+          <select id="su-sq2" onchange="syncSecurityQuestions()" style="font-size:15px;padding:12px 14px">
+            <option value="">Choose a different question...</option>
+          </select>
+          <input type="password" id="su-sa2" autocomplete="off" placeholder="Your answer" style="margin-top:8px;font-size:16px;padding:14px 16px">
+          <div class="hint">Answers are hashed — no one can read them back.</div>
+        </div>
+        <div class="reveal-row" id="rv-sq" role="button" tabindex="0" aria-pressed="false" onclick="toggleReveal('sq')" onkeydown="revealKey(event,'sq')">
+          <span class="rl">
+            <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>
+            <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="rt">Show answers</span>
+          </span>
+          <span class="rs" id="rv-sq-s">Off</span>
+          <div class="toggle sm" id="rv-sq-t"></div>
+        </div>
+
+        <div class="fg" style="margin-top:14px">
+          <label for="su-2fa">Two-factor PIN <span style="color:var(--ink-4);font-weight:400">(optional)</span></label>
+          <input type="password" id="su-2fa" inputmode="numeric" placeholder="6 digits for extra security" maxlength="6" style="font-size:16px;padding:14px 16px">
+        </div>
+
+        <div class="terms-row" style="margin-top:16px">
+          <input type="checkbox" id="su-t">
+          <label for="su-t">I agree to the <a onclick="showTerms()">Terms of Service</a> and <a onclick="showHarassment()">Anti-Harassment Policy</a>.</label>
+        </div>
       </div>
 
-      <div class="terms-row">
-        <input type="checkbox" id="su-t">
-        <label for="su-t">I agree to the <a onclick="showTerms()">Terms of Service</a> and <a onclick="showHarassment()">Anti-Harassment Policy</a>.</label>
+      <!-- Navigation buttons -->
+      <div class="modal-row" style="margin-top:20px">
+        <button class="btn btn-outline" id="su-back" style="flex:1;display:none" onclick="suPrevStep()">Back</button>
+        <button class="btn btn-primary" id="su-next" style="flex:1" onclick="suNextStep()">Next</button>
+        <button class="btn btn-primary" id="su-submit" style="flex:1;display:none" onclick="su()">Create account<div class="spin" id="su-s"></div></button>
       </div>
-      <button class="btn btn-primary" onclick="su()">Create account<div class="spin" id="su-s"></div></button>
       <div class="error-msg" id="su-er"></div>
-      <div class="or">or</div>
-      <button class="btn btn-g" onclick="showToast('Google sign-up coming soon')">
+
+      <div class="or" id="su-or">or</div>
+      <button class="btn btn-g" id="su-google" onclick="showToast('Google sign-up coming soon')">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Sign up with Google <span style="font-size:12px;color:#888;margin-left:4px">(Coming Soon)</span>
       </button>
@@ -1584,6 +1604,89 @@ window.syncSecurityQuestions=function(){
   if(b.value&&b.value===a.value)b.value='';
 };
 
+// ==================== SIGN-UP STEP WIZARD ====================
+var suCurrentStep=1;
+var suTotalSteps=5;
+window.suNextStep=function(){
+  var er=$('su-er');
+  er.classList.remove('show');
+  // Validate current step
+  if(suCurrentStep===1){
+    var n=$('su-n').value.trim();
+    if(!n){er.textContent='Enter your name';er.classList.add('show');return;}
+  }
+  if(suCurrentStep===2){
+    var h=$('su-h').value.trim();
+    if(!h){er.textContent='Choose a username';er.classList.add('show');return;}
+    if(h.length<3){er.textContent='Username must be at least 3 characters';er.classList.add('show');return;}
+  }
+  if(suCurrentStep===3){
+    var e=$('su-e').value.trim();
+    var b=$('su-b').value;
+    if(!e||!e.includes('@')){er.textContent='Enter a valid email';er.classList.add('show');return;}
+    if(!b){er.textContent='Enter your birthday';er.classList.add('show');return;}
+    var bd=new Date(b);
+    var age=(Date.now()-bd.getTime())/(1000*60*60*24*365.25);
+    if(age<13){er.textContent='You must be 13 or older';er.classList.add('show');return;}
+  }
+  if(suCurrentStep===4){
+    var p=$('su-p').value;
+    var p2=$('su-p2').value;
+    if(!p||p.length<12){er.textContent='Password must be at least 12 characters';er.classList.add('show');return;}
+    if(p!==p2){er.textContent='Passwords do not match';er.classList.add('show');return;}
+  }
+  if(suCurrentStep===5){
+    var sq=$('su-sq').value,sa=$('su-sa').value;
+    var sq2=$('su-sq2').value,sa2=$('su-sa2').value;
+    if(!sq||!sa){er.textContent='Answer security question 1';er.classList.add('show');return;}
+    if(!sq2||!sa2){er.textContent='Answer security question 2';er.classList.add('show');return;}
+    if(!$('su-t').checked){er.textContent='Agree to the terms';er.classList.add('show');return;}
+    su();return;
+  }
+  // Advance
+  document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='none'});
+  suCurrentStep++;
+  document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='block'});
+  // Update dots
+  document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)<=suCurrentStep)});
+  // Update buttons
+  $('su-back').style.display=suCurrentStep>1?'block':'none';
+  $('su-next').style.display=suCurrentStep<suTotalSteps?'block':'none';
+  $('su-submit').style.display=suCurrentStep===suTotalSteps?'block':'none';
+  // Update title
+  var titles=['','What's your name?','Choose a username','What's your email?','Create a password','Security questions'];
+  $('su-title').textContent=titles[suCurrentStep];
+  $('su-subtitle').textContent='Step '+suCurrentStep+' of '+suTotalSteps;
+  // Focus first input
+  var firstInput=document.querySelector('.su-step[data-step="'+suCurrentStep+'"] input, .su-step[data-step="'+suCurrentStep+'"] select');
+  if(firstInput)firstInput.focus();
+};
+window.suPrevStep=function(){
+  if(suCurrentStep<=1)return;
+  document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='none'});
+  suCurrentStep--;
+  document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='block'});
+  document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)<=suCurrentStep)});
+  $('su-back').style.display=suCurrentStep>1?'block':'none';
+  $('su-next').style.display=suCurrentStep<suTotalSteps?'block':'none';
+  $('su-submit').style.display=suCurrentStep===suTotalSteps?'block':'none';
+  var titles=['','What's your name?','Choose a username','What's your email?','Create a password','Security questions'];
+  $('su-title').textContent=titles[suCurrentStep];
+  $('su-subtitle').textContent='Step '+suCurrentStep+' of '+suTotalSteps;
+};
+// Reset wizard when switching to signup tab
+window.resetSignupWizard=function(){
+  suCurrentStep=1;
+  document.querySelectorAll('.su-step').forEach(function(el){el.style.display=el.dataset.step==='1'?'block':'none'});
+  document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)===1)});
+  $('su-back').style.display='none';
+  $('su-next').style.display='block';
+  $('su-submit').style.display='none';
+  $('su-title').textContent='Create your account';
+  $('su-subtitle').textContent='Join the chain';
+};
+
+
 // ==================== SIGN-UP: SHOW / HIDE WHAT YOU TYPE ====================
 var REVEAL_GROUPS={
   li:['li-p'],
@@ -1795,7 +1898,7 @@ window.nextTut=function(){window.tutSlide=(window.tutSlide||0)+1;var slides=docu
 window.updateTutSlide=function(){var slides=document.querySelectorAll('.tut-slide');var dots=document.querySelectorAll('.tut-dot');slides.forEach(function(s,i){s.classList.toggle('active',i===window.tutSlide)});dots.forEach(function(d,i){d.classList.toggle('active',i===window.tutSlide)});var btn=$('tut-next');if(btn){btn.textContent=window.tutSlide>=slides.length-1?'Get Started':'Next'}};
 
 // ==================== AUTH ====================
-window.swt=function(t){['in','up','fg'].forEach(function(x){var f=$('form-'+x);if(f)f.classList.remove('a');var tab=$('tab-'+x);if(tab)tab.classList.remove('a')});$('form-'+t).classList.add('a');$('tab-'+t).classList.add('a');['li-er','su-er','fg-er'].forEach(function(x){var el=$(x);if(el)el.classList.remove('show')})};
+window.swt=function(t){['in','up','fg'].forEach(function(x){var f=$('form-'+x);if(f)f.classList.remove('a');var tab=$('tab-'+x);if(tab)tab.classList.remove('a')});$('form-'+t).classList.add('a');$('tab-'+t).classList.add('a');if(t==='up')resetSignupWizard();['li-er','su-er','fg-er'].forEach(function(x){var el=$(x);if(el)el.classList.remove('show')})};
 window.showForgot=function(){$('form-in').classList.remove('a');$('form-up').classList.remove('a');$('tab-in').classList.remove('a');$('tab-up').classList.remove('a');$('form-fg').classList.add('a');resetForgotForm()};
 window.showLogin=function(){$('form-fg').classList.remove('a');$('form-up').classList.remove('a');$('tab-up').classList.remove('a');$('form-in').classList.add('a');$('tab-in').classList.add('a');resetForgotForm()};
 function resetForgotForm(){
