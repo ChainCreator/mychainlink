@@ -2218,18 +2218,23 @@ window.viewUserFromModal=function(el){var id=el.getAttribute('data-uid');if(id){
 
 // ==================== SUBSCRIBE / PAYPAL ====================
 // CONFIG: Replace with your real PayPal Client ID from developer.paypal.com
-const PAYPAL_CLIENT_ID = '7WEUUYSTA5HY8';
-const PLATFORM_FEE_PERCENT = 15; // You keep 15%
-const CREATOR_PERCENT = 85;      // Creator gets 85%
+const PAYPAL_CLIENT_ID = 'ATZa-1m2e4v-oftT72ojzl6F1Z6XfftjrPeRte5-OXg2l0Jtta883B7SpcIPlWbuUJ1YpgZY0xaQjEb4';
+// PayPal Subscription Plan ID — create this at https://developer.paypal.com → Subscriptions → Create Plan
+// Then paste your Plan ID below. Until then, premium will use one-time payment fallback.
+const PAYPAL_PREMIUM_PLAN_ID = ''; // e.g. 'P-5ML4271244454362WXNWU5NQ'
+const PLATFORM_FEE_PERCENT = 15;
+const CREATOR_PERCENT = 85;
 
 window.openSubModal=function(){$('m-pp-checkout').classList.add('on');var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML='';setTimeout(function(){renderPayPalButtons()},300)};
 window.openSubVU=function(){if(!vu){showToast('No user selected');return}var u=getUserData(vu.id);if(!u)return;$('sub-to-name').textContent=u.name||'Creator';$('sub-to-n').textContent=u.name||'User';$('sub-to-av').innerHTML=u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?');$('m-pp-checkout').classList.add('on');var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML='';setTimeout(function(){renderPayPalButtons()},300)};
 
 window.paypalLoaded=false;
-window.loadPayPalSDK=function(cb){
+window.loadPayPalSDK=function(cb,forSubscription){
   if(window.paypalLoaded||typeof paypal!=='undefined'){window.paypalLoaded=true;if(cb)cb();return}
   var s=document.createElement('script');
-  s.src='https://www.paypal.com/sdk/js?client-id='+PAYPAL_CLIENT_ID+'&currency=CAD';
+  var url='https://www.paypal.com/sdk/js?client-id='+PAYPAL_CLIENT_ID+'&currency=CAD';
+  if(forSubscription)url+='&vault=true&intent=subscription';
+  s.src=url;
   s.onload=function(){window.paypalLoaded=true;if(cb)cb()};
   s.onerror=function(){showToast('PayPal failed to load')};document.head.appendChild(s)
 };
@@ -2304,45 +2309,85 @@ window.renderPremiumPayPalButtons=function(){
   var container=$('premium-paypal-container');
   if(!container)return;
   container.innerHTML='';
-  if(typeof paypal==='undefined'||!paypal.Buttons){showToast('Loading PayPal...');loadPayPalSDK(function(){renderPremiumPayPalButtons()});return}
   
-  paypal.Buttons({
-    style:{layout:'vertical',color:'gold',shape:'rect',label:'subscribe'},
-    createOrder:function(data,actions){
-      return actions.order.create({
-        purchase_units:[{
-          amount:{value:'10.99',currency_code:'CAD'},
-          description:'MyChainLink Premium Subscription'
-        }]
-      });
-    },
-    onApprove:function(data,actions){
-      return actions.order.capture().then(async function(details){
+  // Use PayPal Subscriptions if plan ID is configured, otherwise fallback to one-time
+  var useSubscription = PAYPAL_PREMIUM_PLAN_ID && PAYPAL_PREMIUM_PLAN_ID.length > 5;
+  
+  if(typeof paypal==='undefined'||!paypal.Buttons){
+    showToast('Loading PayPal...');
+    loadPayPalSDK(function(){renderPremiumPayPalButtons()}, useSubscription);
+    return
+  }
+  
+  if(useSubscription){
+    // REAL SUBSCRIPTION
+    paypal.Buttons({
+      style:{layout:'vertical',color:'gold',shape:'rect',label:'subscribe'},
+      createSubscription:function(data,actions){
+        return actions.subscription.create({
+          plan_id: PAYPAL_PREMIUM_PLAN_ID
+        });
+      },
+      onApprove:function(data,actions){
         showToast('Premium activated! Welcome to the chain.');
         localStorage.setItem('cl_premium_'+cu.id,'true');
         localStorage.setItem('cl_premium_since_'+cu.id,new Date().toISOString());
+        localStorage.setItem('cl_premium_sub_'+cu.id,data.subscriptionID);
         if(sb&&supabaseOnline){
           try{
-            await sb.from('transactions').insert({
-              payer_id:cu.id,
-              creator_id:null,
-              amount:10.99,
-              platform_fee:10.99,
-              creator_amount:0,
-              paypal_order_id:details.id,
-              status:'completed',
-              type:'premium_subscription'
-            });
+            sb.from('transactions').insert({
+              payer_id:cu.id, creator_id:null, amount:10.99,
+              platform_fee:10.99, creator_amount:0,
+              paypal_subscription_id:data.subscriptionID,
+              status:'completed', type:'premium_subscription'
+            }).then(function(){}).catch(function(e){console.log('tx error',e)});
           }catch(e){console.log('Transaction record error',e)}
         }
         closeModal('m-premium');
         renderProfile();
-      });
-    },
-    onError:function(err){console.log('PayPal error',err);showToast('Payment failed. Please try again.');},
-    onCancel:function(){showToast('Payment cancelled');}
-  }).render('#premium-paypal-container');
-};
+      },
+      onError:function(err){console.log('PayPal error',err);showToast('Payment failed: '+(err.message||'Unknown error'));},
+      onCancel:function(){showToast('Payment cancelled');}
+    }).render('#premium-paypal-container');
+  }else{
+    // FALLBACK: One-time payment (until you create a Plan in PayPal dashboard)
+    container.innerHTML='<div style="background:#1C1C1C;border-radius:12px;padding:16px;margin-bottom:16px;text-align:center">'+
+      '<p style="color:#FFD700;font-weight:700;margin-bottom:8px">⚠️ Subscription Setup Needed</p>'+
+      '<p style="font-size:13px;color:#888">PayPal Plan ID not configured. Using one-time payment fallback.</p>'+
+      '</div>';
+    paypal.Buttons({
+      style:{layout:'vertical',color:'gold',shape:'rect',label:'pay'},
+      createOrder:function(data,actions){
+        return actions.order.create({
+          purchase_units:[{
+            amount:{value:'10.99',currency_code:'CAD'},
+            description:'MyChainLink Premium (one-time)'
+          }]
+        });
+      },
+      onApprove:function(data,actions){
+        return actions.order.capture().then(async function(details){
+          showToast('Premium activated! Welcome to the chain.');
+          localStorage.setItem('cl_premium_'+cu.id,'true');
+          localStorage.setItem('cl_premium_since_'+cu.id,new Date().toISOString());
+          if(sb&&supabaseOnline){
+            try{
+              await sb.from('transactions').insert({
+                payer_id:cu.id, creator_id:null, amount:10.99,
+                platform_fee:10.99, creator_amount:0,
+                paypal_order_id:details.id,
+                status:'completed', type:'premium_subscription'
+              });
+            }catch(e){console.log('Transaction record error',e)}
+          }
+          closeModal('m-premium');
+          renderProfile();
+        });
+      },
+      onError:function(err){console.log('PayPal error',err);showToast('Payment failed. Please try again.');},
+      onCancel:function(){showToast('Payment cancelled');}
+    }).render('#premium-paypal-container');
+  }
 window.goLive = async function() {
   if (!cu) { showToast('Please sign in first'); return; }
   var isPremium = localStorage.getItem('cl_premium_' + cu.id);
