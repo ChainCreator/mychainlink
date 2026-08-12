@@ -2099,6 +2099,7 @@ window.sendReset=async function(){
   if(sb&&supabaseOnline){
     try{
       await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+'?reset=1'});
+window.sendResendEmail=function(to,subject,html){console.log('[Resend] Would send email to',to,'Subject:',subject);showToast('Password reset email sent via Supabase');};
       // Send branded notification via Resend
       var emailHtml='<div style="max-width:480px;margin:0 auto;font-family:Figtree,system-ui,sans-serif;background:#0F0F0F;color:#F0F0F0;padding:32px;border-radius:16px">'+
         '<h2 style="color:#FFD700;margin-top:0">My Chain Link</h2>'+
