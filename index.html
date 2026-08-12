@@ -1548,6 +1548,7 @@ var posts=JSON.parse(localStorage.getItem('cl_posts')||'[]');
 var notifs=JSON.parse(localStorage.getItem('cl_notifs')||'[]');
 var settings=JSON.parse(localStorage.getItem('cl_settings')||'{"comments":true,"subOnly":false,"notifs":true,"dark":true,"showConnects":true}');
 window.isUserPremium=function(userId){if(!userId)return false;var paid=localStorage.getItem('cl_premium_'+userId);if(paid)return true;var trialStart=localStorage.getItem('cl_trial_start_'+userId);if(!trialStart)return false;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));return days<7};window.getTrialDaysLeft=function(userId){if(!userId)return 0;var paid=localStorage.getItem('cl_premium_'+userId);if(paid)return null;var trialStart=localStorage.getItem('cl_trial_start_'+userId);if(!trialStart)return 0;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));var left=7-days;return left>0?left:0};
+window.sendResendEmail=function(to,subject,html){console.log('[Resend] Would send to',to);showToast('Reset email sent');};
 
 var follows=JSON.parse(localStorage.getItem('cl_follows')||'{}');
 var blocks=JSON.parse(localStorage.getItem('cl_blocks')||'[]');
@@ -2099,7 +2100,6 @@ window.sendReset=async function(){
   if(sb&&supabaseOnline){
     try{
       await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+'?reset=1'});
-window.sendResendEmail=function(to,subject,html){console.log('[Resend] Would send email to',to,'Subject:',subject);showToast('Password reset email sent via Supabase');};
       // Send branded notification via Resend
       var emailHtml='<div style="max-width:480px;margin:0 auto;font-family:Figtree,system-ui,sans-serif;background:#0F0F0F;color:#F0F0F0;padding:32px;border-radius:16px">'+
         '<h2 style="color:#FFD700;margin-top:0">My Chain Link</h2>'+
