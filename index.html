@@ -2100,13 +2100,13 @@ window.sendReset=async function(){
     try{
       await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+'?reset=1'});
       // Send branded notification via Resend
-      var emailHtml='<div style='max-width:480px;margin:0 auto;font-family:Figtree,system-ui,sans-serif;background:#0F0F0F;color:#F0F0F0;padding:32px;border-radius:16px'>'+
-        '<h2 style='color:#FFD700;margin-top:0'>My Chain Link</h2>'+
+      var emailHtml='<div style="max-width:480px;margin:0 auto;font-family:Figtree,system-ui,sans-serif;background:#0F0F0F;color:#F0F0F0;padding:32px;border-radius:16px">'+
+        '<h2 style="color:#FFD700;margin-top:0">My Chain Link</h2>'+
         '<p>Hi there,</p>'+
         '<p>We received a request to reset your password.</p>'+
-        '<p style='background:#1C1C1C;padding:16px;border-radius:12px;margin:16px 0'><strong>What happens next:</strong><br>Check your inbox for a password reset link. Click it and you'll be able to set a new password.</p>'+
-        '<p style='color:#888;font-size:13px'>If you didn't request this, you can safely ignore this email. Your account is secure.</p>'+
-        '<p style='margin-top:24px;font-size:12px;color:#666'>My Chain Link — get connected, stay connected.</p>'+
+        '<p style="background:#1C1C1C;padding:16px;border-radius:12px;margin:16px 0"><strong>What happens next:</strong><br>Check your inbox for a password reset link. Click it and you\'ll be able to set a new password.</p>'+
+        '<p style="color:#888;font-size:13px">If you didn\'t request this, you can safely ignore this email. Your account is secure.</p>'+
+        '<p style="margin-top:24px;font-size:12px;color:#666">My Chain Link — get connected, stay connected.</p>'+
         '</div>';
       sendResendEmail(e,'Password Reset - My Chain Link',emailHtml);
       $('fg-s').classList.remove('show');
