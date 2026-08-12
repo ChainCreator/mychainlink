@@ -1566,14 +1566,14 @@ async function loadNotificationsFromSupabase(){
     var {data,error}=await sb.from('notifications').select('*').eq('user_id',cu.id).order('created_at',{ascending:false}).limit(50);
     if(error)throw error;
     if(data&&data.length){
-      notifs=data.map(function(n){return{id:n.id,type:n.type,un:n.actor_name||'User',txt:n.content||'',ts:new Date(n.created_at).getTime(),read:n.read}});
+      notifs=data.map(function(n){return{id:n.id,type:n.type,un:n.actor_name||'User',txt:n.content||'',ts:new Date(n.created_at).getTime(),read:n.is_read}});
       svn();
     }
   }catch(e){console.log('Notif load error',e)}
 }
 async function markNotificationsRead(){
   if(!sb||!supabaseOnline||!cu)return;
-  try{await sb.from('notifications').update({read:true}).eq('user_id',cu.id).eq('read',false)}catch(e){console.log('Notif mark read error',e)}
+  try{await sb.from('notifications').update({is_read:true}).eq('user_id',cu.id).eq('is_read',false)}catch(e){console.log('Notif mark read error',e)}
 }
 function subscribeToNotifications(){
   if(!sb||!supabaseOnline||!cu||window._notifChannel)return;
