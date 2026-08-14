@@ -2991,8 +2991,56 @@ window.showStartConnection=function(){if(!cu){showToast('Sign in to start a conn
 window.startConnWithUser=function(id){closeModal('m-start-conn');openThread(id)};
 
 // ==================== INIT ====================
-function tryLogin(){if(localStorage.getItem('cl_user')){try{cu=JSON.parse(localStorage.getItem('cl_user'));showApp();loadAllFollows();return true}catch(e){}}return false}
-handlePasswordReset().then(function(resetHandled){if(!resetHandled){handleOAuthCallback().then(function(handled){if(!handled){if(sb&&supabaseOnline){sb.auth.getSession().then(function(r){if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows()}else{tryLogin()}}).catch(function(){tryLogin()})}else{tryLogin()}}})}});
+function tryLogin(){
+  var raw=localStorage.getItem('cl_user');
+  if(!raw)return false;
+  try{
+    cu=JSON.parse(raw);
+    if(!cu||!cu.id){console.error('[Init] Invalid user data');localStorage.removeItem('cl_user');return false}
+    console.log('[Init] Restored user:',cu.email);
+    showApp();loadAllFollows();return true;
+  }catch(e){
+    console.error('[Init] Failed to parse cl_user:',e);
+    localStorage.removeItem('cl_user');
+    return false;
+  }
+}
+
+// Fast-path: just logged in from login.html — skip async checks and go straight to app
+if(location.search.includes('login=1')){
+  history.replaceState(null,'',location.pathname);
+  if(!tryLogin()){
+    // If tryLogin fails, still run the normal init in case Supabase has a session
+    handlePasswordReset().then(function(resetHandled){
+      if(!resetHandled){
+        handleOAuthCallback().then(function(handled){
+          if(!handled){
+            if(sb&&supabaseOnline){
+              sb.auth.getSession().then(function(r){
+                if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows()}else{/* already failed */}
+              }).catch(function(){})
+            }
+          }
+        })
+      }
+    });
+  }
+}else{
+  // Normal init flow
+  handlePasswordReset().then(function(resetHandled){
+    if(!resetHandled){
+      handleOAuthCallback().then(function(handled){
+        if(!handled){
+          if(sb&&supabaseOnline){
+            sb.auth.getSession().then(function(r){
+              if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows()}else{tryLogin()}
+            }).catch(function(){tryLogin()})
+          }else{tryLogin()}
+        }
+      })
+    }
+  });
+}
 document.addEventListener('click',function(e){var menu=$('menu-drop');var btn=$('menu-btn');if(menu&&menu.classList.contains('on')&&btn&&!btn.contains(e.target)&&!menu.contains(e.target)){menu.classList.remove('on')}});
 if(location.search.includes('paypal')){setTimeout(function(){if(vu){if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};follows[vu.id].subscribed=true;svf();showToast('Payment successful! You are now subscribed.');history.replaceState(null,'',location.pathname)}},1000)}
 // Handle #signup hash from login page
