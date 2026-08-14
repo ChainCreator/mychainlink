@@ -283,7 +283,7 @@ async function doLogin(){
       err.textContent='Browser blocked login. Check private mode settings.';
       err.classList.add('show');spin.style.display='none';return;
     }
-    location.href='index.html?login=1';
+    location.href='index.html?login=1&nocache=1';
     return;
   }
 
@@ -304,7 +304,7 @@ async function doLogin(){
         saved.push({id:cu.id,email:cu.email,name:meta.display_name||'User',avatar:meta.avatar||''});
         localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
       }
-      location.href='index.html?login=1';
+      location.href='index.html?login=1&nocache=1';
       return;
     }catch(e){err.textContent='Network error. Try again.';err.classList.add('show')}
   }else{err.textContent='No account found with those details.';err.classList.add('show')}

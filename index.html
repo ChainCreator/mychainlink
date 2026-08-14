@@ -2998,7 +2998,7 @@ function tryLogin(){
     cu=JSON.parse(raw);
     if(!cu||!cu.id){console.error('[Init] Invalid user data');localStorage.removeItem('cl_user');return false}
     console.log('[Init] Restored user:',cu.email);
-    showApp();loadAllFollows();return true;
+    try{showApp();loadAllFollows();return true;}catch(e){console.error('[Init] showApp failed:',e);return false;}
   }catch(e){
     console.error('[Init] Failed to parse cl_user:',e);
     localStorage.removeItem('cl_user');
