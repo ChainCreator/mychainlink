@@ -758,7 +758,7 @@ if(hasUser&&(stayLoggedIn||hasSession)){
   <div class="landing-content">
 
     <div class="landing-logo">
-      <img src="logo-v4.png" alt="My Chain Link">
+      <img src="logo-v4.png?v=2" alt="My Chain Link">
     </div>
 
     <div class="landing-lead">
@@ -929,15 +929,25 @@ window.showAuth = function(tab) {
   if (lp) {
     lp.classList.add('hidden');
   }
+  if (tab === 'in') {
+    if (typeof showLoginPage === 'function') {
+      showLoginPage();
+      return;
+    }
+    // Fallback: show auth-page login tab if dedicated page missing
+    if (ap) {
+      ap.classList.remove('hidden');
+    }
+    if (typeof swt === 'function') {
+      swt('in');
+    }
+    return;
+  }
   if (ap) {
     ap.classList.remove('hidden');
   }
   if (typeof swt === 'function') {
-    if (tab === 'in') {
-      showLoginPage();
-      return;
-    }
-    else if (tab === 'up') swt('up');
+    if (tab === 'up') swt('up');
   }
 };
 </script>
@@ -997,7 +1007,7 @@ window.showAuth = function(tab) {
 
 <div class="auth-container hidden" id="auth-page">
   <div class="auth-logo">
-    <img src="logo-v4.png" alt="My Chain Link">
+    <img src="logo-v4.png?v=2" alt="My Chain Link">
     <div class="tag">Get connected. Stay connected.</div>
   </div>
   <div class="auth-box">
@@ -2188,7 +2198,7 @@ window.showLoginPage=function(){
   var lgp=$('login-page');
   if(lp)lp.classList.add('hidden');
   if(ap){ap.classList.add('hidden');ap.style.display='none'}
-  if(lgp){lgp.classList.remove('hidden');lgp.style.display='flex';renderLoginSavedAccounts()}
+  if(lgp){lgp.classList.remove('hidden');lgp.style.display='flex';try{renderLoginSavedAccounts()}catch(e){console.log('renderLoginSavedAccounts error',e)}}
   var stay=localStorage.getItem('cl_stay_logged_in');
   var isOn=(stay!=='false');
   var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
