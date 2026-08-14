@@ -772,7 +772,7 @@ if(hasUser&&(stayLoggedIn||hasSession)){
         Create your account
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </button>
-      <button class="btn btn-outline btn-lg" onclick="showAuth('in')">I already have one</button>
+      <button class="btn btn-outline btn-lg" onclick="location.href='login.html'">I already have one</button>
     </div>
 
     <figure class="landing-quote">
@@ -926,29 +926,34 @@ if(hasUser&&(stayLoggedIn||hasSession)){
 window.showAuth = function(tab) {
   var lp = document.getElementById('landing-page');
   var ap = document.getElementById('auth-page');
-  if (lp) {
-    lp.classList.add('hidden');
-  }
+  if (lp) lp.classList.add('hidden');
+  
   if (tab === 'in') {
-    if (typeof showLoginPage === 'function') {
-      showLoginPage();
-      return;
-    }
-    // Fallback: show auth-page login tab if dedicated page missing
-    if (ap) {
-      ap.classList.remove('hidden');
-    }
-    if (typeof swt === 'function') {
-      swt('in');
-    }
+    location.href = 'login.html';
     return;
   }
-  if (ap) {
-    ap.classList.remove('hidden');
+  
+  if (ap) ap.classList.remove('hidden');
+  
+  // Direct tab switching - no swt dependency
+  ['in','up','fg'].forEach(function(x) {
+    var f = document.getElementById('form-'+x);
+    if (f) f.classList.remove('a');
+    var t = document.getElementById('tab-'+x);
+    if (t) t.classList.remove('a');
+  });
+  var activeForm = document.getElementById('form-'+tab);
+  var activeTab = document.getElementById('tab-'+tab);
+  if (activeForm) activeForm.classList.add('a');
+  if (activeTab) activeTab.classList.add('a');
+  
+  if (tab === 'up' && typeof resetSignupWizard === 'function') {
+    resetSignupWizard();
   }
-  if (typeof swt === 'function') {
-    if (tab === 'up') swt('up');
-  }
+  ['li-er','su-er','fg-er'].forEach(function(x) {
+    var el = document.getElementById(x);
+    if (el) el.classList.remove('show');
+  });
 };
 </script>
 

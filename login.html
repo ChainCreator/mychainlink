@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Log in — My Chain Link</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#0F0F0F;--surf-1:#141414;--surf-2:#1C1C1C;--surf-3:#242424;
+  --line:#2A2A2A;--ink-1:#F5F3EE;--ink-2:#C4BFB6;--ink-3:#8A8580;--ink-4:#5A5550;
+  --gold:#E6C96A;--gold-hi:#F5DE8B;--gold-deep:#C9A84C;--gold-wash:rgba(230,201,106,.08);--gold-edge:rgba(230,201,106,.35);
+  --red:#FF5A5A;--green:#4ADE80;
+  --font-a:'DM Sans',system-ui,sans-serif;--font-b:'Space Grotesk',system-ui,sans-serif;
+  --r:14px;--r-lg:20px;--r-pill:999px;--ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--ink-1);font-family:var(--font-a);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(230,201,106,.06),transparent 70%)}
+.logo-wrap{text-align:center;margin-bottom:32px;position:relative;z-index:1}
+.logo-wrap img{max-width:140px;height:auto}
+.tag{font-size:14px;color:#888;margin-top:8px;letter-spacing:.3px}
+
+.card{
+  background:var(--surf-1);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:28px;width:100%;max-width:400px;position:relative;z-index:1;
+}
+h1{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+.subtitle{text-align:center;color:var(--ink-3);font-size:14px;margin-bottom:20px}
+
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:13px;font-weight:500;color:var(--ink-2);margin-bottom:6px}
+.fg input{
+  width:100%;background:var(--surf-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 14px;color:var(--ink-1);font-size:15px;font-family:inherit;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.fg input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-wash)}
+.fg input::placeholder{color:var(--ink-4)}
+
+.reveal-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  cursor:pointer;transition:border-color .2s,background .2s;margin-top:6px;
+}
+.reveal-row:hover{border-color:var(--gold-edge);background:var(--gold-wash)}
+.reveal-row .rl{display:flex;align-items:center;gap:8px}
+.reveal-row .rl svg{width:15px;height:15px;flex-shrink:0;color:var(--ink-3)}
+.reveal-row .rt{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.reveal-row .rs{font-size:12px;color:var(--ink-4);font-weight:600}
+.toggle{
+  width:42px;height:25px;background:var(--surf-3);border:1px solid var(--line);border-radius:var(--r-pill);
+  position:relative;cursor:pointer;flex-shrink:0;transition:background .28s var(--ease),border-color .28s var(--ease);
+}
+.toggle.on{background:linear-gradient(140deg,var(--gold-hi),var(--gold-deep));border-color:transparent}
+.toggle::after{
+  content:'';position:absolute;width:18px;height:18px;background:#EDE9E1;border-radius:50%;
+  top:2.5px;left:2.5px;box-shadow:0 2px 5px rgba(0,0,0,.45);
+  transition:transform .28s var(--ease),background .28s var(--ease);
+}
+.toggle.on::after{transform:translateX(17px);background:#fff}
+
+.btn{
+  width:100%;padding:14px;border-radius:var(--r);border:none;font-size:15px;font-weight:600;
+  font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .2s,box-shadow .2s;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#0F0F0F;
+  box-shadow:0 8px 24px -8px rgba(230,201,106,.45);
+}
+.btn-primary:hover{box-shadow:0 10px 28px -6px rgba(230,201,106,.55)}
+.btn-outline{
+  background:transparent;border:1px solid var(--line);color:var(--ink-2);
+}
+.btn-outline:hover{border-color:var(--ink-3);color:var(--ink-1)}
+
+.spin{
+  width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#0F0F0F;
+  border-radius:50%;animation:spin 1s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.error-msg{
+  background:rgba(255,90,90,.1);border:1px solid rgba(255,90,90,.25);color:var(--red);
+  padding:10px 14px;border-radius:10px;font-size:13px;margin-top:12px;display:none;
+}
+.error-msg.show{display:block}
+
+.forgot-link{text-align:center;color:var(--gold);font-size:13px;margin-top:14px;cursor:pointer}
+.forgot-link:hover{text-decoration:underline}
+
+.or{display:flex;align-items:center;gap:12px;color:var(--ink-4);font-size:12px;margin:16px 0}
+.or::before,.or::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.saved-row{
+  display:flex;align-items:center;gap:12px;padding:12px;
+  background:var(--surf-2);border-radius:12px;margin-bottom:8px;cursor:pointer;
+  transition:background .15s;border:1px solid transparent;
+}
+.saved-row:hover{background:var(--surf-3);border-color:var(--gold-edge)}
+.saved-av{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#0F0F0F;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.saved-av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.saved-info{flex:1;min-width:0}
+.saved-name{font-weight:600;font-size:14px;color:var(--ink-1)}
+.saved-email{font-size:12px;color:var(--ink-3)}
+.saved-remove{
+  background:none;border:none;color:var(--ink-4);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;
+}
+.saved-remove:hover{color:var(--red);background:rgba(255,90,90,.1)}
+
+.version{position:fixed;bottom:8px;right:8px;font-size:10px;color:var(--ink-4);opacity:.5}
+</style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <img src="logo-v4.png" alt="My Chain Link">
+  <div class="tag">Get connected. Stay connected.</div>
+</div>
+
+<div class="card">
+  <h1>Welcome back</h1>
+  <p class="subtitle">Sign in to your account</p>
+
+  <div id="saved-accounts"></div>
+
+  <div class="fg">
+    <label for="email">Email</label>
+    <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+  </div>
+
+  <div class="fg" style="margin-bottom:6px">
+    <label for="password">Password</label>
+    <input type="password" id="password" autocomplete="current-password" placeholder="Your password">
+  </div>
+
+  <div class="reveal-row" id="rv-row" onclick="toggleReveal()">
+    <span class="rl">
+      <svg id="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>
+      <svg id="eye-on" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="rt">Show password</span>
+    </span>
+    <span class="rs" id="rv-status">Off</span>
+    <div class="toggle" id="rv-toggle"></div>
+  </div>
+
+  <div class="reveal-row" id="stay-row" onclick="toggleStay()" style="margin-top:8px">
+    <span class="rl"><span class="rt">Stay logged in</span></span>
+    <span class="rs" id="stay-status">On</span>
+    <div class="toggle on" id="stay-toggle"></div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:16px" onclick="doLogin()">
+    Sign in
+    <div class="spin" id="spinner"></div>
+  </button>
+
+  <div class="error-msg" id="error"></div>
+
+  <p class="forgot-link" onclick="alert('Forgot password coming soon')">Forgot password?</p>
+
+  <div class="or">or</div>
+
+  <button class="btn btn-outline" onclick="location.href='index.html'">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    Back to home
+  </button>
+</div>
+
+<div class="version">v2.0 — login page</div>
+
+<script>
+// ===== Supabase =====
+var SURL='https://pvtliggkbiwdzedmguag.supabase.co';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2dGxpZ2drYml3ZHplZG1ndWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NDI3MjcsImV4cCI6MjEwMTIxODcyN30.9J-kZO5i5sK7cSb18BsZVN_WZSeejofVzqcKKQ-440M';
+var sb=null,supabaseOnline=false;
+try{sb=supabase.createClient(SURL,SKEY,{auth:{autoRefreshToken:true,persistSession:true}});supabaseOnline=true}catch(e){console.log('Supabase offline')}
+
+// ===== Local users =====
+var localUsers=JSON.parse(localStorage.getItem('cl_localUsers')||'[]');
+function syncLocalUserToCu(lu){return{id:lu.id,email:lu.email,user_metadata:{display_name:lu.name,handle:lu.handle,bio:lu.bio||'',avatar:lu.avatar||''}}}
+
+// ===== Show password =====
+var revealOn=false;
+function toggleReveal(){
+  revealOn=!revealOn;
+  document.getElementById('password').type=revealOn?'text':'password';
+  document.getElementById('eye-off').style.display=revealOn?'none':'block';
+  document.getElementById('eye-on').style.display=revealOn?'block':'none';
+  document.getElementById('rv-status').textContent=revealOn?'On':'Off';
+  document.getElementById('rv-toggle').classList.toggle('on',revealOn);
+}
+
+// ===== Stay logged in =====
+var stayOn=localStorage.getItem('cl_stay_logged_in')!=='false';
+function toggleStay(){
+  stayOn=!stayOn;
+  localStorage.setItem('cl_stay_logged_in',stayOn?'true':'false');
+  document.getElementById('stay-status').textContent=stayOn?'On':'Off';
+  document.getElementById('stay-toggle').classList.toggle('on',stayOn);
+}
+// Init toggle state
+document.getElementById('stay-status').textContent=stayOn?'On':'Off';
+document.getElementById('stay-toggle').classList.toggle('on',stayOn);
+
+// ===== Saved accounts =====
+function renderSaved(){
+  var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+  var container=document.getElementById('saved-accounts');
+  if(!saved.length){container.innerHTML='';return}
+  var html='';
+  saved.forEach(function(a){
+    var av=a.avatar?'<img src="'+a.avatar+'">':(a.name?a.name[0].toUpperCase():'?');
+    html+='<div class="saved-row" onclick="pickAccount(\''+a.email+'\')">';
+    html+='<div class="saved-av">'+av+'</div>';
+    html+='<div class="saved-info"><div class="saved-name">'+(a.name||'User')+'</div><div class="saved-email">'+a.email+'</div></div>';
+    html+='<button class="saved-remove" onclick="event.stopPropagation();removeAccount(\''+a.id+'\')">Remove</button>';
+    html+='</div>';
+  });
+  container.innerHTML=html;
+}
+function pickAccount(email){document.getElementById('email').value=email;document.getElementById('password').focus()}
+function removeAccount(id){
+  var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]').filter(function(a){return a.id!==id});
+  localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
+  renderSaved();
+}
+renderSaved();
+
+// ===== Login =====
+async function doLogin(){
+  var email=document.getElementById('email').value.trim().toLowerCase();
+  var pw=document.getElementById('password').value;
+  var err=document.getElementById('error');
+  var spin=document.getElementById('spinner');
+
+  if(!email||!pw){err.textContent='Enter email and password';err.classList.add('show');return}
+  err.classList.remove('show');
+  spin.style.display='inline-block';
+
+  // Try local auth first
+  var found=localUsers.find(function(u){return u.email===email&&u.password===pw});
+  if(found){
+    var cu=syncLocalUserToCu(found);
+    localStorage.setItem('cl_user',JSON.stringify(cu));
+    if(!stayOn)localStorage.setItem('cl_stay_logged_in','false');
+    sessionStorage.setItem('cl_active_session','1');
+    location.href='index.html';
+    return;
+  }
+
+  // Try Supabase
+  if(sb&&supabaseOnline){
+    try{
+      var r=await sb.auth.signInWithPassword({email:email,password:pw});
+      if(r.error){err.textContent=r.error.message;err.classList.add('show');spin.style.display='none';return}
+      var cu=r.data.user;
+      localStorage.setItem('cl_user',JSON.stringify(cu));
+      if(!stayOn)localStorage.setItem('cl_stay_logged_in','false');
+      sessionStorage.setItem('cl_active_session','1');
+      // Save to saved accounts
+      var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+      if(!saved.find(function(a){return a.id===cu.id})){
+        var meta=cu.user_metadata||{};
+        saved.push({id:cu.id,email:cu.email,name:meta.display_name||'User',avatar:meta.avatar||''});
+        localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
+      }
+      location.href='index.html';
+      return;
+    }catch(e){err.textContent='Network error. Try again.';err.classList.add('show')}
+  }else{err.textContent='No account found with those details.';err.classList.add('show')}
+  spin.style.display='none';
+}
+
+// Enter key on password
+ document.getElementById('password').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+</script>
+</body>
+</html>
