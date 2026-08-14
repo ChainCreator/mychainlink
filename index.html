@@ -732,7 +732,19 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
 </style>
 </head>
 <body>
-<script>if(localStorage.getItem('cl_user')){var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}}</script>
+<script>
+var hasUser=localStorage.getItem('cl_user');
+var stayLoggedIn=localStorage.getItem('cl_stay_logged_in')!=='false';
+var hasSession=sessionStorage.getItem('cl_active_session')==='1';
+if(hasUser&&(stayLoggedIn||hasSession)){
+  var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
+  var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}
+  var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
+  sessionStorage.setItem('cl_active_session','1');
+} else if(hasUser&&!stayLoggedIn&&!hasSession){
+  localStorage.removeItem('cl_user');
+}
+</script>
 <!-- LANDING PAGE INJECTED -->
 
 <!-- AUTH PAGE -->
@@ -777,6 +789,36 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
   background:var(--bg);transition:opacity .5s var(--ease);
 }
 .landing-page.hidden{opacity:0;pointer-events:none;display:none!important}
+
+/* === DEDICATED LOGIN PAGE ===================== */
+.login-page{
+  position:fixed;inset:0;z-index:1000;overflow-y:auto;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:var(--bg);transition:opacity .5s var(--ease);
+}
+.login-page.hidden{opacity:0;pointer-events:none;display:none!important}
+.login-page .auth-logo{margin-bottom:24px}
+.login-page .auth-box{width:100%;max-width:380px;padding:0 20px}
+.login-saved-row{
+  display:flex;align-items:center;gap:12px;padding:12px;
+  background:#1C1C1C;border-radius:12px;margin-bottom:8px;cursor:pointer;
+  transition:background .15s;
+}
+.login-saved-row:hover{background:#252525}
+.login-saved-av{
+  width:40px;height:40px;border-radius:50%;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--gold);color:#000;font-weight:700;font-size:16px;
+}
+.login-saved-av img{width:100%;height:100%;object-fit:cover}
+.login-saved-info{flex:1}
+.login-saved-name{font-weight:700;font-size:15px}
+.login-saved-handle{font-size:13px;color:#888}
+.login-saved-remove{
+  padding:4px 8px;font-size:12px;border-radius:8px;
+  background:transparent;border:1px solid #333;color:#888;cursor:pointer;
+}
+.login-saved-remove:hover{color:#FF6B6B;border-color:#FF6B6B}
 .landing-glow{
   position:absolute;inset:0;pointer-events:none;
   background:
@@ -888,11 +930,68 @@ window.showAuth = function(tab) {
     ap.classList.remove('hidden');
   }
   if (typeof swt === 'function') {
-    if (tab === 'in') swt('in');
+    if (tab === 'in') {
+      showLoginPage();
+      return;
+    }
     else if (tab === 'up') swt('up');
   }
 };
 </script>
+
+<!-- ============ DEDICATED LOGIN PAGE ============ -->
+<div class="login-page hidden" id="login-page">
+  <div class="auth-logo">
+    <img src="logo-v3.png" alt="My Chain Link">
+    <div class="tag">Get connected. Stay connected.</div>
+  </div>
+  <div class="auth-box" style="max-width:380px">
+    <h2 style="text-align:center;margin-bottom:4px">Welcome back</h2>
+    <p style="text-align:center;color:#888;margin-bottom:20px;font-size:14px">Sign in to your account</p>
+
+    <!-- Saved accounts -->
+    <div id="login-saved-accounts" style="margin-bottom:16px"></div>
+
+    <!-- Email -->
+    <div class="fg"><label for="lp-e">Email</label><input type="email" id="lp-e" autocomplete="email" placeholder="you@example.com"></div>
+
+    <!-- Password -->
+    <div class="fg" style="margin-bottom:6px"><label for="lp-p">Password</label><input type="password" id="lp-p" autocomplete="current-password" placeholder="Your password"></div>
+
+    <!-- Show password -->
+    <div class="reveal-row" id="rv-lp" role="button" tabindex="0" aria-pressed="false" onclick="toggleReveal('lp')" onkeydown="revealKey(event,'lp')">
+      <span class="rl">
+        <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>
+        <svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="rt">Show password</span>
+      </span>
+      <span class="rs" id="rv-lp-s">Off</span>
+      <div class="toggle sm" id="rv-lp-t"></div>
+    </div>
+
+    <!-- Stay logged in -->
+    <div class="reveal-row" id="rv-sli" role="button" tabindex="0" aria-pressed="false" onclick="toggleStayLoggedIn()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleStayLoggedIn()" style="margin-top:8px">
+      <span class="rl">
+        <span class="rt">Stay logged in</span>
+      </span>
+      <span class="rs" id="rv-sli-s">On</span>
+      <div class="toggle sm on" id="rv-sli-t"></div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:16px" onclick="lpSignIn()">Sign in<div class="spin" id="lp-s"></div></button>
+    <div class="error-msg" id="lp-er"></div>
+
+    <div class="forgot-link" onclick="showForgotFromLogin()">Forgot password?</div>
+
+    <div class="or">or</div>
+
+    <button class="btn btn-outline" style="width:100%" onclick="backToLanding()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Back
+    </button>
+  </div>
+</div>
+
 <div class="auth-container hidden" id="auth-page">
   <div class="auth-logo">
     <img src="logo-v3.png" alt="My Chain Link">
@@ -1850,6 +1949,7 @@ window.resetSignupWizard=function(){
 // ==================== SIGN-UP: SHOW / HIDE WHAT YOU TYPE ====================
 var REVEAL_GROUPS={
   li:['li-p'],
+  lp:['lp-p'],
   su:['su-p','su-p2','su-2fa'],
   sq:['su-sa','su-sa2'],
   fg:['fg-sa','fg-sa2','fg-pw','fg-pw2'],
@@ -2061,6 +2161,105 @@ window.updateTutSlide=function(){var slides=document.querySelectorAll('.tut-slid
 window.swt=function(t){['in','up','fg'].forEach(function(x){var f=$('form-'+x);if(f)f.classList.remove('a');var tab=$('tab-'+x);if(tab)tab.classList.remove('a')});$('form-'+t).classList.add('a');$('tab-'+t).classList.add('a');if(t==='up')resetSignupWizard();['li-er','su-er','fg-er'].forEach(function(x){var el=$(x);if(el)el.classList.remove('show')})};
 window.showForgot=function(){$('form-in').classList.remove('a');$('form-up').classList.remove('a');$('tab-in').classList.remove('a');$('tab-up').classList.remove('a');$('form-fg').classList.add('a');resetForgotForm()};
 window.showLogin=function(){$('form-fg').classList.remove('a');$('form-up').classList.remove('a');$('tab-up').classList.remove('a');$('form-in').classList.add('a');$('tab-in').classList.add('a');resetForgotForm()};
+
+/* --- dedicated login page --- */
+window.showLoginPage=function(){
+  var lp=$('landing-page');
+  var lgp=$('login-page');
+  if(lp)lp.classList.add('hidden');
+  if(lgp){lgp.classList.remove('hidden');renderLoginSavedAccounts()}
+  var stay=localStorage.getItem('cl_stay_logged_in');
+  var isOn=(stay!=='false');
+  var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
+  if(row){row.classList.toggle('on',isOn);row.setAttribute('aria-pressed',isOn?'true':'false')}
+  if(tog)tog.classList.toggle('on',isOn);
+  if(lab)lab.textContent=isOn?'On':'Off';
+};
+window.hideLoginPage=function(){
+  var lgp=$('login-page');
+  if(lgp)lgp.classList.add('hidden');
+};
+window.renderLoginSavedAccounts=function(){
+  var container=$('login-saved-accounts');
+  if(!container)return;
+  var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+  if(!saved.length){container.innerHTML='';return}
+  var h='<div style="font-size:12px;color:#888;margin-bottom:8px">Your accounts</div>';
+  saved.forEach(function(a){
+    h+='<div class="login-saved-row" onclick="pickSavedAccount(\''+a.id+'\')">';
+    h+='<div class="login-saved-av">'+(a.avatar?'<img src="'+a.avatar+'">':(a.name?a.name[0].toUpperCase():'?'))+'</div>';
+    h+='<div class="login-saved-info"><div class="login-saved-name">'+esc(a.name)+'</div><div class="login-saved-handle">'+esc(a.handle)+'</div></div>';
+    h+='<button class="login-saved-remove" onclick="event.stopPropagation();removeLoginSavedAccount(\''+a.id+'\')">Remove</button>';
+    h+='</div>';
+  });
+  container.innerHTML=h;
+};
+window.pickSavedAccount=function(id){
+  var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+  var acc=saved.find(function(a){return a.id===id});
+  if(!acc){showToast('Account not found');return}
+  $('lp-e').value=acc.email||'';
+  $('lp-p').value='';
+  if($('lp-p'))$('lp-p').focus();
+};
+window.removeLoginSavedAccount=function(id){
+  var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+  saved=saved.filter(function(a){return a.id!==id});
+  localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
+  renderLoginSavedAccounts();
+};
+window.toggleStayLoggedIn=function(){
+  var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
+  var isOn=!row.classList.contains('on');
+  if(row){row.classList.toggle('on',isOn);row.setAttribute('aria-pressed',isOn?'true':'false')}
+  if(tog)tog.classList.toggle('on',isOn);
+  if(lab)lab.textContent=isOn?'On':'Off';
+  localStorage.setItem('cl_stay_logged_in',isOn?'true':'false');
+};
+window.backToLanding=function(){
+  hideLoginPage();
+  var lp=$('landing-page');
+  if(lp){lp.classList.remove('hidden');lp.style.display='block'}
+};
+window.showForgotFromLogin=function(){
+  hideLoginPage();
+  var ap=$('auth-page');
+  if(ap){ap.classList.remove('hidden');ap.style.display='block'}
+  showForgot();
+};
+window.lpSignIn=async function(){
+  var email=$('lp-e').value.trim().toLowerCase();
+  var pw=$('lp-p').value;
+  var er=$('lp-er');
+  var sp=$('lp-s');
+  if(!email||!pw){er.textContent='Enter email and password';er.classList.add('show');return}
+  er.classList.remove('show');
+  if(sp)sp.style.display='inline-block';
+  var foundLocal=localUsers.find(function(u){return u.email===email});
+  if(foundLocal&&foundLocal.password===pw){
+    cu=syncLocalUserToCu(foundLocal);
+    svu();
+    var stay=localStorage.getItem('cl_stay_logged_in')!=='false';
+    if(!stay){localStorage.setItem('cl_stay_logged_in','false');}
+    sessionStorage.setItem('cl_active_session','1');
+    hideLoginPage();showApp();showToast('Signed in');if(sp)sp.style.display='none';return
+  }
+  if(sb&&supabaseOnline){
+    try{
+      var r=await sb.auth.signInWithPassword({email:email,password:pw});
+      if(r.error){er.textContent=r.error.message;er.classList.add('show');if(sp)sp.style.display='none';return}
+      cu=r.data.user;svu();saveAccount(cu);
+      var meta=cu.user_metadata||{};
+      var lu=localUsers.find(function(u){return u.id===cu.id});
+      if(!lu){saveLocalUser({id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''})}
+      var stay=localStorage.getItem('cl_stay_logged_in')!=='false';
+      if(!stay){localStorage.setItem('cl_stay_logged_in','false');}
+      sessionStorage.setItem('cl_active_session','1');
+      hideLoginPage();showApp();showToast('Signed in');
+    }catch(e){er.textContent='Network error. Try again.';er.classList.add('show')}
+  }else{er.textContent='No account found with those details.';er.classList.add('show')}
+  if(sp)sp.style.display='none';
+};
 function resetForgotForm(){
   ['sq-answer-wrap','sq-answer-wrap2','new-pw-wrap','confirm-pw-wrap'].forEach(function(id){var el=$(id);if(el)el.style.display='none'});
   ['fg-sa','fg-sa2','fg-pw','fg-pw2'].forEach(function(id){var el=$(id);if(el)el.value=''});
@@ -2267,16 +2466,16 @@ window.sendReset=async function(){
   }
 };
 
-window.lo=async function(){if(sb)await sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');localStorage.removeItem('cl_posts');showToast('Signed out');location.reload()};
+window.lo=async function(){if(sb)await sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');localStorage.removeItem('cl_posts');sessionStorage.removeItem('cl_active_session');showToast('Signed out');location.reload()};
 window.saveAccount=function(user){if(!user||!user.id)return;var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var idx=saved.findIndex(function(a){return a.id===user.id});var acc={id:user.id,email:user.email||'',name:user.user_metadata&&user.user_metadata.display_name?user.user_metadata.display_name:'User',avatar:user.user_metadata&&user.user_metadata.avatar?user.user_metadata.avatar:'',handle:user.user_metadata&&user.user_metadata.handle?user.user_metadata.handle:'@user'};if(idx>-1){saved[idx]=acc}else{saved.push(acc)}localStorage.setItem('cl_savedAccounts',JSON.stringify(saved))};
 window.showSwitchAccount=function(){var list=$('switch-acct-list');var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');if(!saved.length){list.innerHTML='<div style="text-align:center;padding:20px;color:#888">No saved accounts</div>';$('m-switch-acct').classList.add('on');return}var h='';saved.forEach(function(a){h+='<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1C1C1C;border-radius:12px;margin-bottom:8px;cursor:pointer" onclick="switchToAccount(\''+a.id+'\')">';h+='<div class="av" style="width:40px;height:40px;font-size:17px">'+(a.avatar?'<img src="'+a.avatar+'" style="width:100%;height:100%;object-fit:cover">':(a.name?a.name[0].toUpperCase():'?'))+'</div>';h+='<div style="flex:1"><div style="font-weight:700;font-size:15px">'+esc(a.name)+'</div><div style="font-size:13px;color:#888">'+esc(a.handle)+'</div></div>';h+='<button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:12px" onclick="event.stopPropagation();removeSavedAccount(\''+a.id+'\')">Remove</button>';h+='</div>'});list.innerHTML=h;$('m-switch-acct').classList.add('on')};
 window.switchToAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var acc=saved.find(function(a){return a.id===id});if(!acc){showToast('Account not found');return}closeModal('m-switch-acct');showToast('Switching...');setTimeout(function(){showAuth('in');$('li-e').value=acc.email||''},300)};
-window.addNewAccount=function(){if(sb)sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');var lp=document.getElementById('landing-page');var ap=document.getElementById('auth-page');var main=document.getElementById('main-app');if(main)main.style.display='none';if(lp){lp.classList.remove('hidden');lp.style.display='block'}if(ap){ap.classList.remove('hidden');ap.style.display='block'}if(typeof swt==='function')swt('in');showToast('Sign in to add another account')};window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
+window.addNewAccount=function(){if(sb)sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');var lp=document.getElementById('landing-page');var ap=document.getElementById('auth-page');var lgp=document.getElementById('login-page');var main=document.getElementById('main-app');if(main)main.style.display='none';if(lp){lp.classList.remove('hidden');lp.style.display='block'}if(ap){ap.classList.remove('hidden');ap.style.display='block'}if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}if(typeof swt==='function')swt('in');showToast('Sign in to add another account')};window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
 
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
 // ==================== APP NAV ====================
-window.showApp=function(){$('landing-page').classList.add('hidden');var ap=$('auth-page');ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';$('ma').style.display='block';window.scrollTo(0,0);document.body.style.overflow='';if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderFeed();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge()};
+window.showApp=function(){$('landing-page').classList.add('hidden');var ap=$('auth-page');ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';var lgp=$('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}$('ma').style.display='block';window.scrollTo(0,0);document.body.style.overflow='';if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderFeed();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge()};
 window.navTo=function(p){var map=['feed','explore','news','cam','messages','profile'];var pageMap={feed:'pg-feed',explore:'pg-people',people:'pg-people',news:'pg-news',cam:'pg-cam',messages:'pg-messages',profile:'pg-profile',settings:'pg-settings',user:'pg-user','coming-soon':'pg-coming-soon'};if(!pageMap[p])return;map.forEach(function(x){var el=document.querySelector('.mit[onclick="navTo(\''+x+'\')"]');if(el)el.classList.remove('a')});var activeBtn=document.querySelector('.mit[onclick="navTo(\''+p+'\')"]');if(activeBtn)activeBtn.classList.add('a');Object.values(pageMap).forEach(function(id){$(id).classList.remove('active')});$(pageMap[p]).classList.add('active');cp=p;if(p==='profile'){renderProfile()}if(p==='news'){renderNews()}if(p==='explore'||p==='people'){var schVal=$('p-sch').value.trim();if(schVal){schPpl(schVal)}else{renderPeople()}}if(p==='messages'){renderMessages();if(window.msgChannel){try{window.msgChannel.unsubscribe()}catch(e){}}window.msgChannel=null;window.currentConvId=null}};
 function goBackFromUser(){if(cp==='people'){navTo('explore')}else{navTo('feed')}}window.goBackFromUser=goBackFromUser;
 
