@@ -170,6 +170,11 @@ h1{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
 
   <div class="or">or</div>
 
+  <button class="btn btn-outline" style="margin-bottom:8px" onclick="location.href='index.html#signup'">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    Create new account
+  </button>
+
   <button class="btn btn-outline" onclick="location.href='index.html'">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
     Back to home
@@ -235,6 +240,14 @@ function removeAccount(id){
   renderSaved();
 }
 renderSaved();
+
+// ===== URL param: pre-fill email from switch account =====
+var urlParams=new URLSearchParams(location.search);
+var prefillEmail=urlParams.get('email');
+if(prefillEmail){
+  document.getElementById('email').value=prefillEmail;
+  document.getElementById('password').focus();
+}
 
 // ===== Login =====
 async function doLogin(){

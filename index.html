@@ -2505,8 +2505,8 @@ window.sendReset=async function(){
 window.lo=async function(){if(sb)await sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');localStorage.removeItem('cl_posts');sessionStorage.removeItem('cl_active_session');showToast('Signed out');location.reload()};
 window.saveAccount=function(user){if(!user||!user.id)return;var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var idx=saved.findIndex(function(a){return a.id===user.id});var acc={id:user.id,email:user.email||'',name:user.user_metadata&&user.user_metadata.display_name?user.user_metadata.display_name:'User',avatar:user.user_metadata&&user.user_metadata.avatar?user.user_metadata.avatar:'',handle:user.user_metadata&&user.user_metadata.handle?user.user_metadata.handle:'@user'};if(idx>-1){saved[idx]=acc}else{saved.push(acc)}localStorage.setItem('cl_savedAccounts',JSON.stringify(saved))};
 window.showSwitchAccount=function(){var list=$('switch-acct-list');var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');if(!saved.length){list.innerHTML='<div style="text-align:center;padding:20px;color:#888">No saved accounts</div>';$('m-switch-acct').classList.add('on');return}var h='';saved.forEach(function(a){h+='<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1C1C1C;border-radius:12px;margin-bottom:8px;cursor:pointer" onclick="switchToAccount(\''+a.id+'\')">';h+='<div class="av" style="width:40px;height:40px;font-size:17px">'+(a.avatar?'<img src="'+a.avatar+'" style="width:100%;height:100%;object-fit:cover">':(a.name?a.name[0].toUpperCase():'?'))+'</div>';h+='<div style="flex:1"><div style="font-weight:700;font-size:15px">'+esc(a.name)+'</div><div style="font-size:13px;color:#888">'+esc(a.handle)+'</div></div>';h+='<button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:12px" onclick="event.stopPropagation();removeSavedAccount(\''+a.id+'\')">Remove</button>';h+='</div>'});list.innerHTML=h;$('m-switch-acct').classList.add('on')};
-window.switchToAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var acc=saved.find(function(a){return a.id===id});if(!acc){showToast('Account not found');return}closeModal('m-switch-acct');showToast('Switching...');setTimeout(function(){showAuth('in');$('li-e').value=acc.email||''},300)};
-window.addNewAccount=function(){if(sb)sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');var lp=document.getElementById('landing-page');var ap=document.getElementById('auth-page');var lgp=document.getElementById('login-page');var main=document.getElementById('main-app');if(main)main.style.display='none';if(lp){lp.classList.remove('hidden');lp.style.display='block'}if(ap){ap.classList.remove('hidden');ap.style.display='block'}if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}if(typeof swt==='function')swt('in');showToast('Sign in to add another account')};window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
+window.switchToAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var acc=saved.find(function(a){return a.id===id});if(!acc){showToast('Account not found');return}closeModal('m-switch-acct');showToast('Switching...');setTimeout(function(){location.href='login.html?email='+encodeURIComponent(acc.email||'')},300)};
+window.addNewAccount=function(){if(sb)sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');location.href='login.html';showToast('Sign in to add another account')};window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
 
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
@@ -2995,6 +2995,22 @@ function tryLogin(){if(localStorage.getItem('cl_user')){try{cu=JSON.parse(localS
 handlePasswordReset().then(function(resetHandled){if(!resetHandled){handleOAuthCallback().then(function(handled){if(!handled){if(sb&&supabaseOnline){sb.auth.getSession().then(function(r){if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows()}else{tryLogin()}}).catch(function(){tryLogin()})}else{tryLogin()}}})}});
 document.addEventListener('click',function(e){var menu=$('menu-drop');var btn=$('menu-btn');if(menu&&menu.classList.contains('on')&&btn&&!btn.contains(e.target)&&!menu.contains(e.target)){menu.classList.remove('on')}});
 if(location.search.includes('paypal')){setTimeout(function(){if(vu){if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};follows[vu.id].subscribed=true;svf();showToast('Payment successful! You are now subscribed.');history.replaceState(null,'',location.pathname)}},1000)}
+// Handle #signup hash from login page
+if(location.hash==='#signup'){
+  var lp=document.getElementById('landing-page');
+  var ap=document.getElementById('auth-page');
+  if(lp)lp.classList.add('hidden');
+  if(ap)ap.classList.remove('hidden');
+  ['in','up','fg'].forEach(function(x){
+    var f=document.getElementById('form-'+x);if(f)f.classList.remove('a');
+    var tab=document.getElementById('tab-'+x);if(tab)tab.classList.remove('a');
+  });
+  var uf=document.getElementById('form-up'),ut=document.getElementById('tab-up');
+  if(uf)uf.classList.add('a');if(ut)ut.classList.add('a');
+  if(typeof resetSignupWizard==='function')resetSignupWizard();
+  history.replaceState(null,'',location.pathname);
+}
+
 // Tutorial backup trigger
 window.addEventListener('load',function(){if(cu&&!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Window load backup trigger');setTimeout(function(){showTut()},2000)}});
 </script>
