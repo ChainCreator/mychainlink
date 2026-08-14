@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{
-  --bg:#0F0F0F;--surf-1:#141414;--surf-2:#1C1C1C;--surf-3:#242424;
-  --line:#2A2A2A;--ink-1:#F5F3EE;--ink-2:#C4BFB6;--ink-3:#8A8580;--ink-4:#5A5550;
-  --gold:#E6C96A;--gold-hi:#F5DE8B;--gold-deep:#C9A84C;--gold-wash:rgba(230,201,106,.08);--gold-edge:rgba(230,201,106,.35);
+  --bg:#0F0F0F;--surf-1:#171614;--surf-2:#1E1C19;--surf-3:#26231F;
+  --line:#2A2A2A;--ink-1:#FFFFFF;--ink-2:#E0E0E0;--ink-3:#B0B0B0;--ink-4:#5C5C5C;
+  --gold:#FFD700;--gold-hi:#FFE135;--gold-deep:#FFCC00;--gold-wash:rgba(255,215,0,.08);--gold-edge:rgba(255,215,0,.28);
   --red:#FF5A5A;--green:#4ADE80;
   --font-a:'DM Sans',system-ui,sans-serif;--font-b:'Space Grotesk',system-ui,sans-serif;
   --r:14px;--r-lg:20px;--r-pill:999px;--ease:cubic-bezier(.22,1,.36,1);
@@ -23,10 +23,21 @@ body{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:100vh;padding:20px;
 }
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(230,201,106,.06),transparent 70%)}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(120% 70% at 50% -14%, rgba(255,215,0,.11), transparent 62%),
+    radial-gradient(80% 55% at 108% 104%, rgba(255,204,0,.08), transparent 64%),
+    radial-gradient(70% 50% at -10% 88%, rgba(255,215,0,.05), transparent 60%),
+    var(--bg);
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+}
 .logo-wrap{text-align:center;margin-bottom:32px;position:relative;z-index:1}
 .logo-wrap img{max-width:140px;height:auto}
-.tag{font-size:14px;color:#888;margin-top:8px;letter-spacing:.3px}
+.tag{font-size:14px;color:var(--ink-3);margin-top:8px;letter-spacing:.3px}
 
 .card{
   background:var(--surf-1);border:1px solid var(--line);border-radius:var(--r-lg);
