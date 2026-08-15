@@ -739,12 +739,13 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
 var hasUser=localStorage.getItem('cl_user');
 var stayLoggedIn=localStorage.getItem('cl_stay_logged_in')!=='false';
 var hasSession=sessionStorage.getItem('cl_active_session')==='1';
-if(hasUser&&(stayLoggedIn||hasSession)){
+var justLoggedIn=location.search.indexOf('login=1')>-1;
+if(hasUser&&(stayLoggedIn||hasSession||justLoggedIn)){
   var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
   var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}
   var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
   sessionStorage.setItem('cl_active_session','1');
-} else if(hasUser&&!stayLoggedIn&&!hasSession){
+} else if(hasUser&&!stayLoggedIn&&!hasSession&&!justLoggedIn){
   localStorage.removeItem('cl_user');
 }
 </script>
