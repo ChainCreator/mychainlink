@@ -164,10 +164,9 @@ h1{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
     <div class="toggle" id="rv-toggle"></div>
   </div>
 
-  <div class="reveal-row on" id="stay-row" onclick="toggleStay()" style="margin-top:8px">
-    <span class="rl"><span class="rt">Stay connected</span></span>
-    <span class="rs" id="stay-status">On</span>
-    <div class="toggle on" id="stay-toggle"></div>
+  <div class="terms-row" style="margin-top:8px">
+    <input type="checkbox" id="stay-check" checked>
+    <label for="stay-check">Stay connected</label>
   </div>
 
   <button class="btn btn-primary" style="margin-top:16px" onclick="doLogin()">
@@ -217,16 +216,7 @@ function toggleReveal(){
 }
 
 // ===== Stay connected =====
-var stayOn=localStorage.getItem('cl_stay_logged_in')!=='false';
-function toggleStay(){
-  stayOn=!stayOn;
-  localStorage.setItem('cl_stay_logged_in',stayOn?'true':'false');
-  document.getElementById('stay-status').textContent=stayOn?'On':'Off';
-  document.getElementById('stay-toggle').classList.toggle('on',stayOn);
-}
-// Init toggle state
-document.getElementById('stay-status').textContent=stayOn?'On':'Off';
-document.getElementById('stay-toggle').classList.toggle('on',stayOn);
+function toggleStay(){} // no-op, checkbox handles itself
 
 // ===== Saved accounts =====
 function renderSaved(){
@@ -266,6 +256,7 @@ async function doLogin(){
   var pw=document.getElementById('password').value;
   var err=document.getElementById('error');
   var spin=document.getElementById('spinner');
+  var stayConnected=document.getElementById('stay-check')?document.getElementById('stay-check').checked:true;
 
   if(!email||!pw){err.textContent='Enter email and password';err.classList.add('show');return}
   err.classList.remove('show');
@@ -276,7 +267,14 @@ async function doLogin(){
   if(found){
     var cu=syncLocalUserToCu(found);
     localStorage.setItem('cl_user',JSON.stringify(cu));
-    if(!stayOn)localStorage.setItem('cl_stay_logged_in','false');
+    if(stayConnected){
+      localStorage.setItem('cl_stay_logged_in','true');
+      var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+      if(!saved.find(function(a){return a.id===cu.id})){
+        saved.push({id:cu.id,email:cu.email,name:cu.user_metadata&&cu.user_metadata.display_name?cu.user_metadata.display_name:'User',avatar:cu.user_metadata&&cu.user_metadata.avatar?cu.user_metadata.avatar:''});
+        localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
+      }
+    }else{localStorage.setItem('cl_stay_logged_in','false');}
     sessionStorage.setItem('cl_active_session','1');
     // Verify storage before redirect
     if(!localStorage.getItem('cl_user')){
@@ -295,15 +293,16 @@ async function doLogin(){
       var cu=r.data?r.data.user:(r.user||null);
       if(!cu){err.textContent='Login failed — no user data returned.';err.classList.add('show');spin.style.display='none';return}
       localStorage.setItem('cl_user',JSON.stringify(cu));
-      if(!stayOn)localStorage.setItem('cl_stay_logged_in','false');
+      if(stayConnected){
+        localStorage.setItem('cl_stay_logged_in','true');
+        var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
+        if(!saved.find(function(a){return a.id===cu.id})){
+          var meta=cu.user_metadata||{};
+          saved.push({id:cu.id,email:cu.email,name:meta.display_name||'User',avatar:meta.avatar||''});
+          localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
+        }
+      }else{localStorage.setItem('cl_stay_logged_in','false');}
       sessionStorage.setItem('cl_active_session','1');
-      // Save to saved accounts
-      var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');
-      if(!saved.find(function(a){return a.id===cu.id})){
-        var meta=cu.user_metadata||{};
-        saved.push({id:cu.id,email:cu.email,name:meta.display_name||'User',avatar:meta.avatar||''});
-        localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
-      }
       location.href='index.html?login=1&nocache=1';
       return;
     }catch(e){err.textContent='Network error. Try again.';err.classList.add('show')}

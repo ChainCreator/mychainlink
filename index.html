@@ -988,12 +988,9 @@ window.showAuth = function(tab) {
     </div>
 
     <!-- Stay connected -->
-    <div class="reveal-row on" id="rv-sli" role="button" tabindex="0" aria-pressed="true" onclick="toggleStayLoggedIn()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleStayLoggedIn()" style="margin-top:8px">
-      <span class="rl">
-        <span class="rt">Stay connected</span>
-      </span>
-      <span class="rs" id="rv-sli-s">On</span>
-      <div class="toggle sm on" id="rv-sli-t"></div>
+    <div class="terms-row" style="margin-top:8px">
+      <input type="checkbox" id="lp-stay" checked>
+      <label for="lp-stay">Stay connected</label>
     </div>
 
     <button class="btn btn-primary" style="margin-top:16px" onclick="lpSignIn()">Sign in<div class="spin" id="lp-s"></div></button>
@@ -1037,12 +1034,9 @@ window.showAuth = function(tab) {
         <div class="toggle sm" id="rv-li-t"></div>
       </div>
       <!-- Stay connected -->
-      <div class="reveal-row on" id="rv-sc" role="button" tabindex="0" aria-pressed="true" onclick="toggleStayLoggedIn()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleStayLoggedIn()" style="margin-top:8px">
-        <span class="rl">
-          <span class="rt">Stay connected</span>
-        </span>
-        <span class="rs" id="rv-sc-s">On</span>
-        <div class="toggle sm on" id="rv-sc-t"></div>
+      <div class="terms-row" style="margin-top:8px">
+        <input type="checkbox" id="li-stay" checked>
+        <label for="li-stay">Stay connected</label>
       </div>
       <button class="btn btn-primary" style="margin-top:16px" onclick="li()">Sign in<div class="spin" id="li-s"></div></button>
       <div class="error-msg" id="li-er"></div>
@@ -1170,6 +1164,10 @@ window.showAuth = function(tab) {
         <div class="terms-row" style="margin-top:16px">
           <input type="checkbox" id="su-t">
           <label for="su-t">I agree to the <a onclick="showTerms()">Terms of Service</a> and <a onclick="showHarassment()">Anti-Harassment Policy</a>.</label>
+        </div>
+        <div class="terms-row" style="margin-top:8px">
+          <input type="checkbox" id="su-stay" checked>
+          <label for="su-stay">Stay connected</label>
         </div>
       </div>
 
@@ -2212,16 +2210,6 @@ window.showLoginPage=function(){
   if(lp)lp.classList.add('hidden');
   if(ap){ap.classList.add('hidden');ap.style.display='none'}
   if(lgp){lgp.classList.remove('hidden');lgp.style.display='flex';try{renderLoginSavedAccounts()}catch(e){console.log('renderLoginSavedAccounts error',e)}}
-  var stay=localStorage.getItem('cl_stay_logged_in');
-  var isOn=(stay!=='false');
-  var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
-  var row2=$('rv-sc'),tog2=$('rv-sc-t'),lab2=$('rv-sc-s');
-  if(row){row.classList.toggle('on',isOn);row.setAttribute('aria-pressed',isOn?'true':'false')}
-  if(tog)tog.classList.toggle('on',isOn);
-  if(lab)lab.textContent=isOn?'On':'Off';
-  if(row2){row2.classList.toggle('on',isOn);row2.setAttribute('aria-pressed',isOn?'true':'false')}
-  if(tog2)tog2.classList.toggle('on',isOn);
-  if(lab2)lab2.textContent=isOn?'On':'Off';
 };
 window.hideLoginPage=function(){
   var lgp=$('login-page');
@@ -2256,18 +2244,7 @@ window.removeLoginSavedAccount=function(id){
   localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));
   renderLoginSavedAccounts();
 };
-window.toggleStayLoggedIn=function(){
-  var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
-  var row2=$('rv-sc'),tog2=$('rv-sc-t'),lab2=$('rv-sc-s');
-  var isOn=row?!row.classList.contains('on'):!row2.classList.contains('on');
-  if(row){row.classList.toggle('on',isOn);row.setAttribute('aria-pressed',isOn?'true':'false')}
-  if(tog)tog.classList.toggle('on',isOn);
-  if(lab)lab.textContent=isOn?'On':'Off';
-  if(row2){row2.classList.toggle('on',isOn);row2.setAttribute('aria-pressed',isOn?'true':'false')}
-  if(tog2)tog2.classList.toggle('on',isOn);
-  if(lab2)lab2.textContent=isOn?'On':'Off';
-  localStorage.setItem('cl_stay_logged_in',isOn?'true':'false');
-};
+window.toggleStayLoggedIn=function(){};
 window.backToLanding=function(){
   hideLoginPage();
   var lp=$('landing-page');
@@ -2287,12 +2264,12 @@ window.lpSignIn=async function(){
   if(!email||!pw){er.textContent='Enter email and password';er.classList.add('show');return}
   er.classList.remove('show');
   if(sp)sp.style.display='inline-block';
+  var stayConnected=$('lp-stay')?$('lp-stay').checked:true;
   var foundLocal=localUsers.find(function(u){return u.email===email});
   if(foundLocal&&foundLocal.password===pw){
     cu=syncLocalUserToCu(foundLocal);
     svu();
-    var stay=localStorage.getItem('cl_stay_logged_in')!=='false';
-    if(!stay){localStorage.setItem('cl_stay_logged_in','false');}
+    if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
     sessionStorage.setItem('cl_active_session','1');
     hideLoginPage();showApp();showToast('Signed in');if(sp)sp.style.display='none';return
   }
@@ -2300,12 +2277,11 @@ window.lpSignIn=async function(){
     try{
       var r=await sb.auth.signInWithPassword({email:email,password:pw});
       if(r.error){er.textContent=r.error.message;er.classList.add('show');if(sp)sp.style.display='none';return}
-      cu=r.data.user;svu();saveAccount(cu);
+      cu=r.data.user;svu();
+      if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
       var meta=cu.user_metadata||{};
       var lu=localUsers.find(function(u){return u.id===cu.id});
       if(!lu){saveLocalUser({id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''})}
-      var stay=localStorage.getItem('cl_stay_logged_in')!=='false';
-      if(!stay){localStorage.setItem('cl_stay_logged_in','false');}
       sessionStorage.setItem('cl_active_session','1');
       hideLoginPage();showApp();showToast('Signed in');
     }catch(e){er.textContent='Network error. Try again.';er.classList.add('show')}
@@ -2322,9 +2298,9 @@ function resetForgotForm(){
 }
 window.showTerms=function(){$('m-terms').classList.add('on')};
 window.showHarassment=function(){$('m-harass').classList.add('on')};
-window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-pp-checkout'){var feeDiv=$('pp-fee-breakdown');if(feeDiv)feeDiv.innerHTML='';var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML=''}if(id==='m-edit'){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}epCamData=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;var stay=localStorage.getItem('cl_stay_logged_in')!=='false';if(!stay){localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
+window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-pp-checkout'){var feeDiv=$('pp-fee-breakdown');if(feeDiv)feeDiv.innerHTML='';var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML=''}if(id==='m-edit'){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}epCamData=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;var stay=window.pendingStayConnected!==false;if(stay){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
 
-window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}var stay=$('rv-sc')?$('rv-sc').classList.contains('on'):true;if(!stay){localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();var stay2=$('rv-sc')?$('rv-sc').classList.contains('on'):true;if(!stay2){localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
+window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');var stayConnected=$('li-stay')?$('li-stay').checked:true;window.pendingStayConnected=stayConnected;if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
 
 window.su=async function(){
   var er=$('su-er');
@@ -2344,6 +2320,7 @@ window.su=async function(){
       loc=$('su-loc')?$('su-loc').value.trim():'';
 
   if(!n)return fail('We need a name to put on your profile.','su-n');
+  var stayConnected=$('su-stay')?$('su-stay').checked:true;
   if(!h||h.length<3)return fail('Choose a username (at least 3 letters or numbers).','su-h');
   if(!e||e.indexOf('@')<1)return fail('That email address does not look right.','su-e');
 
@@ -2384,7 +2361,8 @@ window.su=async function(){
         if(r.error.message&&r.error.message.indexOf('network')>-1){console.log('Supabase network error, falling back to local')}
         else{throw r.error}
       }else{
-        supabaseOk=true;cu=r.data.user;svu();saveAccount(cu);
+        supabaseOk=true;cu=r.data.user;svu();
+        if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
         var meta2=cu.user_metadata||{};
         if(r.data.session){
           // Update profile with ALL user data (display_name, handle, etc.)
@@ -2417,7 +2395,8 @@ window.su=async function(){
     var newUser={id:uid(),name:n,email:e,password:p,handle:handle,bio:'',avatar:'',location:loc,
                  birthday:bd,securityQuestion:sq,securityAnswer:saH,securityQuestion2:sq2,securityAnswer2:sa2H,twoFactorPIN:fa||''};
     saveLocalUser(newUser);
-    cu=syncLocalUserToCu(newUser);svu();saveAccount(cu);
+    cu=syncLocalUserToCu(newUser);svu();
+    if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
     claimPendingPayPal();
     $('su-s').classList.remove('show');
     sessionStorage.setItem('cl_active_session','1');
@@ -2524,7 +2503,7 @@ window.lo=async function(){if(sb)await sb.auth.signOut();cu=null;localStorage.re
 window.saveAccount=function(user){if(!user||!user.id)return;var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var idx=saved.findIndex(function(a){return a.id===user.id});var acc={id:user.id,email:user.email||'',name:user.user_metadata&&user.user_metadata.display_name?user.user_metadata.display_name:'User',avatar:user.user_metadata&&user.user_metadata.avatar?user.user_metadata.avatar:'',handle:user.user_metadata&&user.user_metadata.handle?user.user_metadata.handle:'@user'};if(idx>-1){saved[idx]=acc}else{saved.push(acc)}localStorage.setItem('cl_savedAccounts',JSON.stringify(saved))};
 window.showSwitchAccount=function(){var list=$('switch-acct-list');var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');if(!saved.length){list.innerHTML='<div style="text-align:center;padding:20px;color:#888">No saved accounts</div>';$('m-switch-acct').classList.add('on');return}var h='';saved.forEach(function(a){h+='<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1C1C1C;border-radius:12px;margin-bottom:8px;cursor:pointer" onclick="switchToAccount(\''+a.id+'\')">';h+='<div class="av" style="width:40px;height:40px;font-size:17px">'+(a.avatar?'<img src="'+a.avatar+'" style="width:100%;height:100%;object-fit:cover">':(a.name?a.name[0].toUpperCase():'?'))+'</div>';h+='<div style="flex:1"><div style="font-weight:700;font-size:15px">'+esc(a.name)+'</div><div style="font-size:13px;color:#888">'+esc(a.handle)+'</div></div>';h+='<button class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:12px" onclick="event.stopPropagation();removeSavedAccount(\''+a.id+'\')">Remove</button>';h+='</div>'});list.innerHTML=h;$('m-switch-acct').classList.add('on')};
 window.switchToAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');var acc=saved.find(function(a){return a.id===id});if(!acc){showToast('Account not found');return}closeModal('m-switch-acct');showToast('Switching...');setTimeout(function(){location.href='login.html?email='+encodeURIComponent(acc.email||'')},300)};
-window.addNewAccount=function(){if(sb)sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');location.href='login.html';showToast('Sign in to add another account')};window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
+window.addNewAccount=function(){location.href='login.html';showToast('Sign in to add another account')};window.removeSavedAccount=function(id){var saved=JSON.parse(localStorage.getItem('cl_savedAccounts')||'[]');saved=saved.filter(function(a){return a.id!==id});localStorage.setItem('cl_savedAccounts',JSON.stringify(saved));showSwitchAccount()};
 
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
