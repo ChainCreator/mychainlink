@@ -276,6 +276,7 @@ async function doLogin(){
       }
     }else{localStorage.setItem('cl_stay_logged_in','false');}
     sessionStorage.setItem('cl_active_session','1');
+    sessionStorage.setItem('cl_just_logged_in','1');
     // Verify storage before redirect
     if(!localStorage.getItem('cl_user')){
       err.textContent='Browser blocked login. Check private mode settings.';
@@ -303,6 +304,7 @@ async function doLogin(){
         }
       }else{localStorage.setItem('cl_stay_logged_in','false');}
       sessionStorage.setItem('cl_active_session','1');
+      sessionStorage.setItem('cl_just_logged_in','1');
       location.href='index.html?login=1&nocache=1';
       return;
     }catch(e){err.textContent='Network error. Try again.';err.classList.add('show')}

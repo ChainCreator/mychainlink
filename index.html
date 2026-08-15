@@ -740,12 +740,14 @@ var hasUser=localStorage.getItem('cl_user');
 var stayLoggedIn=localStorage.getItem('cl_stay_logged_in')!=='false';
 var hasSession=sessionStorage.getItem('cl_active_session')==='1';
 var justLoggedIn=location.search.indexOf('login=1')>-1;
-if(hasUser&&(stayLoggedIn||hasSession||justLoggedIn)){
+var justLoggedInFlag=sessionStorage.getItem('cl_just_logged_in')==='1';
+if(hasUser||(justLoggedIn||justLoggedInFlag)){
   var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
   var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}
   var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
   sessionStorage.setItem('cl_active_session','1');
-} else if(hasUser&&!stayLoggedIn&&!hasSession&&!justLoggedIn){
+  sessionStorage.removeItem('cl_just_logged_in');
+} else if(hasUser&&!stayLoggedIn&&!hasSession&&!justLoggedIn&&!justLoggedInFlag){
   localStorage.removeItem('cl_user');
 }
 </script>
@@ -3005,35 +3007,52 @@ function tryLogin(){
 }
 
 // Fast-path: just logged in from login.html — skip async checks and go straight to app
-if(location.search.includes('login=1')){
-  history.replaceState(null,'',location.pathname);
-  if(!tryLogin()){
-    // If tryLogin fails, still run the normal init in case Supabase has a session
-    handlePasswordReset().then(function(resetHandled){
-      if(!resetHandled){
-        handleOAuthCallback().then(function(handled){
-          if(!handled){
-            if(sb&&supabaseOnline){
-              sb.auth.getSession().then(function(r){
-                if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows()}else{/* already failed */}
-              }).catch(function(){})
-            }
-          }
-        })
+var forceLogin=location.search.includes('login=1');
+if(forceLogin){history.replaceState(null,'',location.pathname);}
+
+function attemptShowApp(){
+  if(tryLogin()){return true;}
+  // tryLogin failed — but if cl_user exists, force it
+  var raw=localStorage.getItem('cl_user');
+  if(raw){
+    try{
+      cu=JSON.parse(raw);
+      if(cu&&cu.id){
+        console.log('[Init] Force restore user:',cu.email);
+        showApp();loadAllFollows();return true;
       }
-    });
+    }catch(e){console.error('[Init] Force parse failed',e);}
   }
-}else{
-  // Normal init flow
+  return false;
+}
+
+if(!attemptShowApp()){
   handlePasswordReset().then(function(resetHandled){
     if(!resetHandled){
       handleOAuthCallback().then(function(handled){
         if(!handled){
           if(sb&&supabaseOnline){
             sb.auth.getSession().then(function(r){
-              if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows()}else{tryLogin()}
-            }).catch(function(){tryLogin()})
-          }else{tryLogin()}
+              if(r.data&&r.data.session){
+                cu=r.data.session.user;svu();showApp();loadAllFollows();
+              }else if(forceLogin){
+                // Came from login.html but no Supabase session — maybe local user, maybe slow storage
+                console.log('[Init] No Supabase session, will retry');
+                setTimeout(function(){
+                  if(!attemptShowApp()){
+                    console.error('[Init] Login redirect failed after retry');
+                  }
+                },250);
+              }
+            }).catch(function(e){
+              console.error('[Init] getSession error',e);
+              if(forceLogin){
+                setTimeout(attemptShowApp,250);
+              }
+            })
+          }else if(forceLogin){
+            setTimeout(attemptShowApp,250);
+          }
         }
       })
     }
