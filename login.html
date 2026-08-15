@@ -164,8 +164,8 @@ h1{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
     <div class="toggle" id="rv-toggle"></div>
   </div>
 
-  <div class="reveal-row" id="stay-row" onclick="toggleStay()" style="margin-top:8px">
-    <span class="rl"><span class="rt">Stay logged in</span></span>
+  <div class="reveal-row on" id="stay-row" onclick="toggleStay()" style="margin-top:8px">
+    <span class="rl"><span class="rt">Stay connected</span></span>
     <span class="rs" id="stay-status">On</span>
     <div class="toggle on" id="stay-toggle"></div>
   </div>
@@ -216,7 +216,7 @@ function toggleReveal(){
   document.getElementById('rv-toggle').classList.toggle('on',revealOn);
 }
 
-// ===== Stay logged in =====
+// ===== Stay connected =====
 var stayOn=localStorage.getItem('cl_stay_logged_in')!=='false';
 function toggleStay(){
   stayOn=!stayOn;

@@ -987,10 +987,10 @@ window.showAuth = function(tab) {
       <div class="toggle sm" id="rv-lp-t"></div>
     </div>
 
-    <!-- Stay logged in -->
-    <div class="reveal-row" id="rv-sli" role="button" tabindex="0" aria-pressed="false" onclick="toggleStayLoggedIn()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleStayLoggedIn()" style="margin-top:8px">
+    <!-- Stay connected -->
+    <div class="reveal-row on" id="rv-sli" role="button" tabindex="0" aria-pressed="true" onclick="toggleStayLoggedIn()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleStayLoggedIn()" style="margin-top:8px">
       <span class="rl">
-        <span class="rt">Stay logged in</span>
+        <span class="rt">Stay connected</span>
       </span>
       <span class="rs" id="rv-sli-s">On</span>
       <div class="toggle sm on" id="rv-sli-t"></div>
@@ -1035,6 +1035,14 @@ window.showAuth = function(tab) {
         </span>
         <span class="rs" id="rv-li-s">Off</span>
         <div class="toggle sm" id="rv-li-t"></div>
+      </div>
+      <!-- Stay connected -->
+      <div class="reveal-row on" id="rv-sc" role="button" tabindex="0" aria-pressed="true" onclick="toggleStayLoggedIn()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleStayLoggedIn()" style="margin-top:8px">
+        <span class="rl">
+          <span class="rt">Stay connected</span>
+        </span>
+        <span class="rs" id="rv-sc-s">On</span>
+        <div class="toggle sm on" id="rv-sc-t"></div>
       </div>
       <button class="btn btn-primary" style="margin-top:16px" onclick="li()">Sign in<div class="spin" id="li-s"></div></button>
       <div class="error-msg" id="li-er"></div>
@@ -2207,9 +2215,13 @@ window.showLoginPage=function(){
   var stay=localStorage.getItem('cl_stay_logged_in');
   var isOn=(stay!=='false');
   var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
+  var row2=$('rv-sc'),tog2=$('rv-sc-t'),lab2=$('rv-sc-s');
   if(row){row.classList.toggle('on',isOn);row.setAttribute('aria-pressed',isOn?'true':'false')}
   if(tog)tog.classList.toggle('on',isOn);
   if(lab)lab.textContent=isOn?'On':'Off';
+  if(row2){row2.classList.toggle('on',isOn);row2.setAttribute('aria-pressed',isOn?'true':'false')}
+  if(tog2)tog2.classList.toggle('on',isOn);
+  if(lab2)lab2.textContent=isOn?'On':'Off';
 };
 window.hideLoginPage=function(){
   var lgp=$('login-page');
@@ -2246,10 +2258,14 @@ window.removeLoginSavedAccount=function(id){
 };
 window.toggleStayLoggedIn=function(){
   var row=$('rv-sli'),tog=$('rv-sli-t'),lab=$('rv-sli-s');
-  var isOn=!row.classList.contains('on');
+  var row2=$('rv-sc'),tog2=$('rv-sc-t'),lab2=$('rv-sc-s');
+  var isOn=row?!row.classList.contains('on'):!row2.classList.contains('on');
   if(row){row.classList.toggle('on',isOn);row.setAttribute('aria-pressed',isOn?'true':'false')}
   if(tog)tog.classList.toggle('on',isOn);
   if(lab)lab.textContent=isOn?'On':'Off';
+  if(row2){row2.classList.toggle('on',isOn);row2.setAttribute('aria-pressed',isOn?'true':'false')}
+  if(tog2)tog2.classList.toggle('on',isOn);
+  if(lab2)lab2.textContent=isOn?'On':'Off';
   localStorage.setItem('cl_stay_logged_in',isOn?'true':'false');
 };
 window.backToLanding=function(){
@@ -2306,9 +2322,9 @@ function resetForgotForm(){
 }
 window.showTerms=function(){$('m-terms').classList.add('on')};
 window.showHarassment=function(){$('m-harass').classList.add('on')};
-window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-pp-checkout'){var feeDiv=$('pp-fee-breakdown');if(feeDiv)feeDiv.innerHTML='';var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML=''}if(id==='m-edit'){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}epCamData=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
+window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-pp-checkout'){var feeDiv=$('pp-fee-breakdown');if(feeDiv)feeDiv.innerHTML='';var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML=''}if(id==='m-edit'){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}epCamData=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;var stay=localStorage.getItem('cl_stay_logged_in')!=='false';if(!stay){localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
 
-window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}$('li-s').classList.remove('show');showApp();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
+window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}var stay=$('rv-sc')?$('rv-sc').classList.contains('on'):true;if(!stay){localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();var stay2=$('rv-sc')?$('rv-sc').classList.contains('on'):true;if(!stay2){localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
 
 window.su=async function(){
   var er=$('su-er');
@@ -2383,6 +2399,7 @@ window.su=async function(){
         }
         claimPendingPayPal();
         $('su-s').classList.remove('show');
+        sessionStorage.setItem('cl_active_session','1');
         if(r.data.session){showApp()}else{showToast('Almost there - check your email to confirm.')}
         return;
       }
@@ -2403,6 +2420,7 @@ window.su=async function(){
     cu=syncLocalUserToCu(newUser);svu();saveAccount(cu);
     claimPendingPayPal();
     $('su-s').classList.remove('show');
+    sessionStorage.setItem('cl_active_session','1');
     showApp();showToast('Welcome to your chain.');
   }
 };
