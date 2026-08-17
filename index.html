@@ -298,7 +298,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
 .pw-req.ok .dot::after{background:var(--green)}
 
 /* === MAIN APP =============================================== */
-#ma{display:none;position:relative;z-index:1;width:100%;min-height:100vh;padding-bottom:190px}
+#ma{display:none;position:relative;z-index:1;width:100%;min-height:100vh;padding-bottom:var(--nav-h);display:flex;flex-direction:column}
 .page{display:none;width:100%;min-height:100vh;padding:18px 16px}
 .page.active{display:block;animation:pagein .4s var(--ease-out) both}
 @keyframes pagein{from{opacity:0;transform:translate3d(0,8px,0)}to{opacity:1;transform:none}}
@@ -1236,6 +1236,12 @@ window.showAuth = function(tab) {
     </div>
   </div>
   <div class="menu-drop" id="menu-drop">
+    <div class="menu-item" onclick="navTo('feed');toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Home</div>
+    <div class="menu-item" onclick="navTo('explore');toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Explore</div>
+    <div class="menu-item" onclick="navTo('news');toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg> News</div>
+    <div class="menu-item" onclick="openCam();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Camera</div>
+    <div class="menu-item" onclick="navTo('messages');toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Messages</div>
+    <div class="menu-sep"></div>
     <div class="menu-item" onclick="navTo('profile');toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</div>
     <div class="menu-item" onclick="navTo('settings');toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</div>
     <div class="menu-item" onclick="shareApp();toggleMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg> Share</div>
@@ -1641,7 +1647,7 @@ window.showAuth = function(tab) {
       </div>
     </div>
   </figure>
-  <div style="text-align:center;padding:3px 10px;font-size:10px;color:#FFD700;background:var(--bg);position:fixed;bottom:calc(var(--nav-h) + 2px);left:0;right:0;z-index:998;border-top:1px solid var(--line);line-height:1.4">© <span style="color:#fff">My</span><span style="color:#FFD700">Chain</span><span style="color:#fff">Link</span> 2026 — All Rights Reserved to Kendal Symes.</div>
+  <div style="text-align:center;padding:12px 10px;font-size:10px;color:#FFD700;background:var(--bg);border-top:1px solid var(--line);line-height:1.4;margin-top:auto">© <span style="color:#fff">My</span><span style="color:#FFD700">Chain</span><span style="color:#fff">Link</span> 2026 — All Rights Reserved to Kendal Symes.</div>
 </div>
 
 <!-- CAMERA OVERLAY -->
