@@ -510,7 +510,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
   background:linear-gradient(145deg,var(--gold-hi),var(--gold-deep));
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:35px;color:#14120E;
   box-shadow:0 0 0 3px var(--bg),0 0 0 4.5px var(--gold-edge),0 16px 40px -14px rgba(230,201,106,.45);
+  cursor:pointer;transition:transform .2s var(--ease);
 }
+.phead .av:hover{transform:scale(1.04)}
 .phead .av img{width:100%;height:100%;object-fit:cover}
 .phead h1{font-family:var(--font-d);font-size:28px;font-weight:700;margin-bottom:3px}
 .phead .bio{font-size:14.5px;color:var(--ink-2);max-width:420px;margin:10px auto 0;line-height:1.6}
@@ -1383,7 +1385,7 @@ window.showAuth = function(tab) {
   <!-- PROFILE -->
   <div class="page" id="pg-profile">
     <div class="phead">
-      <div class="av" id="p-av">?</div>
+      <div class="av" id="p-av" onclick="openAvatarLightbox('p-av')">?</div>
       <h1 id="p-n">User</h1>
       <p style="color:#888;font-size:14px" id="p-h">@user</p>
       <p class="bio" id="p-b">No bio yet</p>
@@ -1595,7 +1597,7 @@ window.showAuth = function(tab) {
       <h2 style="font-size:21px" id="vu-n">Profile</h2>
     </div>
     <div class="phead" style="margin:-16px -16px 16px">
-      <div class="av" id="vu-av">?</div>
+      <div class="av" id="vu-av" onclick="openAvatarLightbox('vu-av')">?</div>
       <h1 id="vu-name">User</h1>
       <p style="color:#888;font-size:14px" id="vu-h">@user</p>
       <p class="bio" id="vu-b">No bio yet</p>
@@ -2583,6 +2585,7 @@ window.showHelp=function(){alert('Need Help?\n\n• Make sure you\'re using the 
 window.switchProfileTab=function(tab){var myPosts=posts.filter(function(p){return p.uid===cu.id});if(tab==='media'){$('tab-posts').classList.remove('active');$('tab-media').classList.add('active');$('p-posts-view').style.display='none';$('p-media-view').style.display='block';var mediaPosts=myPosts.filter(function(p){return p.m});var h='';if(!mediaPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No media yet</div>'}else{h='<div class="pgrid">';mediaPosts.forEach(function(p){h+='<div class="pi" onclick="openLightbox(\''+esc(p.m)+'\','+(p.v?'true':'false')+')">';if(p.v){h+='<video src="'+p.m+'" muted playsInline></video>'}else{h+='<img src="'+p.m+'">'}h+='</div>'});h+='</div>'}$('p-media-view').innerHTML=h}else{$('tab-posts').classList.add('active');$('tab-media').classList.remove('active');$('p-posts-view').style.display='block';$('p-media-view').style.display='none';var h='';if(!myPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No posts yet</div>'}else{myPosts.forEach(function(p){h+=renderPostHTML(p)})}$('p-posts-view').innerHTML=h}};
 window.switchVUTab=function(tab){if(!vu)return;var myPosts=posts.filter(function(p){return p.uid===vu.id||p.wfor===vu.id});if(tab==='media'){$('vu-tab-posts').classList.remove('active');$('vu-tab-media').classList.add('active');$('vu-posts-view').style.display='none';$('vu-media-view').style.display='block';var mediaPosts=myPosts.filter(function(p){return p.m});var h='';if(!mediaPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No media yet</div>'}else{h='<div class="pgrid">';mediaPosts.forEach(function(p){h+='<div class="pi" onclick="openLightbox(\''+esc(p.m)+'\','+(p.v?'true':'false')+')">';if(p.v){h+='<video src="'+p.m+'" muted playsInline></video>'}else{h+='<img src="'+p.m+'">'}h+='</div>'});h+='</div>'}$('vu-media-view').innerHTML=h}else{$('vu-tab-posts').classList.add('active');$('vu-tab-media').classList.remove('active');$('vu-posts-view').style.display='block';$('vu-media-view').style.display='none';var h='';if(!myPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No posts yet</div>'}else{myPosts.forEach(function(p){h+=renderPostHTML(p)})}$('vu-posts-view').innerHTML=h}};
 window.openLightbox=function(src,isVideo){var lb=$('lb');var content=$('lb-content');if(isVideo){content.innerHTML='<video src="'+src+'" controls autoplay style="max-width:95%;max-height:80vh;border-radius:16px"></video>'}else{content.innerHTML='<img src="'+src+'" style="max-width:95%;max-height:80vh;border-radius:16px">'}lb.classList.add('on')};
+window.openAvatarLightbox=function(id){var el=$(id);if(!el)return;var img=el.querySelector('img');if(!img||!img.src)return;openLightbox(img.src,false)};
 window.closeLightbox=function(){$('lb').classList.remove('on');$('lb-content').innerHTML=''};
 window.renderNotifDrop=function(){loadNotificationsFromSupabase();var d=$('notif-drop');if(!notifs.length){d.innerHTML='<div style="text-align:center;padding:20px;color:#666;font-size:14px">No notifications</div>';return}var h='';notifs.slice(0,10).forEach(function(n){var isRead=n.read;h+='<div class="n-item" style="opacity:'+(isRead?'0.7':'1')+';cursor:pointer" onclick="gotoNotif('+JSON.stringify(n).replace(/"/g,'&quot;')+')">';h+='<div class="av">'+(n.un?n.un[0].toUpperCase():'N')+'</div>';h+='<div class="txt" style="flex:1"><b>'+esc(n.un||'User')+'</b> '+esc(n.txt)+'<div class="time">'+ago(n.ts)+'</div></div>';if(!isRead){h+='<span style="width:8px;height:8px;background:#FF3366;border-radius:50%;flex-shrink:0"></span>'}h+='</div>'});d.innerHTML=h};window.gotoNotif=function(n){if(!n)return;$('notif-drop').classList.remove('on');if(n.type==='message'&&n.actor_id){navTo('messages');openThread(n.actor_id);return}if((n.type==='follow'||n.type==='connect')&&n.actor_id){viewUser(n.actor_id);return}if(n.post_id){navTo('home');setTimeout(function(){var el=document.getElementById('post-'+n.post_id);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.transition='box-shadow .5s';el.style.boxShadow='0 0 0 2px var(--gold)';setTimeout(function(){el.style.boxShadow=''},1500)}},300)}else if(n.actor_id){viewUser(n.actor_id)}};
 
