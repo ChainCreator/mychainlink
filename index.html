@@ -867,17 +867,19 @@ var stayLoggedIn=localStorage.getItem('cl_stay_logged_in')!=='false';
 var hasSession=sessionStorage.getItem('cl_active_session')==='1';
 var justLoggedIn=location.search.indexOf('login=1')>-1;
 var justLoggedInFlag=sessionStorage.getItem('cl_just_logged_in')==='1';
-// Always show app — landing page removed, Main is default for everyone
-var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
-var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
 if(hasUser||(justLoggedIn||justLoggedInFlag)){
+  var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
+  var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}
+  var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
   sessionStorage.setItem('cl_active_session','1');
   sessionStorage.removeItem('cl_just_logged_in');
 } else if(hasUser&&!stayLoggedIn&&!hasSession&&!justLoggedIn&&!justLoggedInFlag){
   localStorage.removeItem('cl_user');
 }
 </script>
-<!-- AUTH PAGE -->
+<!-- LANDING PAGE INJECTED -->
+
+<!-- AUTH PAGE --><!-- AUTH PAGE -->
 
 <style>
 
@@ -1184,6 +1186,147 @@ window.showAuth = function(tab) {
   <div class="auth-foot" style="color:#FFD700">© <span style="color:#fff">My</span><span style="color:#FFD700">Chain</span><span style="color:#fff">Link</span> 2026 — All Rights Reserved to Kendal Symes.</div>
 </div>
 
+<!-- LANDING PAGE -->
+<div id="landing-page" class="landing-page">
+  <div class="landing-glow" aria-hidden="true"></div>
+  <div class="landing-content">
+
+    <div class="landing-logo">
+      <img src="logo-v4.png?v=2" alt="My Chain Link">
+    </div>
+
+    <div class="landing-lead">
+      <p class="lead-eyebrow"><span></span>Authentic connections only · Camera captures only</p>
+      <h1 class="lead-h">Get connected.<br><em>Stay</em> connected.</h1>
+      <p class="lead-sub">Your content. Your price. <strong style="color:var(--gold)">You're worth it.</strong></p>
+    </div>
+
+    <div class="landing-actions">
+      <button class="btn btn-primary btn-lg" onclick="showAuth('up')">
+        Create your account
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+      <button class="btn btn-outline btn-lg" onclick="location.href='login.html'">I am connected</button>
+    </div>
+
+    <figure class="landing-quote">
+      <blockquote id="lq-text">The best way to predict the future is to create it.</blockquote>
+      <figcaption id="lq-auth">Peter Drucker</figcaption>
+    </figure>
+
+  </div>
+  <div class="landing-foot">Built in Canada · © <span style="color:#fff">My </span><span style="color:#FFD700">Chain</span><span style="color:#fff"> Link</span> 2026 · Kendal Symes<br><a href="privacy.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Privacy</a>·<a href="terms.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Terms</a>·<a href="#" onclick="showAbout();return false" style="color:var(--gold);text-decoration:none;margin:0 6px">About</a></div>
+</div>
+
+<style>
+/* === LANDING - asymmetric, warm, one ember of gold ============ */
+.landing-page{
+  position:fixed;inset:0;z-index:1000;overflow-y:auto;
+  display:flex;flex-direction:column;justify-content:center;
+  background:var(--bg);transition:opacity .5s var(--ease);
+}
+.landing-page.hidden{opacity:0;pointer-events:none;display:none!important}
+.landing-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(78% 46% at 14% 6%, rgba(230,201,106,.18), transparent 62%),
+    radial-gradient(64% 42% at 104% 92%, rgba(201,162,67,.11), transparent 64%);
+}
+.landing-content{
+  position:relative;width:100%;max-width:440px;
+  padding:56px 26px 26px;margin:auto;
+}
+.landing-content>*{animation:rise .85s var(--ease-out) both}
+.landing-logo{animation-delay:.05s}
+.landing-lead{animation-delay:.16s}
+.landing-actions{animation-delay:.28s}
+.landing-quote{animation-delay:.4s}
+
+.landing-logo{margin-bottom:34px;padding-left:12px;text-align:center}
+.landing-logo img{
+  width:186px;height:auto;
+  filter:drop-shadow(0 18px 44px rgba(230,201,106,.28));
+  background-color:transparent!important;
+  mix-blend-mode:normal;
+}
+.landing-logo,.auth-logo{
+  background-color:transparent!important;
+  background:none!important;
+  box-shadow:none!important;
+  border:none!important;
+  border-radius:0!important;
+}
+
+.lead-eyebrow{
+  display:flex;align-items:center;gap:9px;
+  font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:16px;
+}
+.lead-eyebrow span{
+  width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;
+  box-shadow:0 0 0 4px rgba(230,201,106,.15);animation:pulse 2.6s ease-in-out infinite;
+}
+.lead-h{
+  font-family:var(--font-d);font-size:clamp(38px,11.5vw,50px);font-weight:750;
+  line-height:1.02;letter-spacing:-0.035em;color:var(--ink);margin-bottom:18px;
+}
+.lead-h em{
+  font-style:italic;font-weight:600;color:var(--gold);
+  background:linear-gradient(100deg,var(--gold-hi),var(--gold-deep));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.lead-sub{
+  font-size:clamp(18px,4vw,22px);line-height:1.55;color:var(--ink-2);
+  max-width:37ch;margin-bottom:38px;font-weight:700;
+}
+
+.landing-actions{display:flex;flex-direction:column;gap:11px;margin-bottom:40px}
+.landing-actions .btn{width:100%}
+
+.landing-quote{
+  position:relative;max-width:39ch;padding:22px 24px 20px 54px;overflow:hidden;
+  border:1px solid var(--gold-edge);border-radius:var(--r-lg);
+  background:linear-gradient(135deg,rgba(230,201,106,.11),rgba(23,22,20,.72) 58%);
+  box-shadow:inset 0 1px 0 rgba(242,223,160,.08),0 18px 45px -30px rgba(230,201,106,.65);
+}
+.landing-quote::before{
+  content:'\201C';position:absolute;left:17px;top:8px;
+  font-family:var(--font-d);font-size:58px;font-weight:700;line-height:1;color:var(--gold);
+}
+.landing-quote blockquote{
+  font-family:var(--font-b);font-style:normal;font-size:18px;line-height:1.48;
+  font-weight:500;color:var(--ink);margin-bottom:12px;
+}
+.landing-quote figcaption{
+  font-size:10.5px;color:var(--gold-deep);font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.landing-quote figcaption::before{content:'- ';color:var(--gold)}
+
+.landing-foot{
+  position:relative;padding:26px;text-align:left;max-width:440px;width:100%;
+  font-size:12px;color:var(--ink-4);letter-spacing:.02em;opacity:.7;
+}
+
+@media(min-width:760px){
+  .landing-page{justify-content:center;align-items:center}
+  .landing-content{max-width:620px;padding:0 64px;margin:auto;text-align:center}
+  .landing-logo{text-align:center}
+  .landing-foot{padding:0 64px;margin:44px auto 0;max-width:620px;text-align:center}
+  .lead-h{font-size:62px}
+  .lead-sub{font-size:20px;max-width:44ch;margin-left:auto;margin-right:auto}
+  .landing-actions{flex-direction:row;max-width:460px;margin-left:auto;margin-right:auto}
+  .landing-actions .btn{width:auto;flex:1}
+  .landing-quote{margin-left:auto;margin-right:auto}
+}
+@media(max-height:680px){
+  .landing-content{padding-top:34px}
+  .landing-logo{margin-bottom:22px}
+  .lead-sub{margin-bottom:26px}
+  .landing-actions{margin-bottom:26px}
+  .landing-quote{display:none}
+}
+</style>
 <div id="ma">
   <div class="topbar">
     <div style="font-weight:700;font-size:17px;letter-spacing:-0.02em"><span style="color:#fff">My</span><span style="color:#FFD700">Chain</span><span style="color:#fff">Link</span></div>
@@ -1760,7 +1903,7 @@ window.showAuth = function(tab) {
     </div>
     <div class="pm-toggle">
       <button id="pm-tab-mo" class="active" onclick="setPremiumTab('monthly')">Monthly</button>
-      <button id="pm-tab-yr" onclick="setPremiumTab('annual')">Annual <span style="color:var(--green)">Save 17%</span></button>
+      <button id="pm-tab-yr" style="opacity:0.4;cursor:not-allowed" disabled>Annual <span style="color:var(--ink-4);font-size:11px">Coming Soon</span></button>
     </div>
     <div class="pm-card">
       <span class="badge">Premium</span>
@@ -2017,7 +2160,7 @@ window.suNextStep=function(){
   er.classList.remove('show');
   // Validate current step
   if(suCurrentStep===1){
-    var n=$('su-n').value.trim();
+    var fn=$('su-fn').value.trim(),ln=$('su-ln').value.trim(),n=(fn+' '+ln).trim();
     if(!n){er.textContent='Enter your name';er.classList.add('show');return;}
   }
   if(suCurrentStep===2){
@@ -2356,7 +2499,8 @@ window.removeLoginSavedAccount=function(id){
 window.toggleStayLoggedIn=function(){};
 window.backToLanding=function(){
   hideLoginPage();
-  navTo('main');
+  var lp=$('landing-page');
+  if(lp){lp.classList.remove('hidden');lp.style.display='flex'}
 };
 window.showForgotFromLogin=function(){
   hideLoginPage();
@@ -2414,7 +2558,7 @@ window.su=async function(){
   var er=$('su-er');
   function fail(msg,focusId){er.textContent=msg;er.classList.add('show');$('su-s').classList.remove('show');var f=$(focusId);if(f)f.focus();return}
 
-  var n=$('su-n').value.trim(),
+  var fn=$('su-fn').value.trim(),ln=$('su-ln').value.trim(),n=(fn+' '+ln).trim(),
       h=$('su-h').value.trim(),
       e=$('su-e').value.trim(),
       bd=$('su-b').value,
@@ -2616,7 +2760,8 @@ window.addNewAccount=function(){location.href='login.html';showToast('Sign in to
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
 // ==================== APP NAV ====================
-window.showApp=function(){var ap=$('auth-page');if(ap){ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0'}var lgp=$('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}var ma=$('ma');if(ma)ma.style.display='block';else if($('main-app'))$('main-app').style.display='block';else{var fc=document.querySelector('.feed-container');if(fc)fc.style.display='block'}window.scrollTo(0,0);document.body.style.overflow='';if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderFeed();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()};
+window.showApp=function(){var lp=$('landing-page');if(lp)lp.classList.add('hidden');var ap=$('auth-page');if(ap){ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0'}var lgp=$('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}var ma=$('ma');if(ma)ma.style.display='block';else if($('main-app'))$('main-app').style.display='block';else{var fc=document.querySelector('.feed-container');if(fc)fc.style.display='block'}window.scrollTo(0,0);document.body.style.overflow='';navTo('main');if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderNews();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()};
+window.scrollTo(0,0);document.body.style.overflow='';if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderFeed();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()};
 window.checkTrialReminder=function(){if(!cu)return;var trialStart=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(!trialStart||isPaid==='true')return;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));var daysLeft=7-days;if(daysLeft<=0){showToast('Your 7-day trial has ended. Subscribe to keep Premium!');showPremiumModal();return}if(daysLeft<=2){showToast('Your free trial ends in '+daysLeft+' day'+(daysLeft===1?'':'s')+'. Subscribe now to avoid interruption.')}};window.navTo=function(p){var map=['main','explore','cam','messages','profile'];var pageMap={main:'pg-main',explore:'pg-people',people:'pg-people',cam:'pg-cam',messages:'pg-messages',profile:'pg-profile',settings:'pg-settings',user:'pg-user','coming-soon':'pg-coming-soon'};if(!pageMap[p])return;map.forEach(function(x){var el=document.querySelector('.mit[onclick="navTo(\''+x+'\')"]');if(el)el.classList.remove('a')});var activeBtn=document.querySelector('.mit[onclick="navTo(\''+p+'\')"]');if(activeBtn)activeBtn.classList.add('a');Object.values(pageMap).forEach(function(id){$(id).classList.remove('active')});$(pageMap[p]).classList.add('active');cp=p;if(p==='profile'){renderProfile()}if(p==='main'){renderNews()}if(p==='explore'||p==='people'){var schVal=$('p-sch').value.trim();if(schVal){schPpl(schVal)}else{renderPeople()}}if(p==='messages'){renderMessages();clearMsgBadge();if(window.msgChannel){try{window.msgChannel.unsubscribe()}catch(e){}}window.msgChannel=null;window.currentConvId=null}};
 function goBackFromUser(){if(cp==='people'){navTo('explore')}else{navTo('feed')}}window.goBackFromUser=goBackFromUser;
 
@@ -2775,7 +2920,7 @@ window.togglePostComments=function(id){var p=posts.find(function(x){return x.id=
 document.addEventListener('click',function(e){if(e.target.closest('.post-menu'))return;document.querySelectorAll('.post-menu-drp').forEach(function(d){d.classList.remove('on')})});
 window.sp=function(id){var p=posts.find(function(x){return x.id===id});if(navigator.share){navigator.share({title:'My Chain Link',text:p?p.t:'',url:location.href})}else{showToast('Link copied!');if(navigator.clipboard)navigator.clipboard.writeText(location.href)}};
 window.addCmt=function(id){if(!cu){showToast('Sign in to comment');return}var p=posts.find(function(x){return x.id===id});if(!p||p.c===false){showToast('Comments disabled on this post');return}var inp=$('cm-'+id);if(!inp)return;var t=inp.value.trim();if(!t)return;if(!p.cm)p.cm=[];p.cm.push({un:cu.user_metadata&&cu.user_metadata.display_name?cu.user_metadata.display_name:'User',x:t,ts:Date.now(),lk:[],dk:[]});svp();renderFeed();var el=$('cmts-'+id);if(el)el.classList.add('on');if(p.uid&&p.uid!==cu.id){addNotification('comment',p.uid,'commented: "'+t.substring(0,60)+(t.length>60?'...':'')+'"',p.id)}};
-window.previewProfilePhoto=function(input){var file=input.files[0];if(!file)return;if(file.size>5*1024*1024){showToast('Image too large. Max 5MB.');input.value='';return}var reader=new FileReader();reader.onload=function(e){var img=$('ep-a-img');img.src=e.target.result;var wrap=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';$('ep-a').setAttribute('data-url',e.target.result);$('ep-a').setAttribute('data-file',file.name)};reader.readAsDataURL(file)};var epCamStream=null;var epCamData='';window.openProfileCam=async function(){if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';if(actions)actions.style.display='none';if(preview)preview.style.display='none';try{var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});epCamStream=s;var v=$('ep-cam-v');v.srcObject=s;v.play()}catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}closeProfileCam()}};window.closeProfileCam=function(){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');if(wrap)wrap.style.display='none';if(actions)actions.style.display='flex'};window.snapProfilePhoto=function(){var v=$('ep-cam-v');var c=$('ep-cam-c');if(!v||!c||!epCamStream)return;c.width=640;c.height=480;var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);epCamData=c.toDataURL('image/jpeg',0.9);if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');var img=$('ep-a-img');if(wrap)wrap.style.display='none';if(actions)actions.style.display='none';if(preview)preview.style.display='block';if(img)img.src=epCamData};window.retakeProfilePhoto=function(){epCamData='';var preview=$('ep-a-preview-wrap');var actions=$('ep-cam-actions');if(preview)preview.style.display='none';if(actions)actions.style.display='flex'};window.previewFont=function(){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';var sel=$(prefix+'pc-font').value;var inp=$(prefix+'pc-t');inp.className=sel};window.pickFont=function(sel,font){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';$(prefix+'pc-font').value=font;previewFont()};window.tPostCmt=function(){var isProfile=$('pg-profile').classList.contains('active');var id=isProfile?'pp-t-post-cmt':'t-post-cmt';var el=$(id);if(!el)return;el.classList.toggle('on');var knob=el.querySelector('div');if(!knob)return;if(el.classList.contains('on')){knob.style.left='3px'}else{knob.style.left='19px'}};window.showPremiumModal=function(){if(cu&&isUserPremium(cu.id)){showToast('You are already a Premium Link!');return}setPremiumTab('monthly');$('m-premium').classList.add('on');document.body.style.overflow='hidden';var trialBtn=$('trial-btn');var trialStatus=$('trial-status');var trialSection=$('premium-trial-section');if(trialBtn&&cu){var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){trialSection.style.display='none'}else{trialSection.style.display='block'}}setTimeout(function(){renderPremiumPayPalButtons()},300)};window.setPremiumTab=function(tab){var moBtn=$('pm-tab-mo');var yrBtn=$('pm-tab-yr');var priceEl=$('pm-price');var ctaBtn=$('pm-subscribe-btn');if(tab==='annual'){if(moBtn)moBtn.classList.remove('active');if(yrBtn)yrBtn.classList.add('active');if(priceEl)priceEl.innerHTML='$109.99<span>/year</span>';if(ctaBtn)ctaBtn.setAttribute('data-plan','annual')}else{if(moBtn)moBtn.classList.add('active');if(yrBtn)yrBtn.classList.remove('active');if(priceEl)priceEl.innerHTML='$10.99<span>/month</span>';if(ctaBtn)ctaBtn.setAttribute('data-plan','monthly')}};window.startPayPalCheckout=function(){var plan=$('pm-subscribe-btn').getAttribute('data-plan')||'monthly';var amount=plan==='annual'?109.99:10.99;showToast('Redirecting to PayPal...');console.log('[PayPal] Initiating checkout for $'+amount+' ('+plan+')')};window.startFreeTrial=function(){if(!cu){showToast('Sign in to start trial');return}var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){showToast('You already used your free trial');return}if(!confirm('By starting your 7-day free trial, you authorize MyChainLink to begin a $10.99/month subscription after the trial period ends. You can cancel anytime in your PayPal account. Continue?')){return}localStorage.setItem('cl_trial_start_'+cu.id,new Date().toISOString());showToast('🎉 7-day free trial activated!');renderProfile();var trialSection=$('premium-trial-section');if(trialSection){trialSection.innerHTML='<div style="padding:16px 0;text-align:center"><p style="color:#FFD700;font-size:15px;margin-bottom:8px">✅ Trial activated!</p><p style="font-size:13px;color:#888;margin-bottom:12px">To keep Premium after 7 days, complete your subscription below.</p></div>'}renderPremiumPayPalButtons();};
+window.previewProfilePhoto=function(input){var file=input.files[0];if(!file)return;if(file.size>5*1024*1024){showToast('Image too large. Max 5MB.');input.value='';return}var reader=new FileReader();reader.onload=function(e){var img=$('ep-a-img');img.src=e.target.result;var wrap=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';$('ep-a').setAttribute('data-url',e.target.result);$('ep-a').setAttribute('data-file',file.name)};reader.readAsDataURL(file)};var epCamStream=null;var epCamData='';window.openProfileCam=async function(){if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';if(actions)actions.style.display='none';if(preview)preview.style.display='none';try{var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});epCamStream=s;var v=$('ep-cam-v');v.srcObject=s;v.play()}catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}closeProfileCam()}};window.closeProfileCam=function(){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');if(wrap)wrap.style.display='none';if(actions)actions.style.display='flex'};window.snapProfilePhoto=function(){var v=$('ep-cam-v');var c=$('ep-cam-c');if(!v||!c||!epCamStream)return;c.width=640;c.height=480;var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);epCamData=c.toDataURL('image/jpeg',0.9);if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');var img=$('ep-a-img');if(wrap)wrap.style.display='none';if(actions)actions.style.display='none';if(preview)preview.style.display='block';if(img)img.src=epCamData};window.retakeProfilePhoto=function(){epCamData='';var preview=$('ep-a-preview-wrap');var actions=$('ep-cam-actions');if(preview)preview.style.display='none';if(actions)actions.style.display='flex'};window.previewFont=function(){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';var sel=$(prefix+'pc-font').value;var inp=$(prefix+'pc-t');inp.className=sel};window.pickFont=function(sel,font){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';$(prefix+'pc-font').value=font;previewFont()};window.tPostCmt=function(){var isProfile=$('pg-profile').classList.contains('active');var id=isProfile?'pp-t-post-cmt':'t-post-cmt';var el=$(id);if(!el)return;el.classList.toggle('on');var knob=el.querySelector('div');if(!knob)return;if(el.classList.contains('on')){knob.style.left='3px'}else{knob.style.left='19px'}};window.showPremiumModal=function(){if(cu&&isUserPremium(cu.id)){showToast('You are already a Premium Link!');return}setPremiumTab('monthly');$('m-premium').classList.add('on');document.body.style.overflow='hidden';var trialBtn=$('trial-btn');var trialStatus=$('trial-status');var trialSection=$('premium-trial-section');if(trialBtn&&cu){var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){trialSection.style.display='none'}else{trialSection.style.display='block'}}setTimeout(function(){renderPremiumPayPalButtons()},300)};window.setPremiumTab=function(tab){var moBtn=$('pm-tab-mo');var yrBtn=$('pm-tab-yr');var priceEl=$('pm-price');var ctaBtn=$('pm-subscribe-btn');if(tab==='annual'){return}if(moBtn)moBtn.classList.add('active');if(priceEl)priceEl.innerHTML='$10.99<span>/month</span>';if(ctaBtn)ctaBtn.setAttribute('data-plan','monthly')};window.startPayPalCheckout=function(){var plan=$('pm-subscribe-btn').getAttribute('data-plan')||'monthly';var amount=plan==='annual'?109.99:10.99;showToast('Redirecting to PayPal...');console.log('[PayPal] Initiating checkout for $'+amount+' ('+plan+')')};window.startFreeTrial=function(){if(!cu){showToast('Sign in to start trial');return}var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){showToast('You already used your free trial');return}if(!confirm('By starting your 7-day free trial, you authorize MyChainLink to begin a $10.99/month subscription after the trial period ends. You can cancel anytime in your PayPal account. Continue?')){return}localStorage.setItem('cl_trial_start_'+cu.id,new Date().toISOString());showToast('🎉 7-day free trial activated!');renderProfile();var trialSection=$('premium-trial-section');if(trialSection){trialSection.innerHTML='<div style="padding:16px 0;text-align:center"><p style="color:#FFD700;font-size:15px;margin-bottom:8px">✅ Trial activated!</p><p style="font-size:13px;color:#888;margin-bottom:12px">To keep Premium after 7 days, complete your subscription below.</p></div>'}renderPremiumPayPalButtons();};
 window.pickColor=function(btn,color){var isPremium=isUserPremium(cu?cu.id:'');if(!isPremium){showPremiumModal();return}var isProfile=$('pg-profile').classList.contains('active');var pickerId=isProfile?'pp-color-picker':'color-picker';document.querySelectorAll('#'+pickerId+' .font-opt').forEach(function(b){b.classList.remove('a');b.style.boxShadow='none'});btn.classList.add('a');btn.style.boxShadow='0 0 0 2px var(--gold)';var prefix=isProfile?'pp-':'';$(prefix+'pc-color').value=color};window.pickCamFont=function(sel,font){$('cam-font-picker').value=font;$('cam-cap').className='cam-cap-textarea '+font};window.pickCamColor=function(btn,color){var isPremium=isUserPremium(cu?cu.id:'');if(!isPremium){showPremiumModal();return}document.querySelectorAll('#cam-color-picker .font-opt').forEach(function(b){b.classList.remove('a');b.style.boxShadow='none'});btn.classList.add('a');btn.style.boxShadow='0 0 0 2px var(--gold)';$('cam-cap').setAttribute('data-color',color);$('cam-cap').style.color=color};;window.linkHashtags=function(t){if(!t)return t;return t.replace(/#([a-zA-Z0-9_]+)/g,'<span style="color:#FFD700;cursor:pointer" onclick="searchTag(\'$1\')">#$1</span>')};window.searchTag=function(tag){$('p-sch').value='#'+tag;navTo('explore');schPpl('#'+tag)};
 
 // ==================== CAMERA ====================
