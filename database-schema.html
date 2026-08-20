@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Database Schema — My Chain Link</title>
+<meta name="theme-color" content="#0F0F0F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Figtree:wght@300..600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0F0F;--surf:#171614;--line:#272522;
+  --gold:#FFD700;--gold-hi:#F2DFA0;--gold-deep:#C9A243;
+  --ink:#FFFFFF;--ink-2:#E0E0E0;--ink-3:#B0B0B0;--ink-4:#5C5C5C;
+  --green:#4ADE80;--blue:#4D96FF;
+  --font-d:'Fraunces',Georgia,serif;--font-b:'Figtree',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  font-family:var(--font-b);font-size:15px;line-height:1.6;color:var(--ink-2);
+  background:var(--bg);min-height:100vh;
+}
+header{
+  padding:24px 20px 16px;text-align:center;border-bottom:1px solid var(--line);
+}
+header h1{
+  font-family:var(--font-d);font-size:28px;color:var(--gold);letter-spacing:-0.02em;
+}
+header p{color:var(--ink-3);font-size:14px;margin-top:4px}
+.container{max-width:900px;margin:0 auto;padding:32px 20px 60px}
+.back-link{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:999px;border:1px solid var(--line);
+  color:var(--ink-3);font-size:14px;margin-bottom:24px;transition:all .2s;
+}
+.back-link:hover{border-color:var(--gold);color:var(--gold);text-decoration:none}
+
+.table-section{margin:32px 0}
+.table-section h2{
+  font-family:var(--font-d);font-size:20px;color:var(--gold);margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.table-section h2 .badge{
+  font-size:11px;background:rgba(230,201,106,.15);color:var(--gold);
+  padding:4px 10px;border-radius:999px;font-family:var(--font-b);font-weight:600;
+}
+
+.schema-table{
+  width:100%;border-collapse:collapse;margin:16px 0;
+  background:var(--surf);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+}
+.schema-table th{
+  background:var(--bg);color:var(--gold);font-size:13px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);
+}
+.schema-table td{
+  padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px;
+}
+.schema-table tr:last-child td{border-bottom:none}
+.schema-table .col-name{color:var(--ink);font-weight:600;font-family:'SF Mono',monospace;font-size:13px}
+.schema-table .col-type{color:var(--blue);font-family:'SF Mono',monospace;font-size:12px}
+.schema-table .col-default{color:var(--ink-3);font-size:12px}
+.schema-table .pk{color:var(--gold);font-size:11px;background:rgba(230,201,106,.12);padding:2px 6px;border-radius:4px;margin-left:6px}
+.schema-table .fk{color:var(--green);font-size:11px;background:rgba(74,222,128,.12);padding:2px 6px;border-radius:4px;margin-left:6px}
+.schema-table .nn{color:var(--red);font-size:11px}
+
+.rel-diagram{
+  background:var(--surf);border:1px solid var(--line);border-radius:16px;
+  padding:24px;margin:24px 0;
+}
+.rel-table{
+  display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:12px;
+  padding:16px;margin:8px;min-width:180px;vertical-align:top;
+}
+.rel-table h4{
+  font-family:var(--font-d);font-size:14px;color:var(--gold);margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid var(--line);
+}
+.rel-table ul{list-style:none}
+.rel-table li{
+  font-size:12px;color:var(--ink-3);padding:4px 0;font-family:'SF Mono',monospace;
+}
+.rel-table li.pk{color:var(--gold)}
+.rel-table li.fk{color:var(--green)}
+.rel-arrow{
+  display:inline-block;color:var(--ink-4);font-size:20px;margin:0 8px;vertical-align:middle;
+}
+
+.rls-box{
+  background:var(--surf);border:1px solid var(--line);border-radius:12px;
+  padding:16px 20px;margin:12px 0;
+}
+.rls-box h4{font-size:14px;color:var(--ink);margin-bottom:8px}
+.rls-box p{font-size:13px;color:var(--ink-3);margin-bottom:6px}
+.rls-box code{
+  font-family:'SF Mono',monospace;font-size:12px;color:var(--gold);
+  background:rgba(230,201,106,.08);padding:2px 6px;border-radius:4px;
+}
+
+.note{
+  background:var(--surf);border:1px solid var(--line);border-radius:12px;
+  padding:16px 20px;margin:24px 0;font-size:14px;color:var(--ink-3);
+}
+.note strong{color:var(--gold)}
+
+footer{
+  text-align:center;padding:32px 20px;border-top:1px solid var(--line);
+  color:var(--ink-4);font-size:13px;
+}
+footer a{color:var(--ink-3);margin:0 12px}
+footer a:hover{color:var(--gold)}
+
+@media(max-width:768px){
+  .schema-table th,.schema-table td{padding:8px;font-size:12px}
+  .rel-table{display:block;width:100%;margin:8px 0}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .schema-table{background:#fff}
+  .rel-table{background:#f5f5f5}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>My Chain Link</h1>
+  <p>Supabase Database Schema & RLS Policies</p>
+</header>
+<div class="container">
+  <a href="index.html" class="back-link">← Back to My Chain Link</a>
+
+  <!-- PROFILES -->
+  <div class="table-section">
+    <h2>profiles <span class="badge">User Profiles</span></h2>
+    <table class="schema-table">
+      <thead>
+        <tr><th>Column</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="pk">PK</span></td><td class="col-type">uuid</td><td class="col-default">auth.uid()</td><td>Links to auth.users</td></tr>
+        <tr><td class="col-name">display_name</td><td class="col-type">text</td><td class="col-default">—</td><td>Full name shown on profile</td></tr>
+        <tr><td class="col-name">handle</td><td class="col-type">text</td><td class="col-default">—</td><td>Unique @username</td></tr>
+        <tr><td class="col-name">bio</td><td class="col-type">text</td><td class="col-default">—</td><td>Profile bio text</td></tr>
+        <tr><td class="col-name">avatar</td><td class="col-type">text</td><td class="col-default">—</td><td>Avatar image URL</td></tr>
+        <tr><td class="col-name">subscription_price</td><td class="col-type">integer</td><td class="col-default">—</td><td>CAD cents/month for fans</td></tr>
+        <tr><td class="col-name">is_premium</td><td class="col-type">boolean</td><td class="col-default">false</td><td>Premium status flag</td></tr>
+        <tr><td class="col-name">premium_until</td><td class="col-type">timestamptz</td><td class="col-default">—</td><td>Premium expiry date</td></tr>
+        <tr><td class="col-name">conversation_theme</td><td class="col-type">text</td><td class="col-default">—</td><td>JSON: {bubbleColor, bgTint}</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Account creation time</td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Last profile update</td></tr>
+      </tbody>
+    </table>
+    <div class="rls-box">
+      <h4>🔒 RLS Policy</h4>
+      <p><code>SELECT</code>: Public — anyone can view profiles</p>
+      <p><code>INSERT/UPDATE</code>: Owner only — users can only edit their own profile</p>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div class="table-section">
+    <h2>posts <span class="badge">Feed Posts</span></h2>
+    <table class="schema-table">
+      <thead>
+        <tr><th>Column</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="pk">PK</span></td><td class="col-type">uuid</td><td class="col-default">gen_random_uuid()</td><td>Unique post ID</td></tr>
+        <tr><td class="col-name">user_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id</td></tr>
+        <tr><td class="col-name">content</td><td class="col-type">text</td><td class="col-default">—</td><td>Post text content</td></tr>
+        <tr><td class="col-name">image_url</td><td class="col-type">text</td><td class="col-default">—</td><td>Camera photo URL</td></tr>
+        <tr><td class="col-name">video_url</td><td class="col-type">text</td><td class="col-default">—</td><td>Camera video URL</td></tr>
+        <tr><td class="col-name">font_style</td><td class="col-type">text</td><td class="col-default">—</td><td>Font class name</td></tr>
+        <tr><td class="col-name">font_color</td><td class="col-type">text</td><td class="col-default">—</td><td>Hex color code</td></tr>
+        <tr><td class="col-name">location</td><td class="col-type">text</td><td class="col-default">—</td><td>Geolocation string</td></tr>
+        <tr><td class="col-name">is_locked</td><td class="col-type">boolean</td><td class="col-default">false</td><td>Paywall enabled</td></tr>
+        <tr><td class="col-name">price</td><td class="col-type">integer</td><td class="col-default">—</td><td>CAD cents to unlock</td></tr>
+        <tr><td class="col-name">likes_count</td><td class="col-type">integer</td><td class="col-default">0</td><td>Cached like count</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Post time</td></tr>
+      </tbody>
+    </table>
+    <div class="rls-box">
+      <h4>🔒 RLS Policy</h4>
+      <p><code>SELECT</code>: Public — anyone can view public posts</p>
+      <p><code>INSERT/UPDATE/DELETE</code>: Owner only</p>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="table-section">
+    <h2>messages <span class="badge">Direct Messages</span></h2>
+    <table class="schema-table">
+      <thead>
+        <tr><th>Column</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="pk">PK</span></td><td class="col-type">uuid</td><td class="col-default">gen_random_uuid()</td><td>Message ID</td></tr>
+        <tr><td class="col-name">sender_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id</td></tr>
+        <tr><td class="col-name">receiver_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id</td></tr>
+        <tr><td class="col-name">content</td><td class="col-type">text</td><td class="col-default">—</td><td>Message text</td></tr>
+        <tr><td class="col-name">image_url</td><td class="col-type">text</td><td class="col-default">—</td><td>Camera media URL</td></tr>
+        <tr><td class="col-name">is_read</td><td class="col-type">boolean</td><td class="col-default">false</td><td>Read receipt</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Sent time</td></tr>
+      </tbody>
+    </table>
+    <div class="rls-box">
+      <h4>🔒 RLS Policy</h4>
+      <p><code>SELECT</code>: Participants only — sender or receiver can view</p>
+      <p><code>INSERT</code>: Authenticated users — can send to anyone</p>
+      <p><code>UPDATE/DELETE</code>: Sender only — can only edit/delete own messages</p>
+    </div>
+  </div>
+
+  <!-- CONNECTIONS -->
+  <div class="table-section">
+    <h2>connections <span class="badge">Follows / Connects</span></h2>
+    <table class="schema-table">
+      <thead>
+        <tr><th>Column</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="pk">PK</span></td><td class="col-type">uuid</td><td class="col-default">gen_random_uuid()</td><td>Connection ID</td></tr>
+        <tr><td class="col-name">follower_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id</td></tr>
+        <tr><td class="col-name">following_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Connection time</td></tr>
+      </tbody>
+    </table>
+    <div class="rls-box">
+      <h4>🔒 RLS Policy</h4>
+      <p><code>SELECT</code>: Public — connection counts are public</p>
+      <p><code>INSERT/DELETE</code>: Authenticated — users manage own connections</p>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="table-section">
+    <h2>notifications <span class="badge">User Notifications</span></h2>
+    <table class="schema-table">
+      <thead>
+        <tr><th>Column</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="pk">PK</span></td><td class="col-type">uuid</td><td class="col-default">gen_random_uuid()</td><td>Notification ID</td></tr>
+        <tr><td class="col-name">user_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id (recipient)</td></tr>
+        <tr><td class="col-name">type</td><td class="col-type">text</td><td class="col-default">—</td><td>like, comment, follow, message, mention</td></tr>
+        <tr><td class="col-name">actor_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id (who triggered)</td></tr>
+        <tr><td class="col-name">reference_id</td><td class="col-type">uuid</td><td class="col-default">—</td><td>Post/message ID reference</td></tr>
+        <tr><td class="col-name">message</td><td class="col-type">text</td><td class="col-default">—</td><td>Human-readable text</td></tr>
+        <tr><td class="col-name">is_read</td><td class="col-type">boolean</td><td class="col-default">false</td><td>Read status</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Notification time</td></tr>
+      </tbody>
+    </table>
+    <div class="rls-box">
+      <h4>🔒 RLS Policy</h4>
+      <p><code>SELECT</code>: Owner only — users see only their own notifications</p>
+      <p><code>INSERT</code>: Authenticated — anyone can trigger notifications</p>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTIONS -->
+  <div class="table-section">
+    <h2>premium_subscriptions <span class="badge">Premium Billing</span></h2>
+    <table class="schema-table">
+      <thead>
+        <tr><th>Column</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="pk">PK</span></td><td class="col-type">uuid</td><td class="col-default">gen_random_uuid()</td><td>Subscription ID</td></tr>
+        <tr><td class="col-name">user_id <span class="fk">FK</span></td><td class="col-type">uuid</td><td class="col-default">—</td><td>→ profiles.id</td></tr>
+        <tr><td class="col-name">paypal_order_id</td><td class="col-type">text</td><td class="col-default">—</td><td>PayPal transaction ref</td></tr>
+        <tr><td class="col-name">amount</td><td class="col-type">integer</td><td class="col-default">—</td><td>CAD cents charged</td></tr>
+        <tr><td class="col-name">status</td><td class="col-type">text</td><td class="col-default">'active'</td><td>active, cancelled, expired</td></tr>
+        <tr><td class="col-name">trial_start</td><td class="col-type">timestamptz</td><td class="col-default">—</td><td>7-day trial start</td></tr>
+        <tr><td class="col-name">started_at</td><td class="col-type">timestamptz</td><td class="col-default">now()</td><td>Subscription start</td></tr>
+        <tr><td class="col-name">expires_at</td><td class="col-type">timestamptz</td><td class="col-default">—</td><td>Next billing date</td></tr>
+      </tbody>
+    </table>
+    <div class="rls-box">
+      <h4>🔒 RLS Policy</h4>
+      <p><code>SELECT</code>: Owner only — users see only own subscriptions</p>
+      <p><code>INSERT</code>: Service role / PayPal webhook only</p>
+    </div>
+  </div>
+
+  <!-- RELATIONSHIPS -->
+  <div class="table-section">
+    <h2>Relationships <span class="badge">Diagram</span></h2>
+    <div class="rel-diagram">
+      <div class="rel-table">
+        <h4>auth.users</h4>
+        <ul>
+          <li class="pk">id (PK)</li>
+          <li>email</li>
+          <li>user_metadata</li>
+        </ul>
+      </div>
+      <span class="rel-arrow">→</span>
+      <div class="rel-table">
+        <h4>profiles</h4>
+        <ul>
+          <li class="pk">id (PK, FK→auth.users)</li>
+          <li>display_name</li>
+          <li>handle</li>
+          <li>is_premium</li>
+        </ul>
+      </div>
+      <br><br>
+      <div class="rel-table">
+        <h4>profiles</h4>
+        <ul>
+          <li class="pk">id (PK)</li>
+        </ul>
+      </div>
+      <span class="rel-arrow">→</span>
+      <div class="rel-table">
+        <h4>posts</h4>
+        <ul>
+          <li class="pk">id (PK)</li>
+          <li class="fk">user_id (FK→profiles)</li>
+          <li>content, image_url</li>
+        </ul>
+      </div>
+      <br><br>
+      <div class="rel-table">
+        <h4>profiles (sender)</h4>
+        <ul>
+          <li class="pk">id</li>
+        </ul>
+      </div>
+      <span class="rel-arrow">↔</span>
+      <div class="rel-table">
+        <h4>messages</h4>
+        <ul>
+          <li class="pk">id (PK)</li>
+          <li class="fk">sender_id</li>
+          <li class="fk">receiver_id</li>
+        </ul>
+      </div>
+      <span class="rel-arrow">↔</span>
+      <div class="rel-table">
+        <h4>profiles (receiver)</h4>
+        <ul>
+          <li class="pk">id</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>📡 Realtime:</strong> Enabled on <code>messages</code>, <code>notifications</code>, and <code>posts</code> tables for live updates.
+    <br><strong>🔐 Auth:</strong> All tables use Row Level Security (RLS). Users can only access their own data unless explicitly public.
+    <br><strong>💾 Storage:</strong> Supabase Storage buckets for profile photos, post media, and profile songs.
+  </div>
+</div>
+<footer>
+  <a href="index.html">Back to App</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="purchase-terms.html">Terms of Purchase</a><br><br>
+  © 2026 Kendal Symes. All rights reserved.
+</footer>
+</body>
+</html>

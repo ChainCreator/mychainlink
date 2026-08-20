@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Site Map — My Chain Link</title>
+<meta name="theme-color" content="#0F0F0F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Figtree:wght@300..600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0F0F;--surf:#171614;--line:#272522;
+  --gold:#FFD700;--gold-hi:#F2DFA0;--gold-deep:#C9A243;
+  --ink:#FFFFFF;--ink-2:#E0E0E0;--ink-3:#B0B0B0;--ink-4:#5C5C5C;
+  --green:#4ADE80;
+  --font-d:'Fraunces',Georgia,serif;--font-b:'Figtree',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  font-family:var(--font-b);font-size:15px;line-height:1.6;color:var(--ink-2);
+  background:var(--bg);min-height:100vh;
+}
+header{
+  padding:24px 20px 16px;text-align:center;border-bottom:1px solid var(--line);
+}
+header h1{
+  font-family:var(--font-d);font-size:28px;color:var(--gold);letter-spacing:-0.02em;
+}
+header p{color:var(--ink-3);font-size:14px;margin-top:4px}
+.container{max-width:800px;margin:0 auto;padding:32px 20px 60px}
+.back-link{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:999px;border:1px solid var(--line);
+  color:var(--ink-3);font-size:14px;margin-bottom:24px;transition:all .2s;
+}
+.back-link:hover{border-color:var(--gold);color:var(--gold);text-decoration:none}
+
+.page-section{margin:32px 0}
+.page-section h2{
+  font-family:var(--font-d);font-size:20px;color:var(--gold);margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.page-section h2 .badge{
+  font-size:11px;background:rgba(230,201,106,.15);color:var(--gold);
+  padding:4px 10px;border-radius:999px;font-family:var(--font-b);font-weight:600;
+}
+
+.page-card{
+  background:var(--surf);border:1px solid var(--line);border-radius:12px;
+  padding:16px 20px;margin-bottom:12px;
+}
+.page-card h3{font-size:16px;color:var(--ink);margin-bottom:6px}
+.page-card p{font-size:14px;color:var(--ink-3);margin-bottom:8px}
+.page-card .url{
+  font-family:'SF Mono',monospace;font-size:12px;color:var(--gold);background:rgba(230,201,106,.08);
+  padding:4px 10px;border-radius:6px;display:inline-block;
+}
+.page-card .meta{
+  display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;
+}
+.page-card .meta span{
+  font-size:12px;color:var(--ink-4);background:var(--bg);
+  padding:4px 10px;border-radius:6px;
+}
+
+.flow-diagram{
+  background:var(--surf);border:1px solid var(--line);border-radius:16px;
+  padding:24px;margin:24px 0;
+}
+.flow-step{
+  display:flex;align-items:center;gap:16px;margin-bottom:16px;
+}
+.flow-step:last-child{margin-bottom:0}
+.flow-step .num{
+  width:32px;height:32px;border-radius:50%;background:var(--gold);color:#000;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;
+  flex-shrink:0;
+}
+.flow-step .content{flex:1}
+.flow-step .content h4{font-size:15px;color:var(--ink);margin-bottom:2px}
+.flow-step .content p{font-size:13px;color:var(--ink-3)}
+.flow-arrow{
+  text-align:center;color:var(--gold);font-size:20px;margin:8px 0;
+}
+
+.tree{
+  margin:16px 0;padding-left:20px;border-left:2px solid var(--line);
+}
+.tree-item{
+  margin-bottom:12px;padding-left:16px;position:relative;
+}
+.tree-item::before{
+  content:'';position:absolute;left:-20px;top:10px;width:12px;height:2px;background:var(--line);
+}
+.tree-item h4{font-size:14px;color:var(--ink);margin-bottom:4px}
+.tree-item p{font-size:13px;color:var(--ink-3)}
+
+footer{
+  text-align:center;padding:32px 20px;border-top:1px solid var(--line);
+  color:var(--ink-4);font-size:13px;
+}
+footer a{color:var(--ink-3);margin:0 12px}
+footer a:hover{color:var(--gold)}
+
+@media(max-width:600px){
+  .flow-step{flex-direction:column;align-items:flex-start;gap:8px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .page-card{background:#f5f5f5;border-color:#ccc}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>My Chain Link</h1>
+  <p>Complete Site Map & User Flow</p>
+</header>
+<div class="container">
+  <a href="index.html" class="back-link">← Back to My Chain Link</a>
+
+  <!-- USER FLOW -->
+  <div class="page-section">
+    <h2>User Journey <span class="badge">Flow</span></h2>
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div class="num">1</div>
+        <div class="content">
+          <h4>Landing Page</h4>
+          <p>New visitors see logo, tagline, quote, and auth buttons</p>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step">
+        <div class="num">2</div>
+        <div class="content">
+          <h4>Authentication</h4>
+          <p>Create account, log in, or use saved accounts on dedicated login page</p>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step">
+        <div class="num">3</div>
+        <div class="content">
+          <h4>Onboarding Tutorial</h4>
+          <p>7-step visual guide for first-time users (dismissable)</p>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step">
+        <div class="num">4</div>
+        <div class="content">
+          <h4>Main Feed (Default)</h4>
+          <p>Public posts from all users. Post creator for logged-in users.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div class="page-section">
+    <h2>Pages <span class="badge">13 Total</span></h2>
+
+    <div class="page-card">
+      <h3>🏠 Landing Page</h3>
+      <p>First impression. Logo, tagline, inspirational quote, create account / login buttons.</p>
+      <span class="url">index.html #landing-page</span>
+      <div class="meta"><span>Public</span><span>No auth required</span><span>Default entry</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>🔐 Authentication Overlay</h3>
+      <p>Create account or log in. First/last name, email, password, security questions, Google/Facebook OAuth.</p>
+      <span class="url">index.html #auth-page</span>
+      <div class="meta"><span>Public</span><span>Overlay</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>🔑 Dedicated Login Page</h3>
+      <p>Saved accounts, quick switch between users, password reset flow.</p>
+      <span class="url">login.html</span>
+      <div class="meta"><span>Public</span><span>Standalone</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>📰 Main Feed</h3>
+      <p>Public posts from all users. Camera-only post creator. Auth banner for logged-out visitors.</p>
+      <span class="url">index.html #pg-main</span>
+      <div class="meta"><span>Public feed</span><span>Auth banner</span><span>Post creator</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>🔍 Explore / People</h3>
+      <p>Search and discover users by name, handle, or email. Connect with new people.</p>
+      <span class="url">index.html #pg-people</span>
+      <div class="meta"><span>Search</span><span>Discovery</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>📸 Camera</h3>
+      <p>Camera-only capture for posts. Photo, video, location, font picker, color picker. Premium color lock.</p>
+      <span class="url">index.html #pg-cam</span>
+      <div class="meta"><span>Camera only</span><span>No gallery</span><span>Creator tool</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>💬 Messages</h3>
+      <p>Direct messaging. Conversation list, thread view, camera DMs (premium), video call button.</p>
+      <span class="url">index.html #pg-messages</span>
+      <div class="meta"><span>Real-time</span><span>Supabase</span><span>Video calls</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>👤 Profile</h3>
+      <p>User profile with posts, stats, profile song, edit profile, subscription price (premium), go live.</p>
+      <span class="url">index.html #pg-profile</span>
+      <div class="meta"><span>Posts</span><span>Stats</span><span>Premium features</span></div>
+    </div>
+
+    <div class="page-card">
+      <h3>⚙️ Settings</h3>
+      <p>Account settings, security (PIN, password), premium upgrade, legal links, delete account.</p>
+      <span class="url">index.html #pg-settings</span>
+      <div class="meta"><span>Security</span><span>Legal</span><span>Account mgmt</span></div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div class="page-section">
+    <h2>Modals & Overlays <span class="badge">10+</span></h2>
+    <div class="tree">
+      <div class="tree-item">
+        <h4>Premium Upgrade Modal (#m-premium)</h4>
+        <p>x.com-style full-page overlay. Monthly/annual toggle, pricing, PayPal checkout, free trial.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Edit Profile Modal (#m-edit)</h4>
+        <p>Name, handle, bio, profile photo (camera), subscription price, profile song, conversation theme.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Tutorial Modal (#m-tut)</h4>
+        <p>7-slide onboarding with visual mockups, step counter, skip option.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Theme Preview Modal (#m-theme-preview)</h4>
+        <p>Mock chat conversation with color picker for bubble/background preview. Go Premium CTA.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Delete Account Modal (#m-del)</h4>
+        <p>TYPE "DELETE" confirmation. Irreversible.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Video Call Overlay (#call-o)</h4>
+        <p>WebRTC 1-on-1 video calls. Local + remote video, end call button.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Live Stream Overlay (#live-o)</h4>
+        <p>Go Live interface. Viewer count, live chat, end stream button.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Lightbox (#lb)</h4>
+        <p>Full-screen image viewer for post photos.</p>
+      </div>
+      <div class="tree-item">
+        <h4>Crop Modal (#m-crop)</h4>
+        <p>Photo cropping tool before posting.</p>
+      </div>
+      <div class="tree-item">
+        <h4>PayPal Checkout Modal (#m-pp-checkout)</h4>
+        <p>Support creator with custom amount. PayPal integration.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGAL -->
+  <div class="page-section">
+    <h2>Legal Pages <span class="badge">3</span></h2>
+    <div class="page-card">
+      <h3>📋 Terms of Service</h3>
+      <p>User agreement, acceptable use, content policies, termination, Canadian law (BC).</p>
+      <span class="url">terms.html</span>
+    </div>
+    <div class="page-card">
+      <h3>🔒 Privacy Policy</h3>
+      <p>Data collection, usage, storage, cookies, third parties, user rights, contact.</p>
+      <span class="url">privacy.html</span>
+    </div>
+    <div class="page-card">
+      <h3>💳 Terms of Purchase</h3>
+      <p>Subscription terms, billing, free trial, cancellation, refunds, creator revenue, arbitration.</p>
+      <span class="url">purchase-terms.html</span>
+    </div>
+  </div>
+
+  <!-- DOWNLOADABLES -->
+  <div class="page-section">
+    <h2>Reference Documents <span class="badge">3</span></h2>
+    <div class="page-card">
+      <h3>📊 Feature Comparison</h3>
+      <p>Free vs Premium side-by-side table. All features categorized.</p>
+      <span class="url">feature-comparison.html</span>
+    </div>
+    <div class="page-card">
+      <h3>🗄️ Database Schema</h3>
+      <p>Supabase tables, columns, RLS policies, relationships.</p>
+      <span class="url">database-schema.html</span>
+    </div>
+    <div class="page-card">
+      <h3>🗺️ Site Map (this page)</h3>
+      <p>Complete page structure, user flows, modals.</p>
+      <span class="url">site-map.html</span>
+    </div>
+  </div>
+</div>
+<footer>
+  <a href="index.html">Back to App</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="purchase-terms.html">Terms of Purchase</a><br><br>
+  © 2026 Kendal Symes. All rights reserved.
+</footer>
+</body>
+</html>

@@ -868,9 +868,10 @@ var hasSession=sessionStorage.getItem('cl_active_session')==='1';
 var justLoggedIn=location.search.indexOf('login=1')>-1;
 var justLoggedInFlag=sessionStorage.getItem('cl_just_logged_in')==='1';
 if(hasUser||(justLoggedIn||justLoggedInFlag)){
-  var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
-  var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}
-  var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
+  // Inject CSS early to hide landing/auth pages before they render
+  var s=document.createElement('style');
+  s.textContent='#landing-page,#auth-page,#login-page{display:none!important}';
+  document.head.appendChild(s);
   sessionStorage.setItem('cl_active_session','1');
   sessionStorage.removeItem('cl_just_logged_in');
 } else if(hasUser&&!stayLoggedIn&&!hasSession&&!justLoggedIn&&!justLoggedInFlag){
@@ -1198,8 +1199,14 @@ window.showAuth = function(tab) {
     <div class="landing-lead">
       <p class="lead-eyebrow"><span></span>Authentic connections only · Camera captures only</p>
       <h1 class="lead-h">Get connected.<br><em>Stay</em> connected.</h1>
-      <p class="lead-sub">Your content. Your price. <strong style="color:var(--gold)">You're worth it.</strong></p>
     </div>
+
+    <figure class="landing-quote" id="landing-quote">
+      <blockquote id="lq-text">The best way to predict the future is to create it.</blockquote>
+      <figcaption id="lq-auth">Peter Drucker</figcaption>
+    </figure>
+
+    <p class="landing-tagline">Your content. Your price. <strong style="color:var(--gold)">You're worth it.</strong></p>
 
     <div class="landing-actions">
       <button class="btn btn-primary btn-lg" onclick="showAuth('up')">
@@ -1208,11 +1215,6 @@ window.showAuth = function(tab) {
       </button>
       <button class="btn btn-outline btn-lg" onclick="location.href='login.html'">I am connected</button>
     </div>
-
-    <figure class="landing-quote">
-      <blockquote id="lq-text">The best way to predict the future is to create it.</blockquote>
-      <figcaption id="lq-auth">Peter Drucker</figcaption>
-    </figure>
 
   </div>
   <div class="landing-foot">Built in Canada · © <span style="color:#fff">My </span><span style="color:#FFD700">Chain</span><span style="color:#fff"> Link</span> 2026 · Kendal Symes<br><a href="privacy.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Privacy</a>·<a href="terms.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Terms</a>·<a href="#" onclick="showAbout();return false" style="color:var(--gold);text-decoration:none;margin:0 6px">About</a></div>
@@ -1238,9 +1240,10 @@ window.showAuth = function(tab) {
 }
 .landing-content>*{animation:rise .85s var(--ease-out) both}
 .landing-logo{animation-delay:.05s}
-.landing-lead{animation-delay:.16s}
-.landing-actions{animation-delay:.28s}
-.landing-quote{animation-delay:.4s}
+.landing-lead{animation-delay:.12s}
+.landing-quote{animation-delay:.22s}
+.landing-tagline{animation-delay:.32s}
+.landing-actions{animation-delay:.42s}
 
 .landing-logo{margin-bottom:34px;padding-left:12px;text-align:center}
 .landing-logo img{
@@ -1280,22 +1283,31 @@ window.showAuth = function(tab) {
   max-width:37ch;margin-bottom:38px;font-weight:700;
 }
 
-.landing-actions{display:flex;flex-direction:column;gap:11px;margin-bottom:40px}
+.landing-tagline{
+  font-size:clamp(20px,4.8vw,26px);line-height:1.5;
+  color:var(--ink-2);font-weight:700;text-align:center;
+  margin:10px 0 28px;letter-spacing:-0.01em;
+}
+
+.landing-actions{display:flex;flex-direction:column;gap:11px;margin-bottom:28px}
 .landing-actions .btn{width:100%}
 
 .landing-quote{
-  position:relative;max-width:39ch;padding:22px 24px 20px 54px;overflow:hidden;
+  position:relative;max-width:42ch;padding:18px 22px 16px 48px;overflow:hidden;
   border:1px solid var(--gold-edge);border-radius:var(--r-lg);
   background:linear-gradient(135deg,rgba(230,201,106,.11),rgba(23,22,20,.72) 58%);
   box-shadow:inset 0 1px 0 rgba(242,223,160,.08),0 18px 45px -30px rgba(230,201,106,.65);
+  margin-bottom:0;transition:opacity .4s var(--ease);
 }
+.landing-quote.fade-out{opacity:.2}
+.landing-quote.fade-in{opacity:1}
 .landing-quote::before{
-  content:'\201C';position:absolute;left:17px;top:8px;
-  font-family:var(--font-d);font-size:58px;font-weight:700;line-height:1;color:var(--gold);
+  content:'\201C';position:absolute;left:14px;top:4px;
+  font-family:var(--font-d);font-size:48px;font-weight:700;line-height:1;color:var(--gold);
 }
 .landing-quote blockquote{
-  font-family:var(--font-b);font-style:normal;font-size:18px;line-height:1.48;
-  font-weight:500;color:var(--ink);margin-bottom:12px;
+  font-family:var(--font-b);font-style:normal;font-size:16.5px;line-height:1.45;
+  font-weight:500;color:var(--ink);margin-bottom:8px;
 }
 .landing-quote figcaption{
   font-size:10.5px;color:var(--gold-deep);font-weight:800;
@@ -1314,7 +1326,7 @@ window.showAuth = function(tab) {
   .landing-logo{text-align:center}
   .landing-foot{padding:0 64px;margin:44px auto 0;max-width:620px;text-align:center}
   .lead-h{font-size:62px}
-  .lead-sub{font-size:20px;max-width:44ch;margin-left:auto;margin-right:auto}
+  .landing-tagline{font-size:24px;max-width:50ch;margin-left:auto;margin-right:auto}
   .landing-actions{flex-direction:row;max-width:460px;margin-left:auto;margin-right:auto}
   .landing-actions .btn{width:auto;flex:1}
   .landing-quote{margin-left:auto;margin-right:auto}
@@ -1322,8 +1334,8 @@ window.showAuth = function(tab) {
 @media(max-height:680px){
   .landing-content{padding-top:34px}
   .landing-logo{margin-bottom:22px}
-  .lead-sub{margin-bottom:26px}
-  .landing-actions{margin-bottom:26px}
+  .landing-tagline{margin:6px 0 18px}
+  .landing-actions{margin-bottom:18px}
   .landing-quote{display:none}
 }
 </style>
@@ -1919,6 +1931,30 @@ window.showAuth = function(tab) {
         <li><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg> Custom conversation themes</li>
         <li><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg> Free preview of all premium features</li>
       </ul>
+      <div style="margin:24px 0;padding:16px;background:rgba(230,201,106,.06);border:1px solid rgba(230,201,106,.15);border-radius:12px">
+        <h4 style="font-family:var(--font-d);font-size:16px;color:var(--gold);margin-bottom:12px;text-align:center">Free vs Premium</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="border-bottom:1px solid var(--line)">
+              <th style="text-align:left;padding:8px 6px;color:var(--ink-3);font-weight:600">Feature</th>
+              <th style="text-align:center;padding:8px 6px;color:var(--ink-3);font-weight:600;width:60px">Free</th>
+              <th style="text-align:center;padding:8px 6px;color:var(--gold);font-weight:600;width:60px">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Post to feed</td><td style="text-align:center;color:var(--green)">✓</td><td style="text-align:center;color:var(--green)">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Direct messaging</td><td style="text-align:center;color:var(--green)">✓</td><td style="text-align:center;color:var(--green)">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Search & connect</td><td style="text-align:center;color:var(--green)">✓</td><td style="text-align:center;color:var(--green)">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Lock content / set price</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Colored fonts</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Go Live</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Camera DMs</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Video chat</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(39,37,34,.5)"><td style="padding:7px 6px;color:var(--ink-2)">Profile songs</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+            <tr><td style="padding:7px 6px;color:var(--ink-2)">Custom themes</td><td style="text-align:center;color:var(--ink-4)">—</td><td style="text-align:center;color:var(--gold);font-weight:700">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
       <div id="premium-paypal-container"></div>
       <button class="pm-cta" id="pm-subscribe-btn" onclick="startPayPalCheckout()">Subscribe & Pay</button>
       <p class="pm-terms">
@@ -2114,8 +2150,13 @@ var quotes=[
   {t:"Happiness is not something ready made. It comes from your own actions.",a:"Dalai Lama"}
 ];
 var qi=0;
-function rotateQuotes(){qi=(qi+1)%quotes.length;['quote-text','lq-text'].forEach(function(id){var el=$(id);if(el)el.textContent=quotes[qi].t});['quote-auth','lq-auth'].forEach(function(id){var el=$(id);if(el)el.textContent=quotes[qi].a})}
-setInterval(rotateQuotes,5000);
+function rotateQuotes(){
+  var qel=$('landing-quote');
+  function swap(){qi=(qi+1)%quotes.length;['quote-text','lq-text'].forEach(function(id){var el=$(id);if(el)el.textContent=quotes[qi].t});['quote-auth','lq-auth'].forEach(function(id){var el=$(id);if(el)el.textContent=quotes[qi].a})}
+  if(qel){qel.style.opacity='0.15';setTimeout(function(){swap();qel.style.opacity='1'},350)}
+  else{swap()}
+}
+setInterval(rotateQuotes,3500);
 
 // ==================== UTILS ====================
 function $(id){return document.getElementById(id)}

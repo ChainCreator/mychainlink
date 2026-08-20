@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Feature Comparison — My Chain Link</title>
+<meta name="theme-color" content="#0F0F0F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Figtree:wght@300..600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0F0F;--surf:#171614;--line:#272522;
+  --gold:#FFD700;--gold-hi:#F2DFA0;--gold-deep:#C9A243;
+  --ink:#FFFFFF;--ink-2:#E0E0E0;--ink-3:#B0B0B0;--ink-4:#5C5C5C;
+  --green:#4ADE80;--red:#FF6B6B;
+  --font-d:'Fraunces',Georgia,serif;--font-b:'Figtree',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  font-family:var(--font-b);font-size:15px;line-height:1.6;color:var(--ink-2);
+  background:var(--bg);min-height:100vh;
+}
+header{
+  padding:24px 20px 16px;text-align:center;border-bottom:1px solid var(--line);
+}
+header h1{
+  font-family:var(--font-d);font-size:28px;color:var(--gold);letter-spacing:-0.02em;
+}
+header p{color:var(--ink-3);font-size:14px;margin-top:4px}
+.container{max-width:800px;margin:0 auto;padding:32px 20px 60px}
+.back-link{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:999px;border:1px solid var(--line);
+  color:var(--ink-3);font-size:14px;margin-bottom:24px;transition:all .2s;
+}
+.back-link:hover{border-color:var(--gold);color:var(--gold);text-decoration:none}
+
+.comparison-table{
+  width:100%;border-collapse:collapse;margin:24px 0;
+  background:var(--surf);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+}
+.comparison-table th{
+  background:linear-gradient(135deg,rgba(230,201,106,.12),rgba(23,22,20,.9));
+  color:var(--gold);font-family:var(--font-d);font-size:15px;font-weight:700;
+  padding:16px 14px;text-align:left;border-bottom:1px solid var(--line);
+}
+.comparison-table td{
+  padding:14px;border-bottom:1px solid var(--line);color:var(--ink-2);font-size:14px;
+}
+.comparison-table tr:last-child td{border-bottom:none}
+.comparison-table .feature{font-weight:600;color:var(--ink)}
+.comparison-table .yes{color:var(--green);font-weight:700}
+.comparison-table .no{color:var(--red);font-weight:600}
+.comparison-table .premium-row{background:rgba(230,201,106,.04)}
+.comparison-table .category{
+  background:var(--bg);color:var(--gold);font-weight:700;font-size:12px;
+  text-transform:uppercase;letter-spacing:.1em;padding:10px 14px;
+}
+
+.price-box{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;
+}
+.price-card{
+  background:var(--surf);border:1px solid var(--line);border-radius:16px;
+  padding:24px;text-align:center;
+}
+.price-card.premium{
+  border-color:rgba(230,201,106,.3);
+  background:linear-gradient(135deg,rgba(230,201,106,.08),rgba(23,22,20,.9));
+}
+.price-card h3{font-family:var(--font-d);font-size:18px;margin-bottom:8px}
+.price-card.premium h3{color:var(--gold)}
+.price-card .price{font-size:32px;font-weight:800;color:var(--ink);margin:8px 0}
+.price-card.premium .price{color:var(--gold)}
+.price-card .price span{font-size:14px;color:var(--ink-3);font-weight:400}
+
+.note{
+  background:var(--surf);border:1px solid var(--line);border-radius:12px;
+  padding:16px 20px;margin:24px 0;font-size:14px;color:var(--ink-3);
+}
+.note strong{color:var(--gold)}
+
+footer{
+  text-align:center;padding:32px 20px;border-top:1px solid var(--line);
+  color:var(--ink-4);font-size:13px;
+}
+footer a{color:var(--ink-3);margin:0 12px}
+footer a:hover{color:var(--gold)}
+
+@media(max-width:600px){
+  .price-box{grid-template-columns:1fr}
+  .comparison-table th,.comparison-table td{padding:10px 8px;font-size:13px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .comparison-table{background:#fff;border-color:#ccc}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>My Chain Link</h1>
+  <p>Free vs Premium — Feature Comparison</p>
+</header>
+<div class="container">
+  <a href="index.html" class="back-link">← Back to My Chain Link</a>
+
+  <div class="price-box">
+    <div class="price-card">
+      <h3>Free</h3>
+      <div class="price">$0<span>/forever</span></div>
+      <p style="color:var(--ink-3);font-size:14px">Join the Chain. Connect. Post. Message.</p>
+    </div>
+    <div class="price-card premium">
+      <h3>Premium</h3>
+      <div class="price">$10.99<span>/month</span></div>
+      <p style="color:var(--gold);font-size:14px">Unlock your full creator potential</p>
+    </div>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th style="text-align:center;width:100px">Free</th>
+        <th style="text-align:center;width:100px">Premium</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="category" colspan="3">Core Social</td></tr>
+      <tr><td class="feature">Create account & profile</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Post to public feed</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Direct messaging</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Search & discover users</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Connect with other users</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Edit profile (name, bio, photo)</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Camera-only post creation</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+
+      <tr><td class="category" colspan="3">Monetization</td></tr>
+      <tr class="premium-row"><td class="feature">Set subscription price for fans</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Lock content behind paywall</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Receive fan payments (PayPal)</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Keep 100% of creator revenue</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+
+      <tr><td class="category" colspan="3">Content & Customization</td></tr>
+      <tr><td class="feature">Colored fonts for posts</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Profile songs</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Custom conversation themes</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Verification badge</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+
+      <tr><td class="category" colspan="3">Communication</td></tr>
+      <tr><td class="feature">Text messaging</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Send camera media in DMs</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Video chat (1-on-1 calls)</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+
+      <tr><td class="category" colspan="3">Live Streaming</td></tr>
+      <tr class="premium-row"><td class="feature">Go Live to connections</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">Live chat during streams</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+
+      <tr><td class="category" colspan="3">Account</td></tr>
+      <tr><td class="feature">Two-step PIN security</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Password change</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr><td class="feature">Account deletion</td><td class="yes" style="text-align:center">✓</td><td class="yes" style="text-align:center">✓</td></tr>
+      <tr class="premium-row"><td class="feature">7-day free trial</td><td class="no" style="text-align:center">—</td><td class="yes" style="text-align:center">✓</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>💡 Note:</strong> Premium subscriptions are billed through PayPal at <strong>CAD $10.99/month</strong>.
+    You can cancel anytime in your PayPal account. The annual plan is coming soon.
+    All prices are in Canadian dollars (CAD).
+  </div>
+</div>
+<footer>
+  <a href="index.html">Back to App</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="purchase-terms.html">Terms of Purchase</a><br><br>
+  © 2026 Kendal Symes. All rights reserved.
+</footer>
+</body>
+</html>
