@@ -286,38 +286,30 @@ CREATE TRIGGER on_auth_user_created
 -- Enable realtime for messages table
 ALTER TABLE messages REPLICA IDENTITY FULL;
 
--- Add messages table to realtime publication
-BEGIN;
-  -- Remove if already exists to avoid errors
-  DELETE FROM pg_publication_tables 
-  WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'messages';
+-- Add tables to realtime publication (ignore if already exists)
+DO $$
+BEGIN
+  -- Messages
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+  EXCEPTION WHEN duplicate_table THEN
+    NULL;
+  END;
   
-  -- Add messages to realtime
-  ALTER PUBLICATION supabase_realtime ADD TABLE messages;
-EXCEPTION WHEN duplicate_table THEN
-  -- Already added, ignore
-  NULL;
-END;
-
--- Also add conversations to realtime
-BEGIN;
-  DELETE FROM pg_publication_tables 
-  WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'conversations';
+  -- Conversations
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
+  EXCEPTION WHEN duplicate_table THEN
+    NULL;
+  END;
   
-  ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
-EXCEPTION WHEN duplicate_table THEN
-  NULL;
-END;
-
--- Also add notifications to realtime
-BEGIN;
-  DELETE FROM pg_publication_tables 
-  WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'notifications';
-  
-  ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
-EXCEPTION WHEN duplicate_table THEN
-  NULL;
-END;
+  -- Notifications
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+  EXCEPTION WHEN duplicate_table THEN
+    NULL;
+  END;
+END $$;
 
 -- ============================================================
 -- 12. STORAGE BUCKETS (run these in Supabase Storage UI if needed)
