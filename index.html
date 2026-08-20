@@ -230,6 +230,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
 .forgot-form.a{display:block}
 .paypal-row{margin:14px 0;padding:14px;background:var(--bg-soft);border-radius:12px;border:1px dashed var(--line);text-align:center;display:none}
 .paypal-row.show,.paypal-row.show-when-join{display:block}
+/* === PAGE FOOTER ========================================== */
+.page-footer a{transition:color .2s}
+.page-footer a:hover{color:var(--gold)}
 .auth-foot{margin:20px auto 0;text-align:center;font-size:12px;color:var(--ink-4);max-width:400px}
 #sq-display{
   display:none;margin:2px 0 14px;padding:12px;
@@ -864,189 +867,37 @@ var stayLoggedIn=localStorage.getItem('cl_stay_logged_in')!=='false';
 var hasSession=sessionStorage.getItem('cl_active_session')==='1';
 var justLoggedIn=location.search.indexOf('login=1')>-1;
 var justLoggedInFlag=sessionStorage.getItem('cl_just_logged_in')==='1';
+// Always show app — landing page removed, Main is default for everyone
+var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
+var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
 if(hasUser||(justLoggedIn||justLoggedInFlag)){
-  var ap=document.getElementById('auth-page');if(ap){ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0';ap.classList.add('hidden');}
-  var lp=document.getElementById('landing-page');if(lp){lp.style.display='none';lp.classList.add('hidden');}
-  var lgp=document.getElementById('login-page');if(lgp){lgp.style.display='none';lgp.classList.add('hidden');}
   sessionStorage.setItem('cl_active_session','1');
   sessionStorage.removeItem('cl_just_logged_in');
 } else if(hasUser&&!stayLoggedIn&&!hasSession&&!justLoggedIn&&!justLoggedInFlag){
   localStorage.removeItem('cl_user');
 }
 </script>
-<!-- LANDING PAGE INJECTED -->
-
 <!-- AUTH PAGE -->
 
-<!-- LANDING PAGE -->
-<div id="landing-page" class="landing-page">
-  <div class="landing-glow" aria-hidden="true"></div>
-  <div class="landing-content">
-
-    <div class="landing-logo">
-      <img src="logo-v4.png?v=2" alt="My Chain Link">
-    </div>
-
-    <div class="landing-lead">
-      <p class="lead-eyebrow"><span></span>Authentic connections only · Camera captures only</p>
-      <h1 class="lead-h">Get connected.<br><em>Stay</em> connected.</h1>
-      <p class="lead-sub">Your content. Your price. <strong style="color:var(--gold)">You're worth it.</strong></p>
-    </div>
-
-    <div class="landing-actions">
-      <button class="btn btn-primary btn-lg" onclick="showAuth('up')">
-        Create your account
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </button>
-      <button class="btn btn-outline btn-lg" onclick="location.href='login.html'">I already have one</button>
-    </div>
-
-    <figure class="landing-quote">
-      <blockquote id="lq-text">The best way to predict the future is to create it.</blockquote>
-      <figcaption id="lq-auth">Peter Drucker</figcaption>
-    </figure>
-
-  </div>
-  <div class="landing-foot">Built in Canada · © <span style="color:#fff">My </span><span style="color:#FFD700">Chain</span><span style="color:#fff"> Link</span> 2026 · Kendal Symes<br><a href="privacy.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Privacy</a>·<a href="terms.html" style="color:var(--gold);text-decoration:none;margin:0 6px">Terms</a>·<a href="about.html" style="color:var(--gold);text-decoration:none;margin:0 6px">About</a></div>
-</div>
-
 <style>
-/* === LANDING - asymmetric, warm, one ember of gold ============ */
-.landing-page{
-  position:fixed;inset:0;z-index:1000;overflow-y:auto;
-  display:flex;flex-direction:column;justify-content:center;
-  background:var(--bg);transition:opacity .5s var(--ease);
-}
-.landing-page.hidden{opacity:0;pointer-events:none;display:none!important}
 
-/* === DEDICATED LOGIN PAGE ===================== */
-.login-page{
-  position:fixed;inset:0;z-index:1000;overflow-y:auto;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  background:var(--bg);transition:opacity .5s var(--ease);
-}
-.login-page.hidden{opacity:0;pointer-events:none;display:none!important}
-.login-page .auth-logo{margin-bottom:24px}
-.login-page .auth-box{width:100%;max-width:380px;padding:0 20px}
-.login-saved-row{
-  display:flex;align-items:center;gap:12px;padding:12px;
-  background:#1C1C1C;border-radius:12px;margin-bottom:8px;cursor:pointer;
-  transition:background .15s;
-}
-.login-saved-row:hover{background:#252525}
-.login-saved-av{
-  width:40px;height:40px;border-radius:50%;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--gold);color:#000;font-weight:700;font-size:16px;
-}
-.login-saved-av img{width:100%;height:100%;object-fit:cover}
-.login-saved-info{flex:1}
-.login-saved-name{font-weight:700;font-size:15px}
-.login-saved-handle{font-size:13px;color:#888}
-.login-saved-remove{
-  padding:4px 8px;font-size:12px;border-radius:8px;
-  background:transparent;border:1px solid #333;color:#888;cursor:pointer;
-}
-.login-saved-remove:hover{color:#FF6B6B;border-color:#FF6B6B}
-.landing-glow{
-  position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(78% 46% at 14% 6%, rgba(230,201,106,.18), transparent 62%),
-    radial-gradient(64% 42% at 104% 92%, rgba(201,162,67,.11), transparent 64%);
-}
-.landing-content{
-  position:relative;width:100%;max-width:440px;
-  padding:56px 26px 26px;margin:auto;
-}
-.landing-content>*{animation:rise .85s var(--ease-out) both}
-.landing-logo{animation-delay:.05s}
-.landing-lead{animation-delay:.16s}
-.landing-actions{animation-delay:.28s}
-.landing-quote{animation-delay:.4s}
-
-.landing-logo{margin-bottom:34px;padding-left:12px}
-.landing-logo img{
-  width:186px;height:auto;
-  filter:drop-shadow(0 18px 44px rgba(230,201,106,.28));
-  background-color:transparent!important;
-  mix-blend-mode:normal;
-}
-.landing-logo,.auth-logo{
-  background-color:transparent!important;
-  background:none!important;
-  box-shadow:none!important;
-  border:none!important;
-  border-radius:0!important;
-}
-
-.lead-eyebrow{
-  display:flex;align-items:center;gap:9px;
-  font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:16px;
-}
-.lead-eyebrow span{
-  width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;
-  box-shadow:0 0 0 4px rgba(230,201,106,.15);animation:pulse 2.6s ease-in-out infinite;
-}
-.lead-h{
-  font-family:var(--font-d);font-size:clamp(38px,11.5vw,50px);font-weight:750;
-  line-height:1.02;letter-spacing:-0.035em;color:var(--ink);margin-bottom:18px;
-}
-.lead-h em{
-  font-style:italic;font-weight:600;color:var(--gold);
-  background:linear-gradient(100deg,var(--gold-hi),var(--gold-deep));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-}
-.lead-sub{
-  font-size:clamp(18px,4vw,22px);line-height:1.55;color:var(--ink-2);
-  max-width:37ch;margin-bottom:38px;font-weight:700;
-}
-
-.landing-actions{display:flex;flex-direction:column;gap:11px;margin-bottom:40px}
-.landing-actions .btn{width:100%}
-
-.landing-quote{
-  position:relative;max-width:39ch;padding:22px 24px 20px 54px;overflow:hidden;
-  border:1px solid var(--gold-edge);border-radius:var(--r-lg);
-  background:linear-gradient(135deg,rgba(230,201,106,.11),rgba(23,22,20,.72) 58%);
-  box-shadow:inset 0 1px 0 rgba(242,223,160,.08),0 18px 45px -30px rgba(230,201,106,.65);
-}
-.landing-quote::before{
-  content:'\201C';position:absolute;left:17px;top:8px;
-  font-family:var(--font-d);font-size:58px;font-weight:700;line-height:1;color:var(--gold);
-}
-.landing-quote blockquote{
-  font-family:var(--font-b);font-style:normal;font-size:18px;line-height:1.48;
-  font-weight:500;color:var(--ink);margin-bottom:12px;
-}
-.landing-quote figcaption{
-  font-size:10.5px;color:var(--gold-deep);font-weight:800;
-  letter-spacing:.14em;text-transform:uppercase;
-}
-.landing-quote figcaption::before{content:'- ';color:var(--gold)}
-
-.landing-foot{
-  position:relative;padding:26px;text-align:left;max-width:440px;width:100%;
-  font-size:12px;color:var(--ink-4);letter-spacing:.02em;opacity:.7;
-}
 
 @media(min-width:760px){
-  .landing-page{justify-content:center;align-items:center}
-  .landing-content{max-width:620px;padding:0 64px;margin:auto;text-align:center}
-  .landing-logo{text-align:center}
-  .landing-foot{padding:0 64px;margin:44px auto 0;max-width:620px;text-align:center}
-  .lead-h{font-size:62px}
-  .lead-sub{font-size:20px;max-width:44ch;margin-left:auto;margin-right:auto}
-  .landing-actions{flex-direction:row;max-width:460px;margin-left:auto;margin-right:auto}
-  .landing-actions .btn{width:auto;flex:1}
-  .landing-quote{margin-left:auto;margin-right:auto}
+  
+  
+  
+  
+  
+  
+  
+  
 }
 @media(max-height:680px){
-  .landing-content{padding-top:34px}
-  .landing-logo{margin-bottom:22px}
-  .lead-sub{margin-bottom:26px}
-  .landing-actions{margin-bottom:26px}
-  .landing-quote{display:none}
+  
+  
+  
+  
+  
 }
 </style>
 
@@ -1364,69 +1215,29 @@ window.showAuth = function(tab) {
   <div class="notif-drop" id="notif-drop"></div>
 
   <!-- FEED -->
-  <div class="page active" id="pg-feed">
+  <!-- MAIN -->
+  <div class="page active" id="pg-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <h2 style="font-size:21px">Feed</h2>
-      <button class="btn btn-outline btn-sm" onclick="refreshFeed()" style="width:auto;padding:6px 12px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        Refresh
-      </button>
-    </div>
-    <div id="feed-premium-toggle" style="display:none;margin-bottom:12px;padding:8px 12px;background:linear-gradient(135deg,rgba(255,204,0,0.1),rgba(255,215,0,0.05));border:1px solid rgba(255,215,0,0.3);border-radius:12px;align-items:center;justify-content:space-between">
-      <span style="font-size:13px;color:#FFD700">⭐ Premium Network — see all posts</span>
-      <div class="toggle" id="t-feed-premium" style="width:40px;height:24px" onclick="toggleFeedPremium()"><div style="width:18px;height:18px;top:3px;left:3px"></div></div>
-    </div>
-    <div class="creator">
-      <div class="creator-row">
-        <div class="av" id="c-av">?</div>
-        <input type="text" id="pc-t" placeholder="Get connected today...">
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-        <input type="text" id="pc-loc" placeholder="📍 Add location" readonly onclick="getLocation('pc-loc')" title="Tap to get your real location" style="flex:1;background:#2A2A2A;border:1px solid #3A3A3A;border-radius:20px;padding:8px 14px;color:#F0F0F0;font-size:14px;cursor:pointer">
-      </div>
-      <div class="creator-actions">
-        <select class="font-select" id="font-picker" onchange="pickFont(this,this.value)">
-  <option value="font-inter" selected>Normal</option>
-  <option value="font-comic">Comic Sans</option>
-  <option value="font-mono">Monospace</option>
-  <option value="font-hand">Handwriting</option>
-  <option value="font-gothic">Gothic</option>
-  <option value="font-dont">Don't</option>
-</select>
-        <div style="display:flex;gap:4px;align-items:center" id="color-picker">
-          <button class="font-opt" style="background:#DEDAD2" onclick="pickColor(this,'#DEDAD2')" title="Default"></button>
-          <button class="font-opt" style="background:#FFD700" onclick="pickColor(this,'#FFD700')" title="Gold"></button>
-          <button class="font-opt" style="background:#FF6B6B" onclick="pickColor(this,'#FF6B6B')" title="Red"></button>
-          <button class="font-opt" style="background:#6BCB77" onclick="pickColor(this,'#6BCB77')" title="Green"></button>
-          <button class="font-opt" style="background:#4D96FF" onclick="pickColor(this,'#4D96FF')" title="Blue"></button>
-          <button class="font-opt" style="background:#C084FC" onclick="pickColor(this,'#C084FC')" title="Purple"></button>
-        </div>
-        <input type="hidden" id="pc-font" value="font-inter">
-        <input type="hidden" id="pc-color" value="#DEDAD2">
-        <button class="btn btn-gold btn-sm" onclick="openCam()" style="font-weight:700">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Camera
-        </button>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888">
-          <span>Comments</span>
-          <div class="toggle on" id="t-post-cmt" style="width:40px;height:24px" onclick="tPostCmt()"><div style="width:18px;height:18px;top:3px;left:3px"></div></div>
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="cp()">Post</button>
-      </div>
-    </div>
-    <div id="fd"></div>
-  </div>
-
-  <!-- NEWS -->
-  <div class="page" id="pg-news">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <h2 style="font-size:21px">Public News Feed</h2>
+      <h2 style="font-size:21px">Main</h2>
       <button class="btn btn-outline btn-sm" onclick="renderNews()" style="width:auto;padding:6px 12px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         Refresh
       </button>
     </div>
+    <div id="main-auth-banner" style="display:none;margin-bottom:16px;padding:16px;background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,215,0,0.05));border:1px solid rgba(255,215,0,0.3);border-radius:16px;text-align:center">
+      <p style="font-size:15px;color:var(--ink-2);margin-bottom:12px">Join the Chain. Real people. Real connections.</p>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-primary btn-sm" onclick="showAuth('up')">Create Account</button>
+        <button class="btn btn-outline btn-sm" onclick="location.href='login.html'">Sign In</button>
+      </div>
+    </div>
     <div id="news-feed"></div>
+    <div class="page-footer" style="margin-top:32px;padding:20px 0;border-top:1px solid var(--line);text-align:center;font-size:13px;color:var(--ink-4)">
+      <a href="terms.html" style="color:var(--ink-3);margin:0 10px">Terms of Service</a>
+      <a href="privacy.html" style="color:var(--ink-3);margin:0 10px">Privacy Policy</a>
+      <a href="#" onclick="showAbout();return false" style="color:var(--ink-3);margin:0 10px">About</a><br><br>
+      © 2026 Kendal Symes. All rights reserved.
+    </div>
   </div>
 
   <!-- PEOPLE -->
@@ -1437,6 +1248,12 @@ window.showAuth = function(tab) {
       <button id="p-sch-clear" onclick="$('p-sch').value='';renderPeople()" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:19px;cursor:pointer;padding:0;width:24px;height:24px;line-height:24px">×</button>
     </div>
     <div class="p-list" id="ppl-list"></div>
+    <div class="page-footer" style="margin-top:32px;padding:20px 0;border-top:1px solid var(--line);text-align:center;font-size:13px;color:var(--ink-4)">
+      <a href="terms.html" style="color:var(--ink-3);margin:0 10px">Terms of Service</a>
+      <a href="privacy.html" style="color:var(--ink-3);margin:0 10px">Privacy Policy</a>
+      <a href="#" onclick="showAbout();return false" style="color:var(--ink-3);margin:0 10px">About</a><br><br>
+      © 2026 Kendal Symes. All rights reserved.
+    </div>
   </div>
 
   <!-- CAMERA -->
@@ -1620,6 +1437,27 @@ window.showAuth = function(tab) {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14l5-5-5-5m5 5H9"/></svg>
       Sign Out
     </button>
+    <div class="s-group" style="margin-top:24px">
+      <h3>Legal</h3>
+      <a href="terms.html" class="s-item" style="text-decoration:none;display:flex">
+        <span class="sl">Terms of Service</span>
+        <span class="sr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </a>
+      <a href="privacy.html" class="s-item" style="text-decoration:none;display:flex">
+        <span class="sl">Privacy Policy</span>
+        <span class="sr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </a>
+      <div class="s-item" onclick="showAbout()">
+        <span class="sl">About My Chain Link</span>
+        <span class="sr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+      </div>
+    </div>
+    <div class="page-footer" style="margin-top:32px;padding:20px 0;border-top:1px solid var(--line);text-align:center;font-size:13px;color:var(--ink-4)">
+      <a href="terms.html" style="color:var(--ink-3);margin:0 10px">Terms of Service</a>
+      <a href="privacy.html" style="color:var(--ink-3);margin:0 10px">Privacy Policy</a>
+      <a href="#" onclick="showAbout();return false" style="color:var(--ink-3);margin:0 10px">About</a><br><br>
+      © 2026 Kendal Symes. All rights reserved.
+    </div>
   </div>
 
   <!-- COMING SOON (SUBSCRIPTIONS ONLY) -->
@@ -1738,9 +1576,8 @@ window.showAuth = function(tab) {
 
   <!-- BOTTOM NAV -->
   <div class="bnav">
-    <div class="mit a" onclick="navTo('feed')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+    <div class="mit a" onclick="navTo('main')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>Main</div>
     <div class="mit" onclick="navTo('explore')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Explore</div>
-    <div class="mit" onclick="navTo('news')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>News</div>
     <div class="mit" onclick="openCam()" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:26px;height:26px;color:var(--gold)"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span style="color:var(--gold);font-weight:700">Camera</span></div>
     <div class="mit" onclick="navTo('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages<span id="msg-badge" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--gold);border-radius:50%"></span></div>
     <div class="mit" onclick="navTo('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</div>
@@ -2511,8 +2348,7 @@ window.removeLoginSavedAccount=function(id){
 window.toggleStayLoggedIn=function(){};
 window.backToLanding=function(){
   hideLoginPage();
-  var lp=$('landing-page');
-  if(lp){lp.classList.remove('hidden');lp.style.display='block'}
+  navTo('main');
 };
 window.showForgotFromLogin=function(){
   hideLoginPage();
@@ -2772,8 +2608,8 @@ window.addNewAccount=function(){location.href='login.html';showToast('Sign in to
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
 // ==================== APP NAV ====================
-window.showApp=function(){var lp=$('landing-page');if(lp)lp.classList.add('hidden');var ap=$('auth-page');if(ap){ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0'}var lgp=$('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}var ma=$('ma');if(ma)ma.style.display='block';else if($('main-app'))$('main-app').style.display='block';else{var fc=document.querySelector('.feed-container');if(fc)fc.style.display='block'}window.scrollTo(0,0);document.body.style.overflow='';if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderFeed();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()};
-window.checkTrialReminder=function(){if(!cu)return;var trialStart=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(!trialStart||isPaid==='true')return;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));var daysLeft=7-days;if(daysLeft<=0){showToast('Your 7-day trial has ended. Subscribe to keep Premium!');showPremiumModal();return}if(daysLeft<=2){showToast('Your free trial ends in '+daysLeft+' day'+(daysLeft===1?'':'s')+'. Subscribe now to avoid interruption.')}};window.navTo=function(p){var map=['feed','explore','news','cam','messages','profile'];var pageMap={feed:'pg-feed',explore:'pg-people',people:'pg-people',news:'pg-news',cam:'pg-cam',messages:'pg-messages',profile:'pg-profile',settings:'pg-settings',user:'pg-user','coming-soon':'pg-coming-soon'};if(!pageMap[p])return;map.forEach(function(x){var el=document.querySelector('.mit[onclick="navTo(\''+x+'\')"]');if(el)el.classList.remove('a')});var activeBtn=document.querySelector('.mit[onclick="navTo(\''+p+'\')"]');if(activeBtn)activeBtn.classList.add('a');Object.values(pageMap).forEach(function(id){$(id).classList.remove('active')});$(pageMap[p]).classList.add('active');cp=p;if(p==='profile'){renderProfile()}if(p==='news'){renderNews()}if(p==='explore'||p==='people'){var schVal=$('p-sch').value.trim();if(schVal){schPpl(schVal)}else{renderPeople()}}if(p==='messages'){renderMessages();clearMsgBadge();if(window.msgChannel){try{window.msgChannel.unsubscribe()}catch(e){}}window.msgChannel=null;window.currentConvId=null}};
+window.showApp=function(){var ap=$('auth-page');if(ap){ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0'}var lgp=$('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}var ma=$('ma');if(ma)ma.style.display='block';else if($('main-app'))$('main-app').style.display='block';else{var fc=document.querySelector('.feed-container');if(fc)fc.style.display='block'}window.scrollTo(0,0);document.body.style.overflow='';if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderFeed();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');showTut()},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()};
+window.checkTrialReminder=function(){if(!cu)return;var trialStart=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(!trialStart||isPaid==='true')return;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));var daysLeft=7-days;if(daysLeft<=0){showToast('Your 7-day trial has ended. Subscribe to keep Premium!');showPremiumModal();return}if(daysLeft<=2){showToast('Your free trial ends in '+daysLeft+' day'+(daysLeft===1?'':'s')+'. Subscribe now to avoid interruption.')}};window.navTo=function(p){var map=['main','explore','cam','messages','profile'];var pageMap={main:'pg-main',explore:'pg-people',people:'pg-people',cam:'pg-cam',messages:'pg-messages',profile:'pg-profile',settings:'pg-settings',user:'pg-user','coming-soon':'pg-coming-soon'};if(!pageMap[p])return;map.forEach(function(x){var el=document.querySelector('.mit[onclick="navTo(\''+x+'\')"]');if(el)el.classList.remove('a')});var activeBtn=document.querySelector('.mit[onclick="navTo(\''+p+'\')"]');if(activeBtn)activeBtn.classList.add('a');Object.values(pageMap).forEach(function(id){$(id).classList.remove('active')});$(pageMap[p]).classList.add('active');cp=p;if(p==='profile'){renderProfile()}if(p==='main'){renderNews()}if(p==='explore'||p==='people'){var schVal=$('p-sch').value.trim();if(schVal){schPpl(schVal)}else{renderPeople()}}if(p==='messages'){renderMessages();clearMsgBadge();if(window.msgChannel){try{window.msgChannel.unsubscribe()}catch(e){}}window.msgChannel=null;window.currentConvId=null}};
 function goBackFromUser(){if(cp==='people'){navTo('explore')}else{navTo('feed')}}window.goBackFromUser=goBackFromUser;
 
 // ==================== NOTIFICATIONS PULLDOWN ====================
@@ -2781,7 +2617,29 @@ window.dismissUsernameBanner=function(){var banner=$('username-fix-banner');if(b
 window.toggleMenu=function(){$('menu-drop').classList.toggle('on');$('notif-drop').classList.remove('on')};
 window.updateNotifBadge=function(){var unread=notifs.filter(function(n){return!n.read}).length;var dot=$('ni');if(dot)dot.style.display=unread>0?'block':'none'};window.updateMsgBadge=function(){var un=JSON.parse(localStorage.getItem('cl_msg_unread')||'{}');var total=Object.values(un).reduce(function(a,b){return a+b},0);var badge=$('msg-badge');if(badge)badge.style.display=total>0?'block':'none'};window.clearMsgBadge=function(){localStorage.setItem('cl_msg_unread','{}');updateMsgBadge()};
 window.shareApp=function(){var url='https://mychainlink.ca';var txt='Check out My Chain Link — get connected, stay connected.';if(navigator.share){navigator.share({title:'My Chain Link',text:txt,url:url})}else{showToast('Link copied!');if(navigator.clipboard)navigator.clipboard.writeText(url)}};
-window.showAbout=function(){alert('My Chain Link\n\nBuilt in Canada 🇨🇦\n© 2026 Kendal Symes\n\nGet connected. Stay connected.')};
+window.showAbout=function(){
+  var aboutHTML='<div style="text-align:center;padding:20px 0">'+
+    '<div style="font-size:42px;margin-bottom:12px">🔗</div>'+
+    '<h2 style="color:#FFD700;font-family:var(--font-d);font-size:24px;margin-bottom:8px">My Chain Link</h2>'+
+    '<p style="color:#aaa;font-size:15px;margin-bottom:20px">Get connected. Stay connected.</p>'+
+    '<div style="background:#1C1C1C;border-radius:16px;padding:20px;text-align:left;margin-bottom:20px">'+
+    '<p style="font-size:14px;color:#888;margin-bottom:12px"><strong style="color:#fff">Built in Canada 🇨🇦</strong></p>'+
+    '<p style="font-size:14px;color:#888;margin-bottom:12px">Your content. Your price. Real people only. No filters. No gallery uploads.</p>'+
+    '<p style="font-size:14px;color:#888;margin-bottom:0">© 2026 Kendal Symes. All rights reserved.</p>'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;gap:10px">'+
+    '<a href="terms.html" style="display:block;padding:12px 16px;background:#1C1C1C;border-radius:12px;color:#FFD700;text-decoration:none;font-size:14px">Terms of Service →</a>'+
+    '<a href="privacy.html" style="display:block;padding:12px 16px;background:#1C1C1C;border-radius:12px;color:#FFD700;text-decoration:none;font-size:14px">Privacy Policy →</a>'+
+    '<a href="mailto:Kendalchaincreator@proton.me" style="display:block;padding:12px 16px;background:#1C1C1C;border-radius:12px;color:#FFD700;text-decoration:none;font-size:14px">Contact Us →</a>'+
+    '</div>'+
+    '</div>';
+  var modal=document.createElement('div');
+  modal.className='modal-overlay on';
+  modal.style.zIndex='11000';
+  modal.innerHTML='<div class="modal-box" style="max-width:400px">'+aboutHTML+'<div class="modal-row" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" onclick="this.closest('.modal-overlay').remove()">Close</button></div></div>';
+  modal.onclick=function(e){if(e.target===modal)modal.remove()};
+  document.body.appendChild(modal);
+};
 window.showHelp=function(){alert('Need Help?\n\n• Make sure you\'re using the latest version\n• For camera issues: allow camera permissions in your browser\n• For login issues: check your email for the verification link\n• Contact: support@mychainlink.ca')};
 window.switchProfileTab=function(tab){var myPosts=posts.filter(function(p){return p.uid===cu.id});if(tab==='media'){$('tab-posts').classList.remove('active');$('tab-media').classList.add('active');$('p-posts-view').style.display='none';$('p-media-view').style.display='block';var mediaPosts=myPosts.filter(function(p){return p.m});var h='';if(!mediaPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No media yet</div>'}else{h='<div class="pgrid">';mediaPosts.forEach(function(p){h+='<div class="pi" onclick="openLightbox(\''+esc(p.m)+'\','+(p.v?'true':'false')+')">';if(p.v){h+='<video src="'+p.m+'" muted playsInline></video>'}else{h+='<img src="'+p.m+'">'}h+='</div>'});h+='</div>'}$('p-media-view').innerHTML=h}else{$('tab-posts').classList.add('active');$('tab-media').classList.remove('active');$('p-posts-view').style.display='block';$('p-media-view').style.display='none';var h='';if(!myPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No posts yet</div>'}else{myPosts.forEach(function(p){h+=renderPostHTML(p)})}$('p-posts-view').innerHTML=h}};
 window.switchVUTab=function(tab){if(!vu)return;var myPosts=posts.filter(function(p){return p.uid===vu.id||p.wfor===vu.id});if(tab==='media'){$('vu-tab-posts').classList.remove('active');$('vu-tab-media').classList.add('active');$('vu-posts-view').style.display='none';$('vu-media-view').style.display='block';var mediaPosts=myPosts.filter(function(p){return p.m});var h='';if(!mediaPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No media yet</div>'}else{h='<div class="pgrid">';mediaPosts.forEach(function(p){h+='<div class="pi" onclick="openLightbox(\''+esc(p.m)+'\','+(p.v?'true':'false')+')">';if(p.v){h+='<video src="'+p.m+'" muted playsInline></video>'}else{h+='<img src="'+p.m+'">'}h+='</div>'});h+='</div>'}$('vu-media-view').innerHTML=h}else{$('vu-tab-posts').classList.add('active');$('vu-tab-media').classList.remove('active');$('vu-posts-view').style.display='block';$('vu-media-view').style.display='none';var h='';if(!myPosts.length){h='<div style="text-align:center;padding:40px;color:#555">No posts yet</div>'}else{myPosts.forEach(function(p){h+=renderPostHTML(p)})}$('vu-posts-view').innerHTML=h}};
@@ -2794,7 +2652,7 @@ window.renderNotifDrop=function(){loadNotificationsFromSupabase();var d=$('notif
 window.getLocation=function(id){if(!navigator.geolocation){showToast('Location not supported on this device');return}showToast('Getting location...');navigator.geolocation.getCurrentPosition(function(pos){var lat=pos.coords.latitude;var lng=pos.coords.longitude;fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lng+'&localityLanguage=en').then(function(r){return r.json()}).then(function(data){var city=data.city||data.locality||'';var state=data.principalSubdivision||'';var country=data.countryName||'';var locName=city;if(state)locName+=(locName?', ':'')+state;if(country)locName+=(locName?', ':'')+country;$(id).value=locName||lat.toFixed(4)+', '+lng.toFixed(4);showToast('Location set!')}).catch(function(){$(id).value=lat.toFixed(4)+', '+lng.toFixed(4);showToast('Location set!')})},function(err){showToast('Location denied. Check permissions.')},{enableHighAccuracy:true,timeout:10000,maximumAge:0})};window.cp=async function(){if(!cu){showToast('Please sign in first');return}var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';var t=$(prefix+'pc-t').value.trim();if(!t){showToast('Write something first');return}var fontClass=$(prefix+'pc-font').value;var cmtOn=$(prefix+'t-post-cmt').classList.contains('on');var loc=$(prefix+'pc-loc').value.trim();var extractedTags=t.match(/#[a-zA-Z0-9_]+/g);var allTags=extractedTags?extractedTags.map(function(tag){return tag.toLowerCase()}).join(' '):'';var p={id:uid(),uid:cu.id,un:cu.user_metadata&&cu.user_metadata.display_name?cu.user_metadata.display_name:'User',uh:cu.user_metadata&&cu.user_metadata.handle?cu.user_metadata.handle:'@user',ua:cu.user_metadata&&cu.user_metadata.avatar?cu.user_metadata.avatar:'',t:t,fc:fontClass||'font-inter',tc:$(prefix+'pc-color').value||'#DEDAD2',ts:Date.now(),lk:[],dk:[],cm:[],c:cmtOn,subOnly:settings.subOnly,tags:allTags,loc:loc};posts.unshift(p);svp();$(prefix+'pc-t').value='';$(prefix+'pc-loc').value='';renderFeed();switchProfileTab('posts');showToast('Posted!');var mentions=t.match(/@[a-zA-Z0-9_]+/g);if(mentions&&mentions.length){var allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');mentions.forEach(function(m){var handle=m.toLowerCase();var found=allUsersStore.find(function(u){return(u.handle||'').toLowerCase()===handle});if(found&&found.id&&found.id!==cu.id){addNotification('mention',found.id,'mentioned you in a post',p.id)}})}if(sb&&supabaseOnline){try{await sb.from('posts').insert({user_id:cu.id,display_name:p.un,handle:p.uh,avatar_url:p.ua,text:p.t,font_class:p.fc,text_color:p.tc,media_url:p.m||null,is_video:p.v||false,location:p.loc||null,tags:p.tags||null,comments_enabled:p.c,subscribers_only:p.subOnly,likes:p.lk,dislikes:p.dk,comments:p.cm})}catch(e){console.log('Post sync error',e)}}};
 
 window.canListenToMusic=function(profileUserId){if(!cu)return false;if(cu.id===profileUserId)return true;var myPremium=isUserPremium(cu.id);if(myPremium)return true;var isFollowing=follows[profileUserId]&&follows[profileUserId].following;return isFollowing};window.refreshFeed=function(){renderFeed();showToast('Feed refreshed')};window.toggleFeedPremium=function(){var el=$('t-feed-premium');if(!el)return;var isOn=el.classList.contains('on');if(isOn){el.classList.remove('on');localStorage.setItem('cl_feed_show_all','false')}else{el.classList.add('on');localStorage.setItem('cl_feed_show_all','true')}renderFeed()};window.renderPostHTML=function(p){var isMe=cu&&p.uid===cu.id;var isBlocked=blocks.indexOf(p.uid)!==-1;if(isBlocked)return'';var u=getUserData(p.uid);var name=u&&u.name?u.name:(p.un||'User');var h='<div class="post" id="post-'+(p.id||'')+'">';h+='<div class="post-h">';var avatar=p.ua||'';if(!avatar&&u&&u.avatar)avatar=u.avatar;h+='<div class="av" onclick="viewUser('+(p.uid?"'"+p.uid+"'":'')+')">'+(avatar?'<img src="'+avatar+'">':name[0].toUpperCase())+'</div>';h+='<div class="u" style="flex:1"><div class="n" onclick="viewUser('+(p.uid?"'"+p.uid+"'":'')+')">'+esc(name)+'</div><div class="t">'+ago(p.ts)+'</div></div>';if(p.subOnly){h+='<span style="font-size:11px;background:linear-gradient(135deg,#FFCC00,#FFD700);color:#1C1C1C;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0">Subscribers Only</span>'}if(p.loc){h+='<span style="font-size:11px;background:#2A2A2A;color:#888;padding:2px 8px;border-radius:20px;margin-left:6px;flex-shrink:0">📍 '+esc(p.loc)+'</span>'}if(isMe){h+='<div class="post-menu"><div class="post-menu-btn" onclick="togglePostMenu('+(p.id?"'"+p.id+"'":'')+',event)">✏️</div><div class="post-menu-drp" id="pm-'+(p.id||'')+'"><div onclick="editPost('+(p.id?"'"+p.id+"'":'')+')">✏️ Edit</div><div onclick="togglePostComments('+(p.id?"'"+p.id+"'":'')+')">💬 Comments '+(p.c===false?'On':'Off')+'</div><div onclick="sp('+(p.id?"'"+p.id+"'":'')+')">🔗 Share</div><div class="del" onclick="delPost('+(p.id?"'"+p.id+"'":'')+')">Delete</div></div></div>'}h+='</div>';h+='<div class="post-c '+(p.fc||'font-inter')+'" style="color:'+(p.tc||'#DEDAD2')+'">'+linkHashtags(esc(p.t))+'</div>';if(p.m){if(p.v){h+='<video class="post-vid" src="'+p.m+'" controls playsinline></video>'}else{h+='<img class="post-img" src="'+p.m+'" onclick="this.requestFullscreen()">'}}h+='<div class="post-actions">';var liked=cu&&p.lk&&p.lk.indexOf(cu.id)!==-1;var hated=cu&&p.dk&&p.dk.indexOf(cu.id)!==-1;var loved=cu&&p.lv&&p.lv.indexOf(cu.id)!==-1;h+='<div class="pact '+(liked?'on':'')+'" onclick="lk('+(p.id?"'"+p.id+"'":'')+')">👍🏼 <span>'+(p.lk?p.lk.length:0)+'</span></div>';h+='<div class="pact '+(hated?'hate':'')+'" onclick="dk('+(p.id?"'"+p.id+"'":'')+')">👎🏼 <span>'+(p.dk?p.dk.length:0)+'</span></div>';h+='<div class="pact '+(loved?'love':'')+'" onclick="lv('+(p.id?"'"+p.id+"'":'')+')">❤️ <span>'+(p.lv?p.lv.length:0)+'</span></div>';h+='<div class="pact" style="color:var(--gold)" onclick="repost('+(p.id?"'"+p.id+"'":'')+')">🔁</div>';h+='<div class="pact share-c" onclick="sp('+(p.id?"'"+p.id+"'":'')+')">🔗</div>';h+='</div>';if(p.c!==false){h+='<div class="cmt-sect" id="cmts-'+(p.id||'')+'">';if(p.cm&&p.cm.length){h+='<div class="cmt-l">';p.cm.forEach(function(c,idx){var cmtLiked=cu&&c.lk&&c.lk.indexOf(cu.id)!==-1;var cmtHated=cu&&c.dk&&c.dk.indexOf(cu.id)!==-1;h+='<div class="cmt"><div class="av">'+(c.un?c.un[0].toUpperCase():'?')+'</div><div class="b"><div class="n">'+esc(c.un||'User')+'</div><div class="x">'+esc(c.x)+'</div><div class="cmt-react"><span class="'+(cmtLiked?'on':'')+'" onclick="lkCmt('+(p.id?"'"+p.id+"'":'')+','+idx+')">👍🏼 '+(c.lk?c.lk.length:0)+'</span><span class="'+(cmtHated?'on':'')+'" onclick="dkCmt('+(p.id?"'"+p.id+"'":'')+','+idx+')">👎🏼 '+(c.dk?c.dk.length:0)+'</span></div></div></div>'});h+='</div>'}h+='<div class="cmt-row"><input type="text" placeholder="Leave a comment..." id="cm-'+(p.id||'')+'"><button class="btn btn-primary btn-sm" onclick="addCmt('+(p.id?"'"+p.id+"'":'')+')">Send</button></div>';h+='</div>'}h+='</div>';return h};
-window.renderNews=async function(){
+window.renderNews=async function(){var banner=document.getElementById('main-auth-banner');if(banner){banner.style.display=cu?'none':'block'}
   var el=$('news-feed');
   el.innerHTML='<div style="text-align:center;padding:40px"><div style="width:24px;height:24px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto"></div><p style="margin-top:12px;color:#888">Loading news...</p></div>';
   if(sb&&supabaseOnline){
@@ -3354,9 +3212,6 @@ document.addEventListener('click',function(e){var menu=$('menu-drop');var btn=$(
 if(location.search.includes('paypal')){setTimeout(function(){if(vu){if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};follows[vu.id].subscribed=true;svf();showToast('Payment successful! You are now subscribed.');history.replaceState(null,'',location.pathname)}},1000)}
 // Handle #signup hash from login page
 if(location.hash==='#signup'){
-  var lp=document.getElementById('landing-page');
-  var ap=document.getElementById('auth-page');
-  if(lp)lp.classList.add('hidden');
   if(ap)ap.classList.remove('hidden');
   ['in','up','fg'].forEach(function(x){
     var f=document.getElementById('form-'+x);if(f)f.classList.remove('a');
