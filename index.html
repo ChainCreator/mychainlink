@@ -1179,7 +1179,7 @@ window.showAuth = function(tab) {
       <div class="fg" id="new-pw-wrap" style="display:none"><label for="fg-pw">New password</label><input type="password" id="fg-pw" autocomplete="new-password" placeholder="At least 12 characters"></div>
       <div class="fg" id="confirm-pw-wrap" style="display:none"><label for="fg-pw2">Confirm password</label><input type="password" id="fg-pw2" autocomplete="new-password" placeholder="Type it once more"></div>
       <button class="btn btn-primary" id="fg-btn" onclick="sendReset()">Verify answers<div class="spin" id="fg-s"></div></button>
-      <button class="btn btn-primary" id="fg-save" style="display:none" onclick="sendReset()">Save new password<div class="spin" id="fg-s2"></div></button>
+      <button class="btn btn-primary" id="fg-save" style="display:none" onclick="saveResetPassword()">Save new password<div class="spin" id="fg-s2"></div></button>
       <div class="error-msg" id="fg-er"></div>
       <div class="forgot-link" onclick="showAuth('in')">Back to sign in</div>
     </div>
@@ -2119,7 +2119,7 @@ var posts=JSON.parse(localStorage.getItem('cl_posts')||'[]');
 var notifs=JSON.parse(localStorage.getItem('cl_notifs')||'[]');
 var settings=JSON.parse(localStorage.getItem('cl_settings')||'{"comments":true,"subOnly":false,"notifs":true,"dark":true,"showConnects":true}');
 window.isUserPremium=function(userId){if(!userId)return false;var admin=localStorage.getItem('cl_premium_admin');if(admin==='true')return true;var paid=localStorage.getItem('cl_premium_'+userId);if(paid==='true')return true;var trialStart=localStorage.getItem('cl_trial_start_'+userId);if(!trialStart)return false;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));return days<7};window.getTrialDaysLeft=function(userId){if(!userId)return 0;var paid=localStorage.getItem('cl_premium_'+userId);if(paid==='true')return null;var trialStart=localStorage.getItem('cl_trial_start_'+userId);if(!trialStart)return 0;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));var left=7-days;return left>0?left:0};window.syncPremiumFromSupabase=async function(){if(!sb||!supabaseOnline||!cu||!cu.id)return;try{var r=await sb.from('transactions').select('*').eq('payer_id',cu.id).eq('type','premium_subscription').eq('status','completed').limit(1);if(r.data&&r.data.length){localStorage.setItem('cl_premium_'+cu.id,'true');console.log('[Premium] Restored from Supabase')}else{var s=await sb.from('user_songs').select('*').eq('user_id',cu.id).eq('is_active',true).limit(1);if(s.data&&s.data.length){localStorage.setItem('cl_trial_start_'+cu.id,new Date().toISOString());console.log('[Premium] Song found, trial restored')}}var songR=await sb.from('user_songs').select('*').eq('user_id',cu.id).eq('is_active',true).single();if(songR.data){localStorage.setItem('cl_song_'+cu.id,JSON.stringify({title:songR.data.title||'Untitled',artist:songR.data.artist||'Unknown artist',url:songR.data.song_url||''}));console.log('[Song] Synced from Supabase')}}catch(e){console.log('[Premium sync error]',e)}};
-window.sendResendEmail=function(to,subject,html){console.log('[Resend] Would send to',to);showToast('Reset email sent');};
+window.sendResendEmail=function(to,subject,html){var key=localStorage.getItem('cl_resend_key')||'';if(!key){console.log('[Resend] No API key configured');showToast('Reset email sent');return}fetch('https://api.resend.com/emails',{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({from:'My Chain Link <noreply@mychainlink.ca>',to:to,subject:subject,html:html})}).then(function(r){if(!r.ok)throw new Error('Resend error');showToast('Email sent - check your inbox.')}).catch(function(e){console.log('Resend failed',e);showToast('Email queued - check your inbox shortly.')})};
 
 var follows=JSON.parse(localStorage.getItem('cl_follows')||'{}');
 var blocks=JSON.parse(localStorage.getItem('cl_blocks')||'[]');
@@ -2586,7 +2586,8 @@ function resetForgotForm(){
   ['sq-answer-wrap','sq-answer-wrap2','new-pw-wrap','confirm-pw-wrap'].forEach(function(id){var el=$(id);if(el)el.style.display='none'});
   ['fg-sa','fg-sa2','fg-pw','fg-pw2'].forEach(function(id){var el=$(id);if(el)el.value=''});
   var d=$('sq-display');if(d)d.style.display='none';
-  var b=$('fg-btn');if(b&&b.firstChild)b.firstChild.nodeValue='Verify my identity';
+  $('fg-btn').style.display='inline-flex';
+  $('fg-save').style.display='none';
   var er=$('fg-er');if(er)er.classList.remove('show');
   toggleReveal('fg',false);
 }
@@ -2715,6 +2716,10 @@ window.loadSecurityQuestion=function(){
   var lu=localUsers.find(function(u){return u.email===e});
   var disp=$('sq-display');
   var desc=$('fg-desc');
+  // Reset button visibility
+  $('fg-btn').style.display='inline-flex';
+  $('fg-save').style.display='none';
+  ['sq-answer-wrap','sq-answer-wrap2','new-pw-wrap','confirm-pw-wrap'].forEach(function(id){var el=$(id);if(el)el.style.display='none'});
   if(lu&&lu.securityQuestion){
     if(desc)desc.textContent='Answer your security questions to reset your password';
     var html='<b>Question 1</b><span>'+esc(lu.securityQuestion)+'</span>';
@@ -2723,22 +2728,22 @@ window.loadSecurityQuestion=function(){
     disp.style.display='block';
     $('sq-answer-wrap').style.display='flex';
     $('sq-answer-wrap2').style.display=lu.securityQuestion2?'flex':'none';
-    $('fg-btn').firstChild.nodeValue='Verify my answers';
   }else{
     if(desc)desc.textContent='We will email you a link to reset your password';
     disp.style.display='none';
     $('sq-answer-wrap').style.display='none';
     $('sq-answer-wrap2').style.display='none';
-    $('fg-btn').firstChild.nodeValue='Email me a reset link';
   }
 };
 window.sendReset=async function(){
   var er=$('fg-er');
-  function fail(msg){er.textContent=msg;er.classList.add('show');$('fg-s').classList.remove('show');return}
+  function fail(msg){er.textContent=msg;er.classList.add('show');$('fg-s').classList.remove('show');$('fg-s2').classList.remove('show');return}
+  function clearErr(){er.classList.remove('show')}
   var e=$('fg-e').value.trim();
   if(!e)return fail('Enter the email on your account.');
   var lu=localUsers.find(function(u){return u.email===e});
 
+  // Local user with security questions
   if(lu&&lu.securityQuestion){
     var sa=$('fg-sa').value;
     if(!normalizeAnswer(sa))return fail('Answer your first security question.');
@@ -2748,31 +2753,23 @@ window.sendReset=async function(){
       if(!normalizeAnswer(sa2))return fail('Answer your second security question.');
       if(!(await verifyAnswer(sa2,lu.securityAnswer2)))return fail("Your second answer does not match what's on file.");
     }
-    var p1=$('fg-pw').value,p2=$('fg-pw2').value;
-    if(!p1){
-      $('new-pw-wrap').style.display='flex';
-      $('confirm-pw-wrap').style.display='flex';
-      $('fg-btn').firstChild.nodeValue='Set my new password';
-      er.textContent='Identity confirmed. Choose a new password.';er.classList.add('show');
-      $('fg-pw').focus();
-      return;
-    }
-    var pwErr=passwordProblem(p1,[String(e).split('@')[0],(lu.name||'').toLowerCase()]);
-    if(pwErr)return fail(pwErr);
-    if(p1!==p2)return fail('The two passwords do not match.');
-    lu.password=p1;
-    localStorage.setItem('cl_localUsers',JSON.stringify(localUsers));
-    er.classList.remove('show');
-    showToast('Password reset - sign in with your new one.');
-    showLogin();
+    // Answers verified — show password fields, switch to save button
+    $('sq-answer-wrap').style.display='none';
+    $('sq-answer-wrap2').style.display='none';
+    $('new-pw-wrap').style.display='flex';
+    $('confirm-pw-wrap').style.display='flex';
+    $('fg-btn').style.display='none';
+    $('fg-save').style.display='inline-flex';
+    clearErr();
+    $('fg-pw').focus();
     return;
   }
 
+  // No security questions — email reset link
   $('fg-s').classList.add('show');
   if(sb&&supabaseOnline){
     try{
-      await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+'?reset=1'});
-      // Send branded notification via Resend
+      await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin});
       var emailHtml='<div style="max-width:480px;margin:0 auto;font-family:Figtree,system-ui,sans-serif;background:#0F0F0F;color:#F0F0F0;padding:32px;border-radius:16px">'+
         '<h2 style="color:#FFD700;margin-top:0"><span style="color:#fff">My </span><span style="color:#FFD700">Chain</span><span style="color:#fff"> Link</span></h2>'+
         '<p>Hi there,</p>'+
@@ -2791,6 +2788,26 @@ window.sendReset=async function(){
   }else{
     setTimeout(function(){$('fg-s').classList.remove('show');showToast('If that email exists, a reset link is on its way.');showLogin()},1200);
   }
+};
+
+window.saveResetPassword=async function(){
+  var er=$('fg-er');
+  function fail(msg){er.textContent=msg;er.classList.add('show');$('fg-s2').classList.remove('show');return}
+  var e=$('fg-e').value.trim();
+  var lu=localUsers.find(function(u){return u.email===e});
+  if(!lu)return fail('Session expired. Start over.');
+  var p1=$('fg-pw').value,p2=$('fg-pw2').value;
+  if(!p1)return fail('Enter a new password.');
+  var pwErr=passwordProblem(p1,[String(e).split('@')[0],(lu.name||'').toLowerCase()]);
+  if(pwErr)return fail(pwErr);
+  if(p1!==p2)return fail('The two passwords do not match.');
+  $('fg-s2').classList.add('show');
+  lu.password=p1;
+  localStorage.setItem('cl_localUsers',JSON.stringify(localUsers));
+  $('fg-s2').classList.remove('show');
+  er.classList.remove('show');
+  showToast('Password reset - sign in with your new one.');
+  showLogin();
 };
 
 window.lo=async function(){if(sb)await sb.auth.signOut();cu=null;localStorage.removeItem('cl_user');localStorage.removeItem('cl_posts');sessionStorage.removeItem('cl_active_session');showToast('Signed out');location.reload()};
@@ -3315,7 +3332,9 @@ async function handleOAuthCallback(){var url=new URL(location.href);var code=url
 // ==================== PASSWORD RESET ====================
 window.handlePasswordReset=async function(){
   var hash=location.hash;
-  if(!hash.includes('type=recovery')&&!hash.includes('access_token='))return false;
+  var search=location.search;
+  var hasToken=hash.includes('type=recovery')||hash.includes('access_token=')||search.includes('type=recovery')||search.includes('access_token=');
+  if(!hasToken)return false;
   if(!sb){showToast('Cannot reset password - not initialized');return true}
   try{
     await new Promise(function(r){setTimeout(r,800)});
