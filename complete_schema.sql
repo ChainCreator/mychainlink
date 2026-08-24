@@ -347,21 +347,9 @@ CREATE INDEX IF NOT EXISTS idx_stories_user_id ON stories(user_id);
 CREATE INDEX IF NOT EXISTS idx_stories_expires_at ON stories(expires_at DESC);
 CREATE INDEX IF NOT EXISTS idx_stories_created_at ON stories(created_at DESC);
 
--- Stories (24hr ephemeral content)
-CREATE TABLE IF NOT EXISTS stories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  avatar_url TEXT,
-  media_url TEXT NOT NULL,
-  is_video BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  expires_at TIMESTAMPTZ DEFAULT (now() + interval '24 hours')
-);
-CREATE INDEX idx_stories_user ON stories(user_id);
-CREATE INDEX idx_stories_expires ON stories(expires_at);
-
--- Live Streams
+-- ============================================================
+-- 14. LIVE STREAMS TABLE
+-- ============================================================
 CREATE TABLE IF NOT EXISTS live_streams (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   display_name TEXT,
@@ -372,4 +360,12 @@ CREATE TABLE IF NOT EXISTS live_streams (
   viewer_count INTEGER DEFAULT 0,
   updated_at TIMESTAMPTZ DEFAULT now()
 );
-CREATE INDEX idx_live_streams_active ON live_streams(is_live) WHERE is_live = true;
+
+ALTER TABLE live_streams ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read live streams" ON live_streams FOR SELECT USING (true);
+CREATE POLICY "Users can update own live stream" ON live_streams FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own live stream" ON live_streams FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE INDEX IF NOT EXISTS idx_live_streams_active ON live_streams(is_live) WHERE is_live = true;
+CREATE INDEX IF NOT EXISTS idx_live_streams_user ON live_streams(user_id);
