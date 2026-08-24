@@ -1,12 +1,22 @@
--- ============================================================
--- MYCHAINLINK.CA — COMPLETE SUPABASE SCHEMA
--- Run this in Supabase SQL Editor (all at once)
--- ============================================================
+-- Fix: recreate tables with all columns, then policies safely
 
 -- ============================================================
--- 1. PROFILES TABLE (extends auth.users)
+-- DROP & RECREATE CONVERSATIONS (missing user1_id/user2_id)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS profiles (
+DROP TABLE IF EXISTS messages CASCADE;
+DROP TABLE IF EXISTS conversations CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS likes CASCADE;
+DROP TABLE IF EXISTS posts CASCADE;
+DROP TABLE IF EXISTS follows CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- ============================================================
+-- 1. PROFILES
+-- ============================================================
+CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   display_name TEXT,
   handle TEXT UNIQUE,
@@ -24,36 +34,6 @@ CREATE TABLE IF NOT EXISTS profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add missing columns if table already exists
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'conversation_theme') THEN
-    ALTER TABLE profiles ADD COLUMN conversation_theme TEXT;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'conversation_color') THEN
-    ALTER TABLE profiles ADD COLUMN conversation_color TEXT;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'subscription_price') THEN
-    ALTER TABLE profiles ADD COLUMN subscription_price INTEGER DEFAULT 0;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'is_premium') THEN
-    ALTER TABLE profiles ADD COLUMN is_premium BOOLEAN DEFAULT FALSE;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'premium_until') THEN
-    ALTER TABLE profiles ADD COLUMN premium_until TIMESTAMPTZ;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'song_title') THEN
-    ALTER TABLE profiles ADD COLUMN song_title TEXT;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'song_artist') THEN
-    ALTER TABLE profiles ADD COLUMN song_artist TEXT;
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'song_url') THEN
-    ALTER TABLE profiles ADD COLUMN song_url TEXT;
-  END IF;
-END $$;
-
--- RLS on profiles
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public profiles are viewable by everyone"
@@ -65,14 +45,13 @@ CREATE POLICY "Users can update own profile"
 CREATE POLICY "Users can insert own profile"
   ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_profiles_handle ON profiles(handle);
-CREATE INDEX IF NOT EXISTS idx_profiles_display_name ON profiles(display_name);
+CREATE INDEX idx_profiles_handle ON profiles(handle);
+CREATE INDEX idx_profiles_display_name ON profiles(display_name);
 
 -- ============================================================
--- 2. POSTS TABLE
+-- 2. POSTS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS posts (
+CREATE TABLE posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   display_name TEXT,
@@ -100,13 +79,13 @@ CREATE POLICY "Users can create own posts" ON posts FOR INSERT WITH CHECK (auth.
 CREATE POLICY "Users can update own posts" ON posts FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own posts" ON posts FOR DELETE USING (auth.uid() = user_id);
 
-CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts (created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts (user_id);
+CREATE INDEX idx_posts_created_at ON posts (created_at DESC);
+CREATE INDEX idx_posts_user_id ON posts (user_id);
 
 -- ============================================================
--- 3. LIKES TABLE (proper relational likes)
+-- 3. LIKES
 -- ============================================================
-CREATE TABLE IF NOT EXISTS likes (
+CREATE TABLE likes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -120,13 +99,13 @@ CREATE POLICY "Anyone can read likes" ON likes FOR SELECT USING (true);
 CREATE POLICY "Users can like" ON likes FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can unlike" ON likes FOR DELETE USING (auth.uid() = user_id);
 
-CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
-CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
+CREATE INDEX idx_likes_post_id ON likes(post_id);
+CREATE INDEX idx_likes_user_id ON likes(user_id);
 
 -- ============================================================
--- 4. COMMENTS TABLE (proper relational comments)
+-- 4. COMMENTS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS comments (
+CREATE TABLE comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -142,13 +121,13 @@ CREATE POLICY "Anyone can read comments" ON comments FOR SELECT USING (true);
 CREATE POLICY "Users can comment" ON comments FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete own comments" ON comments FOR DELETE USING (auth.uid() = user_id);
 
-CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
-CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at DESC);
+CREATE INDEX idx_comments_post_id ON comments(post_id);
+CREATE INDEX idx_comments_created_at ON comments(created_at DESC);
 
 -- ============================================================
--- 5. FOLLOWS TABLE (connects)
+-- 5. FOLLOWS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS follows (
+CREATE TABLE follows (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   follower_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   followed_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -162,13 +141,13 @@ CREATE POLICY "Anyone can read follows" ON follows FOR SELECT USING (true);
 CREATE POLICY "Users can follow" ON follows FOR INSERT WITH CHECK (auth.uid() = follower_id);
 CREATE POLICY "Users can unfollow" ON follows FOR DELETE USING (auth.uid() = follower_id);
 
-CREATE INDEX IF NOT EXISTS idx_follows_follower ON follows(follower_id);
-CREATE INDEX IF NOT EXISTS idx_follows_followed ON follows(followed_id);
+CREATE INDEX idx_follows_follower ON follows(follower_id);
+CREATE INDEX idx_follows_followed ON follows(followed_id);
 
 -- ============================================================
--- 6. CONVERSATIONS TABLE
+-- 6. CONVERSATIONS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS conversations (
+CREATE TABLE conversations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user1_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   user2_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -183,14 +162,14 @@ CREATE POLICY "Users can read their conversations" ON conversations FOR SELECT
   USING (auth.uid() = user1_id OR auth.uid() = user2_id);
 CREATE POLICY "Users can create conversations" ON conversations FOR INSERT WITH CHECK (auth.uid() = user1_id OR auth.uid() = user2_id);
 
-CREATE INDEX IF NOT EXISTS idx_conv_user1 ON conversations(user1_id);
-CREATE INDEX IF NOT EXISTS idx_conv_user2 ON conversations(user2_id);
-CREATE INDEX IF NOT EXISTS idx_conv_updated ON conversations(updated_at DESC);
+CREATE INDEX idx_conv_user1 ON conversations(user1_id);
+CREATE INDEX idx_conv_user2 ON conversations(user2_id);
+CREATE INDEX idx_conv_updated ON conversations(updated_at DESC);
 
 -- ============================================================
--- 7. MESSAGES TABLE
+-- 7. MESSAGES
 -- ============================================================
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
   sender_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -205,13 +184,13 @@ CREATE POLICY "Users can read messages in their conversations" ON messages FOR S
   USING (EXISTS (SELECT 1 FROM conversations c WHERE c.id = messages.conversation_id AND (c.user1_id = auth.uid() OR c.user2_id = auth.uid())));
 CREATE POLICY "Users can send messages" ON messages FOR INSERT WITH CHECK (auth.uid() = sender_id);
 
-CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
-CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at DESC);
+CREATE INDEX idx_messages_conversation ON messages(conversation_id);
+CREATE INDEX idx_messages_created ON messages(created_at DESC);
 
 -- ============================================================
--- 8. NOTIFICATIONS TABLE
+-- 8. NOTIFICATIONS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS notifications (
+CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   type TEXT NOT NULL,
@@ -227,14 +206,14 @@ CREATE POLICY "Users can read own notifications" ON notifications FOR SELECT USI
 CREATE POLICY "Users can create notifications" ON notifications FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id);
-CREATE INDEX IF NOT EXISTS idx_notif_read ON notifications(user_id, read);
-CREATE INDEX IF NOT EXISTS idx_notif_created ON notifications(created_at DESC);
+CREATE INDEX idx_notif_user ON notifications(user_id);
+CREATE INDEX idx_notif_read ON notifications(user_id, read);
+CREATE INDEX idx_notif_created ON notifications(created_at DESC);
 
 -- ============================================================
--- 9. TRANSACTIONS TABLE (PayPal/subscription payments)
+-- 9. TRANSACTIONS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   creator_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -251,11 +230,11 @@ ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can read own transactions" ON transactions FOR SELECT 
   USING (auth.uid() = user_id OR auth.uid() = creator_id);
 
-CREATE INDEX IF NOT EXISTS idx_tx_user ON transactions(user_id);
-CREATE INDEX IF NOT EXISTS idx_tx_creator ON transactions(creator_id);
+CREATE INDEX idx_tx_user ON transactions(user_id);
+CREATE INDEX idx_tx_creator ON transactions(creator_id);
 
 -- ============================================================
--- 10. AUTH TRIGGER — auto-create profile on signup
+-- 10. AUTH TRIGGER
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -273,7 +252,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Drop existing trigger if any, then recreate
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 CREATE TRIGGER on_auth_user_created
@@ -281,95 +259,22 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ============================================================
--- 11. REALTIME ENABLEMENT
+-- 11. REALTIME
 -- ============================================================
--- Enable realtime for messages table
 ALTER TABLE messages REPLICA IDENTITY FULL;
 
--- Add tables to realtime publication (ignore if already exists)
 DO $$
 BEGIN
-  -- Messages
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE messages;
-  EXCEPTION WHEN duplicate_table THEN
-    NULL;
+  EXCEPTION WHEN duplicate_table THEN NULL;
   END;
-  
-  -- Conversations
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
-  EXCEPTION WHEN duplicate_table THEN
-    NULL;
+  EXCEPTION WHEN duplicate_table THEN NULL;
   END;
-  
-  -- Notifications
   BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
-  EXCEPTION WHEN duplicate_table THEN
-    NULL;
+  EXCEPTION WHEN duplicate_table THEN NULL;
   END;
 END $$;
-
--- ============================================================
--- 12. STORAGE BUCKETS (run these in Supabase Storage UI if needed)
--- ============================================================
--- These need to be created via Supabase UI or API, not SQL:
--- - avatars (public)
--- - media (public) 
--- - photos (public)
--- - songs (public)
-
--- ============================================================
--- DONE! Everything should work now.
--- ============================================================
-
--- ============================================================
--- 13. STORIES TABLE (24-hour disappearing content)
--- ============================================================
-CREATE TABLE IF NOT EXISTS stories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  media_url TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('image', 'video')),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '24 hours'),
-  viewers UUID[] DEFAULT '{}'
-);
-
-ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can read stories" ON stories FOR SELECT USING (true);
-CREATE POLICY "Users can create own stories" ON stories FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own stories" ON stories FOR DELETE USING (auth.uid() = user_id);
-
-CREATE INDEX IF NOT EXISTS idx_stories_user_id ON stories(user_id);
-CREATE INDEX IF NOT EXISTS idx_stories_expires_at ON stories(expires_at DESC);
-CREATE INDEX IF NOT EXISTS idx_stories_created_at ON stories(created_at DESC);
-
--- Stories (24hr ephemeral content)
-CREATE TABLE IF NOT EXISTS stories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  avatar_url TEXT,
-  media_url TEXT NOT NULL,
-  is_video BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  expires_at TIMESTAMPTZ DEFAULT (now() + interval '24 hours')
-);
-CREATE INDEX idx_stories_user ON stories(user_id);
-CREATE INDEX idx_stories_expires ON stories(expires_at);
-
--- Live Streams
-CREATE TABLE IF NOT EXISTS live_streams (
-  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  avatar_url TEXT,
-  is_live BOOLEAN DEFAULT false,
-  started_at TIMESTAMPTZ,
-  ended_at TIMESTAMPTZ,
-  viewer_count INTEGER DEFAULT 0,
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-CREATE INDEX idx_live_streams_active ON live_streams(is_live) WHERE is_live = true;
