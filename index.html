@@ -3209,12 +3209,26 @@ window.schPpl=async function(v){console.log('[search] start:',v);var list=$('ppl
 var allUsers=[];var allUsersMap={};
 function addUser(u){if(!u||!u.id)return;if(cu&&u.id===cu.id)return;if(allUsersMap[u.id]){var existing=allUsers.find(function(x){return x.id===u.id});if(existing){if(!existing.email&&u.email)existing.email=u.email;if(!existing.name&&u.name)existing.name=u.name;if(!existing.handle&&u.handle)existing.handle=u.handle;if(!existing.avatar&&u.avatar)existing.avatar=u.avatar}return}allUsersMap[u.id]=true;allUsers.push(u)}
 
-// 1. Query Supabase FIRST
-var dbSuccess=false;
-if(sb&&supabaseOnline){try{var ilike='%'+v+'%';var {data:dbUsers,error:dbErr}=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').or('display_name.ilike.'+ilike+',handle.ilike.'+ilike).limit(50);if(!dbErr&&dbUsers){console.log('[search] supabase found:',dbUsers.length);dbSuccess=true;dbUsers.forEach(function(u){if(u.id!==(cu&&cu.id)){addUser({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}})}}catch(e){console.log('[search] supabase error',e)}}
+// 1. Query Supabase FIRST (two simple queries, no .or())
+var dbSuccess=false;var dbErrorMsg='';
+if(sb&&supabaseOnline){try{
+  var ilike='%'+v+'%';
+  console.log('[search] querying display_name ilike:',ilike);
+  var r1=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').ilike('display_name',ilike).limit(50);
+  if(r1.error){console.log('[search] display_name error:',r1.error);dbErrorMsg=r1.error.message||'DB error'}
+  else if(r1.data){console.log('[search] display_name found:',r1.data.length);r1.data.forEach(function(u){if(u.id!==(cu&&cu.id)){addUser({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}})}
+  
+  console.log('[search] querying handle ilike:',ilike);
+  var r2=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').ilike('handle',ilike).limit(50);
+  if(r2.error){console.log('[search] handle error:',r2.error);dbErrorMsg=r2.error.message||'DB error'}
+  else if(r2.data){console.log('[search] handle found:',r2.data.length);r2.data.forEach(function(u){if(u.id!==(cu&&cu.id)){addUser({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}})}
+  
+  if(allUsers.length>0){dbSuccess=true;console.log('[search] total db users:',allUsers.length)}
+}catch(e){console.log('[search] supabase exception:',e);dbErrorMsg=e.message||'Exception'}
+}else{dbErrorMsg='Supabase offline';console.log('[search] sb offline')}
 
 // 2. If no DB results or offline, fall back to local
-if(!dbSuccess){console.log('[search] falling back to local');var localUsersSafe=[];try{localUsersSafe=JSON.parse(localStorage.getItem('cl_localUsers')||'[]')}catch(e){localUsersSafe=[]}localUsersSafe.forEach(function(u){addUser({id:u.id,email:u.email||'',name:u.name||u.user_metadata&&u.user_metadata.display_name||'User',handle:u.handle||u.user_metadata&&u.user_metadata.handle||'@user',avatar:u.avatar||u.user_metadata&&u.user_metadata.avatar||''})});var allUsersStore=[];try{allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]')}catch(e){allUsersStore=[]}allUsersStore.forEach(function(u){addUser(u)});posts.forEach(function(p){if(p.uid&&p.uid!==(cu&&cu.id)&&!allUsersMap[p.uid]){addUser({id:p.uid,email:'',name:p.un||'User',handle:p.uh||'@user',avatar:p.ua||''})}})}
+if(!dbSuccess){console.log('[search] falling back to local, dbError:',dbErrorMsg);var localUsersSafe=[];try{localUsersSafe=JSON.parse(localStorage.getItem('cl_localUsers')||'[]')}catch(e){localUsersSafe=[]}localUsersSafe.forEach(function(u){addUser({id:u.id,email:u.email||'',name:u.name||u.user_metadata&&u.user_metadata.display_name||'User',handle:u.handle||u.user_metadata&&u.user_metadata.handle||'@user',avatar:u.avatar||u.user_metadata&&u.user_metadata.avatar||''})});var allUsersStore=[];try{allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]')}catch(e){allUsersStore=[]}allUsersStore.forEach(function(u){addUser(u)});posts.forEach(function(p){if(p.uid&&p.uid!==(cu&&cu.id)&&!allUsersMap[p.uid]){addUser({id:p.uid,email:'',name:p.un||'User',handle:p.uh||'@user',avatar:p.ua||''})}})}
 
 // 3. Filter
 var filtered=allUsers.filter(function(u){return(u.name||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().indexOf(term)>-1});
@@ -3223,7 +3237,7 @@ var filtered=allUsers.filter(function(u){return(u.name||'').toLowerCase().indexO
 if(term.indexOf('#')===0){var tagPosts=posts.filter(function(p){return p.tags&&p.tags.toLowerCase().indexOf(term)>-1});tagPosts.forEach(function(p){if(p.uid&&p.uid!==(cu&&cu.id)){var u=getUserData(p.uid);if(u)addUser(u)}});filtered=allUsers.filter(function(u){return(u.name||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().indexOf(term)>-1||(u.tags||'').toLowerCase().indexOf(term)>-1})}
 
 console.log('[search] rendering',filtered.length,'results');
-if(!filtered.length){list.innerHTML='<div class="empty"><h3>No results</h3><p>No users match "'+esc(v)+'"</p></div>';return}
+if(!filtered.length){var msg=dbErrorMsg?'Search error: '+dbErrorMsg+'. Showing local results only.':'No users match "'+esc(v)+'"';list.innerHTML='<div class="empty"><h3>No results</h3><p>'+msg+'</p></div>';return}
 
 // 5. Render
 var h='';filtered.forEach(function(u){var isFollowing=follows[u.id]&&follows[u.id].following;h+='<div class="p-card">';h+='<div class="av">'+(u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?'))+'</div>';h+='<div class="info"><div class="n">'+esc(u.name)+'</div><div class="h">'+esc(u.handle)+'</div></div>';h+='<div class="actions">';h+='<button class="btn btn-outline btn-sm" onclick="viewUser('+(u.id?"'"+u.id+"'":'')+')">View</button>';if(cu&&u.id!==cu.id){h+='<button class="btn btn-outline btn-sm" onclick="navTo(\'messages\');openThread('+(u.id?"'"+u.id+"'":'')+')">Message</button>';h+='<button class="btn '+(isFollowing?'btn-outline':'btn-primary')+' btn-sm" onclick="toggleFollowId('+(u.id?"'"+u.id+"'":'')+');schPpl(\''+v.replace(/'/g,"\\'")+'\')">'+(isFollowing?'Disconnect':'Connect')+'</button>'}h+='</div>';h+='</div>'});list.innerHTML=h;console.log('[search] done');};
