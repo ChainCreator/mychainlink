@@ -2268,7 +2268,8 @@ window.showAuth = function(tab) {
   <script>
 // ==================== SUPABASE ====================
 var SURL='https://pvtliggkbiwdzedmguag.supabase.co';
-var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2dGxpZ2drYml3ZHplZG1ndWFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NDI3MjcsImV4cCI6MjEwMTIxODcyN30.9J-kZO5i5sK7cSb18BsZVN_WZSeejofVzqcKKQ-440M';
+// Load Supabase key from localStorage (set via browser console: localStorage.setItem('cl_sb_key','your-key'))
+var SKEY=localStorage.getItem('cl_sb_key')||'';
 var sb=null;
 var supabaseOnline=false;
 try{sb=supabase.createClient(SURL,SKEY,{auth:{flowType:'pkce',autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});supabaseOnline=true}catch(e){console.log('Supabase offline, using local auth')}
@@ -3670,7 +3671,7 @@ window.sendMediaMsg=function(){if(!cu){showToast('Sign in first');return}if(!act
 window.addEventListener('offline',function(){showToast('You are offline. Some features may not work.')});window.addEventListener('online',function(){showToast('You are back online!')});
 window.addEventListener('pageshow',function(e){if(e.persisted){window.location.reload()}});
 // ==================== OAUTH CALLBACK ====================
-async function handleOAuthCallback(){var url=new URL(location.href);var code=url.searchParams.get('code');if(code&&sb&&supabaseOnline){try{var r=await sb.auth.exchangeCodeForSession(code);if(r.error){console.log('OAuth callback error',r.error);showToast('Sign-in failed. Please try again.');return}if(r.data&&r.data.session){cu=r.data.session.user;svu();showApp();loadAllFollows();syncPremiumFromSupabase();showToast('Signed in!');history.replaceState(null,'',location.pathname);return true}}catch(e){console.log('OAuth exchange error',e);showToast('Sign-in failed. Please try again.')}}return false}
+async function handleOAuthCallback(){var url=new URL(location.href);var code=url.searchParams.get('code');if(code&&sb&&supabaseOnline){try{var r=await sb.auth.exchangeCodeForSession(code);if(r.error){console.log('OAuth callback error',r.error);showToast('Sign-in failed. Please try again.');return}if(r.data&&r.data.session){cu=r.data.session.user;svu();var meta=cu.user_metadata||{};var isNewUser=!meta.display_name||!meta.handle||meta.display_name===cu.email||meta.handle==='@user_'+cu.id.slice(0,8);if(!isNewUser&&sb&&supabaseOnline){try{var pr=await sb.from('profiles').select('display_name,handle,terms_agreed_at').eq('id',cu.id).single();if(pr.data){if(!pr.data.display_name||!pr.data.handle)isNewUser=true}}catch(e){}}if(isNewUser){console.log('[OAuth] New user detected, starting onboarding');window.oauthOnboarding=true;window.oauthProvider=cu.app_metadata&&cu.app_metadata.provider?cu.app_metadata.provider:'google';showAuth('up');resetSignupWizard();if(cu.email){var suE=$('su-e');if(suE){suE.value=cu.email;suE.readOnly=true;suE.style.opacity='0.7'}}var suN=$('su-n');if(suN&&meta.full_name)suN.value=meta.full_name;if(meta.avatar_url){window.oauthAvatarUrl=meta.avatar_url}showToast('Welcome! Complete your profile to continue.');history.replaceState(null,'',location.pathname);return true}else{cu=r.data.session.user;svu();showApp();loadAllFollows();syncPremiumFromSupabase();showToast('Signed in!');history.replaceState(null,'',location.pathname);return true}}}catch(e){console.log('OAuth exchange error',e);showToast('Sign-in failed. Please try again.')}}return false}
 // ==================== PASSWORD RESET ====================
 window.handlePasswordReset=async function(){
   var hash=location.hash;

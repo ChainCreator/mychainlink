@@ -51,6 +51,21 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'song_url') THEN
     ALTER TABLE profiles ADD COLUMN song_url TEXT;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'terms_agreed_at') THEN
+    ALTER TABLE profiles ADD COLUMN terms_agreed_at TIMESTAMPTZ;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'terms_version') THEN
+    ALTER TABLE profiles ADD COLUMN terms_version TEXT DEFAULT '1.0';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'birth_date') THEN
+    ALTER TABLE profiles ADD COLUMN birth_date TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'location') THEN
+    ALTER TABLE profiles ADD COLUMN location TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'tutorial_seen') THEN
+    ALTER TABLE profiles ADD COLUMN tutorial_seen BOOLEAN DEFAULT FALSE;
+  END IF;
 END $$;
 
 -- RLS on profiles
