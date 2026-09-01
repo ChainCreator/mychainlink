@@ -1104,8 +1104,10 @@ window.showAuth = function(tab) {
         <span class="step-dot a" data-step="1"></span>
         <span class="step-dot" data-step="2"></span>
         <span class="step-dot" data-step="3"></span>
-        <span class="step-dot" data-step="4"></span>
-        <span class="step-dot" data-step="5"></span>
+        <span class="step-dot" data-step="4" id="su-dot-4"></span>
+        <span class="step-dot" data-step="5" id="su-dot-5"></span>
+        <span class="step-dot" data-step="6"></span>
+        <span class="step-dot" data-step="7"></span>
       </div>
 
       <!-- STEP 1: Name -->
@@ -1125,7 +1127,7 @@ window.showAuth = function(tab) {
         </div>
       </div>
 
-      <!-- STEP 3: Email -->
+      <!-- STEP 3: Email + Birthday + City -->
       <div class="su-step" data-step="3" style="display:none">
         <div class="fg" style="margin-top:20px">
           <label for="su-e" style="font-size:16px">What's your email?</label>
@@ -1135,6 +1137,10 @@ window.showAuth = function(tab) {
           <label for="su-b" style="font-size:16px">Birthday</label>
           <input type="date" id="su-b" autocomplete="bday" min="1900-01-01" oninput="checkBirthday()" style="font-size:16px;padding:14px 16px">
           <div class="hint" id="bd-hint">Must be 13 or older</div>
+        </div>
+        <div class="fg">
+          <label for="su-loc" style="font-size:16px">City you live in</label>
+          <input type="text" id="su-loc" autocomplete="address-level2" placeholder="e.g. Vancouver" style="font-size:16px;padding:14px 16px">
         </div>
       </div>
 
@@ -1214,6 +1220,54 @@ window.showAuth = function(tab) {
         <div class="terms-row" style="margin-top:6px">
           <input type="checkbox" id="su-remember" checked>
           <label for="su-remember">Remember my password</label>
+        </div>
+      </div>
+
+      <!-- STEP 6: Profile Photo (Camera Only) -->
+      <div class="su-step" data-step="6" style="display:none">
+        <div style="text-align:center;margin-top:20px">
+          <h3 style="font-family:var(--font-d);font-size:20px;margin-bottom:8px">Profile Photo</h3>
+          <p style="font-size:15px;color:var(--ink-3);margin-bottom:20px">Camera captures only — no gallery uploads.</p>
+          <div id="su-photo-preview" style="width:120px;height:120px;border-radius:50%;margin:0 auto 16px;background:linear-gradient(145deg,var(--gold-hi),var(--gold-deep));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:40px;color:#14120E;overflow:hidden;box-shadow:0 0 0 3px var(--bg),0 0 0 4.5px var(--gold-edge)">
+            <span id="su-photo-placeholder">?</span>
+            <img id="su-photo-img" style="width:100%;height:100%;object-fit:cover;display:none" src="" alt="Profile">
+          </div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button type="button" class="btn btn-primary" style="width:auto;padding:10px 20px" onclick="openSignupCam()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Take Photo
+            </button>
+            <button type="button" class="btn btn-outline" style="width:auto;padding:10px 20px;display:none" id="su-photo-retake" onclick="retakeSignupPhoto()">Retake</button>
+          </div>
+          <input type="hidden" id="su-photo-data" value="">
+        </div>
+      </div>
+
+      <!-- STEP 7: Terms of Service -->
+      <div class="su-step" data-step="7" style="display:none">
+        <div style="margin-top:20px">
+          <h3 style="font-family:var(--font-d);font-size:20px;margin-bottom:12px">Terms of Service</h3>
+          <div style="background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;padding:16px;max-height:280px;overflow-y:auto;margin-bottom:16px;font-size:14px;line-height:1.6;color:var(--ink-2)">
+            <p style="margin-bottom:12px"><strong>1. Acceptance of Terms</strong><br>By creating an account on My Chain Link, you agree to these Terms of Service and our Anti-Harassment Policy. If you do not agree, you may not use the platform.</p>
+            <p style="margin-bottom:12px"><strong>2. User Conduct</strong><br>You agree to be respectful, not post harmful content, not harass others, and follow community guidelines. We reserve the right to suspend or terminate accounts that violate these rules.</p>
+            <p style="margin-bottom:12px"><strong>3. Content Ownership</strong><br>You retain ownership of content you post. By posting, you grant My Chain Link a license to display your content on the platform.</p>
+            <p style="margin-bottom:12px"><strong>4. Authenticity</strong><br>My Chain Link is for real people only. Camera captures only — no gallery uploads. Misrepresentation or catfishing is prohibited.</p>
+            <p style="margin-bottom:12px"><strong>5. Privacy</strong><br>We collect and store your data securely. See our Privacy Policy for details.</p>
+            <p style="margin-bottom:12px"><strong>6. Termination</strong><br>We may suspend or terminate your account for violations. You may delete your account at any time in Settings.</p>
+            <p><strong>7. Changes</strong><br>We may update these terms. You will be notified of significant changes.</p>
+          </div>
+          <div class="terms-row" style="margin:0">
+            <input type="checkbox" id="su-t">
+            <label for="su-t">I have read and agree to the <strong>Terms of Service</strong> and <a onclick="showHarassment()">Anti-Harassment Policy</a>.</label>
+          </div>
+          <div class="terms-row" style="margin-top:8px">
+            <input type="checkbox" id="su-stay" checked>
+            <label for="su-stay">Stay connected</label>
+          </div>
+          <div class="terms-row" style="margin-top:6px">
+            <input type="checkbox" id="su-remember" checked>
+            <label for="su-remember">Remember my password</label>
+          </div>
         </div>
       </div>
       </form>
@@ -2465,84 +2519,99 @@ window.syncSecurityQuestions=function(){
 
 // ==================== SIGN-UP STEP WIZARD ====================
 var suCurrentStep=1;
-var suTotalSteps=5;
+var suTotalSteps=7;
 window.suNextStep=function(){
-  var er=$('su-er');
+  var er=document.getElementById('su-er');
   er.classList.remove('show');
+  var isOAuth=window.oauthOnboarding===true;
   // Validate current step
   if(suCurrentStep===1){
-    var n=($('su-n')?$('su-n').value:'').trim();
+    var n=(document.getElementById('su-n')?document.getElementById('su-n').value:'').trim();
     if(!n){er.textContent='Enter your name';er.classList.add('show');return;}
   }
   if(suCurrentStep===2){
-    var h=$('su-h').value.trim();
+    var h=document.getElementById('su-h').value.trim();
     if(!h){er.textContent='Choose a username';er.classList.add('show');return;}
     if(h.length<3){er.textContent='Username must be at least 3 characters';er.classList.add('show');return;}
   }
   if(suCurrentStep===3){
-    var e=$('su-e').value.trim();
-    var b=$('su-b').value;
+    var e=document.getElementById('su-e').value.trim();
+    var b=document.getElementById('su-b').value;
+    var loc=document.getElementById('su-loc').value.trim();
     if(!e||!e.includes('@')){er.textContent='Enter a valid email';er.classList.add('show');return;}
     if(!b){er.textContent='Enter your birthday';er.classList.add('show');return;}
+    if(!loc){er.textContent='Enter your city';er.classList.add('show');return;}
     var bd=new Date(b);
     var age=(Date.now()-bd.getTime())/(1000*60*60*24*365.25);
     if(age<13){er.textContent='You must be 13 or older';er.classList.add('show');return;}
   }
   if(suCurrentStep===4){
-    var p=$('su-p').value;
-    var p2=$('su-p2').value;
+    if(isOAuth){suCurrentStep=6;document.querySelectorAll('.su-step[data-step="3"]').forEach(function(el){el.style.display='none'});document.querySelectorAll('.su-step[data-step="6"]').forEach(function(el){el.style.display='block'});updateStepDots();updateStepButtons();updateStepTitles();return;}
+    var p=document.getElementById('su-p').value;
+    var p2=document.getElementById('su-p2').value;
     if(!p||p.length<12){er.textContent='Password must be at least 12 characters';er.classList.add('show');return;}
     if(p!==p2){er.textContent='Passwords do not match';er.classList.add('show');return;}
   }
   if(suCurrentStep===5){
-    var sq=$('su-sq').value,sa=$('su-sa').value;
-    var sq2=$('su-sq2').value,sa2=$('su-sa2').value;
+    if(isOAuth){suCurrentStep=6;document.querySelectorAll('.su-step[data-step="5"]').forEach(function(el){el.style.display='none'});document.querySelectorAll('.su-step[data-step="6"]').forEach(function(el){el.style.display='block'});updateStepDots();updateStepButtons();updateStepTitles();return;}
+    var sq=document.getElementById('su-sq').value,sa=document.getElementById('su-sa').value;
+    var sq2=document.getElementById('su-sq2').value,sa2=document.getElementById('su-sa2').value;
     if(!sq||!sa){er.textContent='Answer security question 1';er.classList.add('show');return;}
     if(!sq2||!sa2){er.textContent='Answer security question 2';er.classList.add('show');return;}
-    if(!$('su-t').checked){er.textContent='Agree to the terms';er.classList.add('show');return;}
+  }
+  if(suCurrentStep===6){
+    var photoData=document.getElementById('su-photo-data').value;
+    if(!photoData){er.textContent='Take a profile photo to continue';er.classList.add('show');return;}
+  }
+  if(suCurrentStep===7){
+    if(!document.getElementById('su-t').checked){er.textContent='Agree to the Terms of Service to continue';er.classList.add('show');return;}
     su();return;
   }
   // Advance
   document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='none'});
   suCurrentStep++;
   document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='block'});
-  // Update dots
-  document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)<=suCurrentStep)});
-  // Update buttons
-  $('su-back').style.display=suCurrentStep>1?'block':'none';
-  $('su-next').style.display=suCurrentStep<suTotalSteps?'block':'none';
-  $('su-submit').style.display=suCurrentStep===suTotalSteps?'block':'none';
-  // Update title
-  var titles=['',"What's your name?",'Choose a username',"What's your email?",'Create a password','Security questions'];
-  $('su-title').textContent=titles[suCurrentStep];
-  $('su-subtitle').textContent='Step '+suCurrentStep+' of '+suTotalSteps;
-  // Focus first input
-  var firstInput=document.querySelector('.su-step[data-step="'+suCurrentStep+'"] input, .su-step[data-step="'+suCurrentStep+'"] select');
-  if(firstInput)firstInput.focus();
+  updateStepDots();updateStepButtons();updateStepTitles();
 };
+function updateStepDots(){document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)<=suCurrentStep)});}
+function updateStepButtons(){document.getElementById('su-back').style.display=suCurrentStep>1?'block':'none';document.getElementById('su-next').style.display=suCurrentStep<suTotalSteps?'block':'none';document.getElementById('su-submit').style.display=suCurrentStep===suTotalSteps?'block':'none';}
+function updateStepTitles(){var isOAuth=window.oauthOnboarding===true;var titles=['',"What's your name?",'Choose a username',"What's your email?",'Create a password','Security questions','Profile Photo','Terms of Service'];document.getElementById('su-title').textContent=titles[suCurrentStep]||'Create your account';document.getElementById('su-subtitle').textContent='Step '+suCurrentStep+' of '+suTotalSteps;var firstInput=document.querySelector('.su-step[data-step="'+suCurrentStep+'"] input, .su-step[data-step="'+suCurrentStep+'"] select');if(firstInput)firstInput.focus();}
 window.suPrevStep=function(){
   if(suCurrentStep<=1)return;
+  var isOAuth=window.oauthOnboarding===true;
   document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='none'});
   suCurrentStep--;
+  // Skip password/security for OAuth users going back
+  if(isOAuth&&suCurrentStep===5)suCurrentStep=3;
+  if(isOAuth&&suCurrentStep===4)suCurrentStep=3;
   document.querySelectorAll('.su-step[data-step="'+suCurrentStep+'"]').forEach(function(el){el.style.display='block'});
   document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)<=suCurrentStep)});
-  $('su-back').style.display=suCurrentStep>1?'block':'none';
-  $('su-next').style.display=suCurrentStep<suTotalSteps?'block':'none';
-  $('su-submit').style.display=suCurrentStep===suTotalSteps?'block':'none';
-  var titles=['',"What's your name?",'Choose a username',"What's your email?",'Create a password','Security questions'];
-  $('su-title').textContent=titles[suCurrentStep];
-  $('su-subtitle').textContent='Step '+suCurrentStep+' of '+suTotalSteps;
+  document.getElementById('su-back').style.display=suCurrentStep>1?'block':'none';
+  document.getElementById('su-next').style.display=suCurrentStep<suTotalSteps?'block':'none';
+  document.getElementById('su-submit').style.display=suCurrentStep===suTotalSteps?'block':'none';
+  var titles=['',"What's your name?",'Choose a username',"What's your email?",'Create a password','Security questions','Profile Photo','Terms of Service'];
+  document.getElementById('su-title').textContent=titles[suCurrentStep]||'Create your account';
+  document.getElementById('su-subtitle').textContent='Step '+suCurrentStep+' of '+suTotalSteps;
 };
 // Reset wizard when switching to signup tab
 window.resetSignupWizard=function(){
   suCurrentStep=1;
+  window.oauthOnboarding=false;
+  window.oauthProvider=null;
+  window.oauthAvatarUrl=null;
   document.querySelectorAll('.su-step').forEach(function(el){el.style.display=el.dataset.step==='1'?'block':'none'});
   document.querySelectorAll('.step-dot').forEach(function(dot){dot.classList.toggle('a',parseInt(dot.dataset.step)===1)});
-  $('su-back').style.display='none';
-  $('su-next').style.display='block';
-  $('su-submit').style.display='none';
-  $('su-title').textContent='Create your account';
-  $('su-subtitle').textContent='Join the chain';
+  var suE=document.getElementById('su-e');if(suE){suE.readOnly=false;suE.style.opacity='1';}
+  var photoImg=document.getElementById('su-photo-img');var photoPlace=document.getElementById('su-photo-placeholder');var photoData=document.getElementById('su-photo-data');
+  if(photoImg){photoImg.style.display='none';photoImg.src='';}
+  if(photoPlace)photoPlace.style.display='block';
+  if(photoData)photoData.value='';
+  var retakeBtn=document.getElementById('su-photo-retake');if(retakeBtn)retakeBtn.style.display='none';
+  document.getElementById('su-back').style.display='none';
+  document.getElementById('su-next').style.display='block';
+  document.getElementById('su-submit').style.display='none';
+  document.getElementById('su-title').textContent='Create your account';
+  document.getElementById('su-subtitle').textContent='Join the chain';
 };
 
 
@@ -2867,24 +2936,29 @@ window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-premium')
 window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');var stayConnected=$('li-stay')?$('li-stay').checked:true;window.pendingStayConnected=stayConnected;if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();syncPremiumFromSupabase();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
 
 window.su=async function(){
-  var er=$('su-er');
-  function fail(msg,focusId){er.textContent=msg;er.classList.add('show');$('su-s').classList.remove('show');var f=$(focusId);if(f)f.focus();return}
+  var er=document.getElementById('su-er');
+  function fail(msg,focusId){er.textContent=msg;er.classList.add('show');document.getElementById('su-s').classList.remove('show');var f=document.getElementById(focusId);if(f)f.focus();return}
 
-  var n=($('su-n')?$('su-n').value:'').trim(),
-      h=$('su-h').value.trim(),
-      e=$('su-e').value.trim(),
-      bd=$('su-b').value,
-      p=$('su-p').value,
-      p2=$('su-p2').value,
-      sq=$('su-sq').value,
-      sa=$('su-sa').value.trim(),
-      sq2=$('su-sq2').value,
-      sa2=$('su-sa2').value.trim(),
-      fa=$('su-2fa').value.trim(),
-      loc=$('su-loc')?$('su-loc').value.trim():'';
+  var isOAuth=window.oauthOnboarding===true;
+  var n=(document.getElementById('su-n')?document.getElementById('su-n').value:'').trim(),
+      h=document.getElementById('su-h').value.trim(),
+      e=document.getElementById('su-e').value.trim(),
+      bd=document.getElementById('su-b').value,
+      p=document.getElementById('su-p').value,
+      p2=document.getElementById('su-p2').value,
+      sq=document.getElementById('su-sq').value,
+      sa=document.getElementById('su-sa').value.trim(),
+      sq2=document.getElementById('su-sq2').value,
+      sa2=document.getElementById('su-sa2').value.trim(),
+      fa=document.getElementById('su-2fa').value.trim(),
+      loc=document.getElementById('su-loc')?document.getElementById('su-loc').value.trim():'';
+
+  var photoData=document.getElementById('su-photo-data').value;
+  var avatarUrl=window.oauthAvatarUrl||'';
+  if(photoData){avatarUrl=photoData;}
 
   if(!n)return fail('We need a name to put on your profile.','su-n');
-  var stayConnected=$('su-stay')?$('su-stay').checked:true;
+  var stayConnected=document.getElementById('su-stay')?document.getElementById('su-stay').checked:true;
   if(!h||h.length<3)return fail('Choose a username (at least 3 letters or numbers).','su-h');
   if(!e||e.indexOf('@')<1)return fail('That email address does not look right.','su-e');
 
@@ -2893,30 +2967,74 @@ window.su=async function(){
   if(age===null||age<0||age>130)return fail('That birthday does not look right.','su-b');
   if(age<MIN_AGE)return fail('You need to be at least '+MIN_AGE+' years old to join My Chain Link.','su-b');
 
-  var pwErr=passwordProblem(p,pwContext());
-  if(pwErr)return fail(pwErr,'su-p');
-  if(p!==p2)return fail('The two passwords do not match.','su-p2');
+  if(!isOAuth){
+    var pwErr=passwordProblem(p,pwContext());
+    if(pwErr)return fail(pwErr,'su-p');
+    if(p!==p2)return fail('The two passwords do not match.','su-p2');
+    if(!sq)return fail('Pick your first security question.','su-sq');
+    if(normalizeAnswer(sa).length<3)return fail('Your first security answer needs at least 3 characters.','su-sa');
+    if(!sq2)return fail('Pick a second security question.','su-sq2');
+    if(sq2===sq)return fail('Please choose two different security questions.','su-sq2');
+    if(normalizeAnswer(sa2).length<3)return fail('Your second security answer needs at least 3 characters.','su-sa2');
+    if(normalizeAnswer(sa)===normalizeAnswer(sa2))return fail('Use a different answer for each question.','su-sa2');
+    if(fa&&!/^\d{6}$/.test(fa))return fail('Your two-factor PIN must be exactly 6 digits.','su-2fa');
+  }
 
-  if(!sq)return fail('Pick your first security question.','su-sq');
-  if(normalizeAnswer(sa).length<3)return fail('Your first security answer needs at least 3 characters.','su-sa');
-  if(!sq2)return fail('Pick a second security question.','su-sq2');
-  if(sq2===sq)return fail('Please choose two different security questions.','su-sq2');
-  if(normalizeAnswer(sa2).length<3)return fail('Your second security answer needs at least 3 characters.','su-sa2');
-  if(normalizeAnswer(sa)===normalizeAnswer(sa2))return fail('Use a different answer for each question.','su-sa2');
-
-  if(fa&&!/^\d{6}$/.test(fa))return fail('Your two-factor PIN must be exactly 6 digits.','su-2fa');
-  if(!$('su-t').checked)return fail('Please accept the Terms of Service to continue.','su-t');
-  if(findLocalUser(e,p))return fail('An account already exists for that email.','su-e');
+  if(!document.getElementById('su-t').checked)return fail('Please accept the Terms of Service to continue.','su-t');
+  if(!isOAuth&&findLocalUser(e,p))return fail('An account already exists for that email.','su-e');
 
   er.classList.remove('show');
-  $('su-s').classList.add('show');
+  document.getElementById('su-s').classList.add('show');
 
-  var saH=await hashAnswer(sa), sa2H=await hashAnswer(sa2);
+  var saH=isOAuth?'':await hashAnswer(sa);
+  var sa2H=isOAuth?'':await hashAnswer(sa2);
   var handle='@'+h.toLowerCase().replace(/\s+/g,'');
-  var meta={display_name:n,handle:handle,bio:'',avatar:'',location:loc,birth_date:bd,
-            security_question_1:sq,security_answer_1:saH,
-            security_question_2:sq2,security_answer_2:sa2H};
+  var meta={display_name:n,handle:handle,bio:'',avatar:avatarUrl,location:loc,birth_date:bd,
+            security_question_1:sq||'',security_answer_1:saH,
+            security_question_2:sq2||'',security_answer_2:sa2H};
 
+  // OAuth user: update existing Supabase user profile
+  if(isOAuth&&cu&&sb&&supabaseOnline){
+    try{
+      var nowIso=new Date().toISOString();
+      var updateData={
+        id:cu.id,
+        display_name:n,
+        handle:handle,
+        birth_date:bd,
+        location:loc,
+        avatar:avatarUrl,
+        terms_agreed_at:nowIso,
+        terms_version:'1.0',
+        security_question_1:sq||'',security_answer_1:saH,
+        security_question_2:sq2||'',security_answer_2:sa2H
+      };
+      await sb.from('profiles').upsert(updateData,{onConflict:'id'});
+      // Update user_metadata too
+      await sb.auth.updateUser({data:meta});
+      cu.user_metadata=Object.assign(cu.user_metadata||{},meta);
+      svu();
+      if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
+      if(!localUsers.find(function(u){return u.id===cu.id})){
+        saveLocalUser({id:cu.id,name:n,email:e,password:'',handle:handle,bio:'',avatar:avatarUrl,
+                       birthday:bd,securityQuestion:sq||'',securityAnswer:saH,securityQuestion2:sq2||'',securityAnswer2:sa2H,twoFactorPIN:''});
+        var store=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');
+        if(!store.find(function(u){return u.id===cu.id})){store.push({id:cu.id,email:e,name:n,handle:handle,avatar:avatarUrl});localStorage.setItem('cl_allUsers',JSON.stringify(store))}
+      }
+      claimPendingPayPal();
+      document.getElementById('su-s').classList.remove('show');
+      sessionStorage.setItem('cl_active_session','1');
+      window.oauthOnboarding=false;
+      showApp();showToast('Welcome to your chain!');
+      return;
+    }catch(err){
+      console.log('OAuth profile update error',err);
+      document.getElementById('su-s').classList.remove('show');
+      return fail('Could not save your profile. Please try again.','su-n');
+    }
+  }
+
+  // Regular email/password signup
   var supabaseOk=false;
   if(sb&&supabaseOnline){
     try{
@@ -2928,26 +3046,26 @@ window.su=async function(){
         supabaseOk=true;cu=r.data.user;svu();
         if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
         var meta2=cu.user_metadata||{};
+        var nowIso2=new Date().toISOString();
         if(r.data.session){
-          // Update profile with ALL user data (display_name, handle, etc.)
-          try{await sb.from('profiles').upsert({id:cu.id,display_name:n,handle:handle,birth_date:bd,security_question_1:sq,security_answer_1:saH,security_question_2:sq2,security_answer_2:sa2H},{onConflict:'id'})}
+          try{await sb.from('profiles').upsert({id:cu.id,display_name:n,handle:handle,birth_date:bd,location:loc,avatar:avatarUrl,terms_agreed_at:nowIso2,terms_version:'1.0',security_question_1:sq||'',security_answer_1:saH,security_question_2:sq2||'',security_answer_2:sa2H},{onConflict:'id'})}
           catch(pe){console.log('profile detail sync skipped',pe)}
         }
         if(!localUsers.find(function(u){return u.id===cu.id||u.email===e})){
-          saveLocalUser({id:cu.id,name:meta2.display_name||n,email:e,password:p,handle:meta2.handle||handle,bio:meta2.bio||'',avatar:meta2.avatar||'',
-                         birthday:bd,securityQuestion:sq,securityAnswer:saH,securityQuestion2:sq2,securityAnswer2:sa2H,twoFactorPIN:fa||''});
+          saveLocalUser({id:cu.id,name:meta2.display_name||n,email:e,password:p,handle:meta2.handle||handle,bio:meta2.bio||'',avatar:meta2.avatar||avatarUrl,
+                         birthday:bd,securityQuestion:sq||'',securityAnswer:saH,securityQuestion2:sq2||'',securityAnswer2:sa2H,twoFactorPIN:fa||''});
           var store=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');
-          if(!store.find(function(u){return u.id===cu.id})){store.push({id:cu.id,email:e,name:meta2.display_name||n,handle:meta2.handle||handle,avatar:meta2.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(store))}
+          if(!store.find(function(u){return u.id===cu.id})){store.push({id:cu.id,email:e,name:meta2.display_name||n,handle:meta2.handle||handle,avatar:meta2.avatar||avatarUrl});localStorage.setItem('cl_allUsers',JSON.stringify(store))}
         }
         claimPendingPayPal();
-        $('su-s').classList.remove('show');
+        document.getElementById('su-s').classList.remove('show');
         sessionStorage.setItem('cl_active_session','1');
         if(r.data.session){showApp()}else{showToast('Almost there - check your email to confirm.')}
         return;
       }
     }catch(err){
       console.log('Supabase signup error',err);
-      $('su-s').classList.remove('show');
+      document.getElementById('su-s').classList.remove('show');
       if(err.message&&(err.message.indexOf('fetch')>-1||err.message.indexOf('network')>-1||err.message.indexOf('Failed to fetch')>-1)){
         return fail('Could not reach the server. Check your connection and try again.','su-e');
       }
@@ -2956,13 +3074,13 @@ window.su=async function(){
   }
 
   if(!supabaseOk){
-    var newUser={id:uid(),name:n,email:e,password:p,handle:handle,bio:'',avatar:'',location:loc,
-                 birthday:bd,securityQuestion:sq,securityAnswer:saH,securityQuestion2:sq2,securityAnswer2:sa2H,twoFactorPIN:fa||''};
+    var newUser={id:uid(),name:n,email:e,password:p,handle:handle,bio:'',avatar:avatarUrl,location:loc,
+                 birthday:bd,securityQuestion:sq||'',securityAnswer:saH,securityQuestion2:sq2||'',securityAnswer2:sa2H,twoFactorPIN:fa||''};
     saveLocalUser(newUser);
     cu=syncLocalUserToCu(newUser);svu();
     if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}
     claimPendingPayPal();
-    $('su-s').classList.remove('show');
+    document.getElementById('su-s').classList.remove('show');
     sessionStorage.setItem('cl_active_session','1');
     showApp();syncPremiumFromSupabase();showToast('Welcome to your chain.');
   }
@@ -3088,7 +3206,34 @@ window.addNewAccount=function(){location.href='login.html';showToast('Sign in to
 window.connectPayPal=function(){$('m-pp-setup').classList.add('on')};window.savePayPalEmail=function(){var e=$('pp-email').value.trim();if(!e||!e.includes('@')){showToast('Enter a valid email');return}if(cu&&cu.id){localStorage.setItem('cl_paypal_email_'+cu.id,e);localStorage.setItem('cl_paypal','connected')}else{localStorage.setItem('cl_paypal_email_temp',e);localStorage.setItem('cl_paypal_temp','connected')}paypalConnected='connected';$('pp-btn').innerHTML='PayPal Connected ✓';$('pp-btn').style.background='#1DB954';$('pp-status').textContent='PayPal connected: '+e;closeModal('m-pp-setup');showToast('PayPal connected!')};
 
 // ==================== APP NAV ====================
-window.showApp=function(){var lp=$('landing-page');if(lp)lp.classList.add('hidden');var ap=$('auth-page');if(ap){ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0'}var lgp=$('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}var ma=$('ma');if(ma)ma.style.display='block';else if($('main-app'))$('main-app').style.display='block';else{var fc=document.querySelector('.feed-container');if(fc)fc.style.display='block'}window.scrollTo(0,0);document.body.style.overflow='';navTo('main');if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));$('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');var mainAv2=$('main-c-av');if(mainAv2)mainAv2.innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');$('p-n').textContent=name;$('p-h').textContent=handle;$('p-b').textContent=bio||'No bio yet'}renderNews();renderNotifDrop();updateNotifBadge();if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=$('username-fix-banner');if(banner)banner.style.display='block'}if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');if(cu&&sb&&supabaseOnline){sb.from('profiles').select('tutorial_seen').eq('id',cu.id).single().then(function(r){if(r.data&&r.data.tutorial_seen){console.log('[Tutorial] Already seen per Supabase');localStorage.setItem('cl_tutorial_seen','1');return}showTut()}).catch(function(){showTut()})}else{showTut()}},1200)};subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()};
+window.showApp=async function(){
+  // Check terms agreement for returning OAuth users
+  if(cu&&sb&&supabaseOnline){
+    try{
+      var pr=await sb.from('profiles').select('terms_agreed_at,display_name,handle').eq('id',cu.id).single();
+      if(pr.data&&!pr.data.terms_agreed_at){
+        console.log('[Terms] User has not agreed to terms yet');
+        window.oauthOnboarding=true;
+        showAuth('up');
+        resetSignupWizard();
+        if(cu.email){var suE=document.getElementById('su-e');if(suE){suE.value=cu.email;suE.readOnly=true;suE.style.opacity='0.7';}}
+        var suN=document.getElementById('su-n');if(suN&&pr.data.display_name)suN.value=pr.data.display_name;
+        showToast('Please complete your profile and accept the Terms of Service.');
+        return;
+      }
+    }catch(e){console.log('[Terms] Check skipped',e);}
+  }
+  var lp=document.getElementById('landing-page');if(lp)lp.classList.add('hidden');
+  var ap=document.getElementById('auth-page');if(ap){ap.classList.add('hidden');ap.style.display='none';ap.style.visibility='hidden';ap.style.opacity='0'}
+  var lgp=document.getElementById('login-page');if(lgp){lgp.classList.add('hidden');lgp.style.display='none'}
+  var ma=document.getElementById('ma');if(ma)ma.style.display='block';else if(document.getElementById('main-app'))document.getElementById('main-app').style.display='block';else{var fc=document.querySelector('.feed-container');if(fc)fc.style.display='block'}
+  window.scrollTo(0,0);document.body.style.overflow='';navTo('main');
+  if(cu){var meta=cu.user_metadata||{};var lu=localUsers.find(function(u){return u.id===cu.id});if(!lu){var newLocalUser={id:cu.id,name:meta.display_name||'User',email:cu.email||'',password:'',handle:meta.handle||('@user_'+cu.id.slice(0,8)),bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(newLocalUser);lu=newLocalUser}var bio=meta.bio||'';var avatar=meta.avatar||'';if(lu){bio=lu.bio||bio;avatar=lu.avatar||avatar}var name=meta.display_name||lu.name||'User';var handle=meta.handle||lu.handle||('@user_'+cu.id.slice(0,8));document.getElementById('pp-c-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');document.getElementById('p-av').innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');var mainAv2=document.getElementById('main-c-av');if(mainAv2)mainAv2.innerHTML=avatar?'<img src="'+avatar+'">':(name?name[0].toUpperCase():'?');document.getElementById('p-n').textContent=name;document.getElementById('p-h').textContent=handle;document.getElementById('p-b').textContent=bio||'No bio yet'}
+  renderNews();renderNotifDrop();updateNotifBadge();
+  if(!localStorage.getItem('cl_username_banner_dismissed')){var banner=document.getElementById('username-fix-banner');if(banner)banner.style.display='block'}
+  if(!localStorage.getItem('cl_tutorial_seen')){console.log('[Tutorial] Will show in 1.2s');setTimeout(function(){console.log('[Tutorial] Timeout fired');if(cu&&sb&&supabaseOnline){sb.from('profiles').select('tutorial_seen').eq('id',cu.id).single().then(function(r){if(r.data&&r.data.tutorial_seen){console.log('[Tutorial] Already seen per Supabase');localStorage.setItem('cl_tutorial_seen','1');return}showTut()}).catch(function(){showTut()})}else{showTut()}},1200)};
+  subscribeToNotifications();loadNotificationsFromSupabase();syncDeletedUsers();updateNotifBadge();updateMsgBadge();checkTrialReminder()
+};
 
 window.checkTrialReminder=function(){if(!cu)return;var trialStart=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(!trialStart||isPaid==='true')return;var days=Math.floor((Date.now()-new Date(trialStart).getTime())/(1000*60*60*24));var daysLeft=7-days;if(daysLeft<=0){showToast('Your 7-day trial has ended. Subscribe to keep Premium!');showPremiumModal();return}if(daysLeft<=2){showToast('Your free trial ends in '+daysLeft+' day'+(daysLeft===1?'':'s')+'. Subscribe now to avoid interruption.')}};window.navTo=function(p){var map=['main','explore','cam','messages','profile'];var pageMap={main:'pg-main',explore:'pg-people',people:'pg-people',cam:'pg-cam',messages:'pg-messages',profile:'pg-profile',settings:'pg-settings',user:'pg-user','coming-soon':'pg-coming-soon'};if(!pageMap[p])return;map.forEach(function(x){var el=document.querySelector('.mit[onclick="navTo(\''+x+'\')"]');if(el)el.classList.remove('a')});var activeBtn=document.querySelector('.mit[onclick="navTo(\''+p+'\')"]');if(activeBtn)activeBtn.classList.add('a');Object.values(pageMap).forEach(function(id){$(id).classList.remove('active')});$(pageMap[p]).classList.add('active');cp=p;if(p==='profile'){renderProfile()}if(p==='main'){renderNews()}if(p==='explore'||p==='people'){var schVal=$('p-sch').value.trim();if(schVal){schPpl(schVal)}else{renderPeople()}}if(p==='messages'){renderMessages();clearMsgBadge();if(window.msgChannel){try{window.msgChannel.unsubscribe()}catch(e){}}window.msgChannel=null;window.currentConvId=null}};
 function goBackFromUser(){if(cp==='people'){navTo('explore')}else{navTo('main')}}window.goBackFromUser=goBackFromUser;
@@ -3260,7 +3405,65 @@ window.togglePostComments=function(id){var p=posts.find(function(x){return x.id=
 document.addEventListener('click',function(e){if(e.target.closest('.post-menu'))return;document.querySelectorAll('.post-menu-drp').forEach(function(d){d.classList.remove('on')})});
 window.sp=function(id){var p=posts.find(function(x){return x.id===id});if(navigator.share){navigator.share({title:'My Chain Link',text:p?p.t:'',url:location.href})}else{showToast('Link copied!');if(navigator.clipboard)navigator.clipboard.writeText(location.href)}};
 window.addCmt=function(id){if(!cu){showToast('Sign in to comment');return}var p=posts.find(function(x){return x.id===id});if(!p||p.c===false){showToast('Comments disabled on this post');return}var inp=$('cm-'+id);if(!inp)return;var t=inp.value.trim();if(!t)return;if(!p.cm)p.cm=[];p.cm.push({un:cu.user_metadata&&cu.user_metadata.display_name?cu.user_metadata.display_name:'User',x:t,ts:Date.now(),lk:[],dk:[]});svp();renderFeed();var el=$('cmts-'+id);if(el)el.classList.add('on');if(p.uid&&p.uid!==cu.id){addNotification('comment',p.uid,'commented: "'+t.substring(0,60)+(t.length>60?'...':'')+'"',p.id)}};
-window.previewProfilePhoto=function(input){var file=input.files[0];if(!file)return;if(file.size>5*1024*1024){showToast('Image too large. Max 5MB.');input.value='';return}var reader=new FileReader();reader.onload=function(e){var img=$('ep-a-img');img.src=e.target.result;var wrap=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';$('ep-a').setAttribute('data-url',e.target.result);$('ep-a').setAttribute('data-file',file.name)};reader.readAsDataURL(file)};var epCamStream=null;var epCamData='';window.openProfileCam=async function(){if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';if(actions)actions.style.display='none';if(preview)preview.style.display='none';try{var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});epCamStream=s;var v=$('ep-cam-v');v.srcObject=s;v.play()}catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}closeProfileCam()}};window.closeProfileCam=function(){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');if(wrap)wrap.style.display='none';if(actions)actions.style.display='flex'};window.snapProfilePhoto=async function(){var v=$('ep-cam-v');var c=$('ep-cam-c');if(!v||!c||!epCamStream)return;c.width=640;c.height=480;var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.9);var mod=await checkImageModeration(data);if(mod.flagged){showToast('Image flagged: '+mod.reason);return}epCamData=data;if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');var img=$('ep-a-img');if(wrap)wrap.style.display='none';if(actions)actions.style.display='none';if(preview)preview.style.display='block';if(img)img.src=epCamData};window.retakeProfilePhoto=function(){epCamData='';var preview=$('ep-a-preview-wrap');var actions=$('ep-cam-actions');if(preview)preview.style.display='none';if(actions)actions.style.display='flex'};window.previewFont=function(){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';var sel=$(prefix+'pc-font').value;var inp=$(prefix+'pc-t');inp.className=sel};window.pickFont=function(sel,font){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';$(prefix+'pc-font').value=font;previewFont()};window.tPostCmt=function(){var isProfile=$('pg-profile').classList.contains('active');var id=isProfile?'pp-t-post-cmt':'t-post-cmt';var el=$(id);if(!el)return;el.classList.toggle('on');var knob=el.querySelector('div');if(!knob)return;if(el.classList.contains('on')){knob.style.left='3px'}else{knob.style.left='19px'}};window.showPremiumModal=function(){if(cu&&isUserPremium(cu.id)){showToast('You are already a Premium Link!');return}setPremiumTab('monthly');$('m-premium').classList.add('on');document.body.style.overflow='hidden';var trialBtn=$('trial-btn');var trialStatus=$('trial-status');var trialSection=$('premium-trial-section');if(trialBtn&&cu){var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){trialSection.style.display='none'}else{trialSection.style.display='block'}}setTimeout(function(){renderPremiumPayPalButtons()},300)};window.setPremiumTab=function(tab){var moBtn=$('pm-tab-mo');var yrBtn=$('pm-tab-yr');var priceEl=$('pm-price');var ctaBtn=$('pm-subscribe-btn');if(tab==='annual'){return}if(moBtn)moBtn.classList.add('active');if(priceEl)priceEl.innerHTML='$10.99<span>/month</span>';if(ctaBtn)ctaBtn.setAttribute('data-plan','monthly')};window.startPayPalCheckout=function(){var plan=$('pm-subscribe-btn').getAttribute('data-plan')||'monthly';var amount=plan==='annual'?109.99:10.99;showToast('Redirecting to PayPal...');console.log('[PayPal] Initiating checkout for $'+amount+' ('+plan+')')};window.startFreeTrial=function(){if(!cu){showToast('Sign in to start trial');return}var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){showToast('You already used your free trial');return}var paypalEmail=localStorage.getItem('cl_paypal_email_'+cu.id);if(!paypalEmail){showToast('Connect your PayPal first to start the free trial');connectPayPal();return}if(!confirm('By starting your 7-day free trial, you authorize MyChainLink to begin a $10.99/month subscription after the trial period ends. You can cancel anytime in your PayPal account. Continue?')){return}localStorage.setItem('cl_trial_start_'+cu.id,new Date().toISOString());showToast('🎉 7-day free trial activated!');renderProfile();var trialSection=$('premium-trial-section');if(trialSection){trialSection.innerHTML='<div style="padding:16px 0;text-align:center"><p style="color:#FFD700;font-size:15px;margin-bottom:8px">✅ Trial activated!</p><p style="font-size:15px;color:#888;margin-bottom:12px">To keep Premium after 7 days, complete your subscription below.</p></div>'}renderPremiumPayPalButtons();};
+window.previewProfilePhoto=function(input){var file=input.files[0];if(!file)return;if(file.size>5*1024*1024){showToast('Image too large. Max 5MB.');input.value='';return}var reader=new FileReader();reader.onload=function(e){var img=$('ep-a-img');img.src=e.target.result;var wrap=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';$('ep-a').setAttribute('data-url',e.target.result);$('ep-a').setAttribute('data-file',file.name)};reader.readAsDataURL(file)};var epCamStream=null;var epCamData='';window.openProfileCam=async function(){if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';if(actions)actions.style.display='none';if(preview)preview.style.display='none';try{var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});epCamStream=s;var v=$('ep-cam-v');v.srcObject=s;v.play()}catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}closeProfileCam()}};window.closeProfileCam=function(){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');if(wrap)wrap.style.display='none';if(actions)actions.style.display='flex'};window.snapProfilePhoto=async function(){var v=$('ep-cam-v');var c=$('ep-cam-c');if(!v||!c||!epCamStream)return;c.width=640;c.height=480;var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.9);var mod=await checkImageModeration(data);if(mod.flagged){showToast('Image flagged: '+mod.reason);return}epCamData=data;if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');var img=$('ep-a-img');if(wrap)wrap.style.display='none';if(actions)actions.style.display='none';if(preview)preview.style.display='block';if(img)img.src=epCamData};window.retakeProfilePhoto=function(){epCamData='';var preview=$('ep-a-preview-wrap');var actions=$('ep-cam-actions');if(preview)preview.style.display='none';if(actions)actions.style.display='flex'};
+
+// ==================== SIGNUP PROFILE PHOTO CAMERA ====================
+var suCamStream=null;
+window.openSignupCam=async function(){
+  if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}
+  try{
+    var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    suCamStream=s;
+    // Create a temporary video element for capture
+    var v=document.createElement('video');
+    v.srcObject=s;v.play();
+    v.style.position='fixed';v.style.inset='0';v.style.width='100%';v.style.height='100%';v.style.objectFit='cover';v.style.zIndex='2001';v.style.transform='scaleX(-1)';
+    document.body.appendChild(v);
+    // Create capture button
+    var btn=document.createElement('button');
+    btn.textContent='Capture';
+    btn.style.position='fixed';btn.style.bottom='60px';btn.style.left='50%';btn.style.transform='translateX(-50%)';
+    btn.style.zIndex='2002';btn.style.padding='14px 32px';btn.style.borderRadius='999px';btn.style.border='none';
+    btn.style.background='linear-gradient(175deg,#FFD700,#FFCC00)';btn.style.color='#14120E';btn.style.fontWeight='700';
+    btn.style.fontSize='16px';btn.style.cursor='pointer';btn.style.boxShadow='0 10px 34px -14px rgba(230,201,106,.45)';
+    document.body.appendChild(btn);
+    // Close button
+    var xbtn=document.createElement('button');
+    xbtn.innerHTML='&#10005;';
+    xbtn.style.position='fixed';xbtn.style.top='20px';xbtn.style.right='20px';xbtn.style.zIndex='2002';
+    xbtn.style.width='44px';xbtn.style.height='44px';xbtn.style.borderRadius='50%';xbtn.style.border='none';
+    xbtn.style.background='rgba(245,243,238,.12)';xbtn.style.color='#F5F3EE';xbtn.style.fontSize='20px';
+    xbtn.style.cursor='pointer';xbtn.style.backdropFilter='blur(10px)';
+    document.body.appendChild(xbtn);
+    var cleanup=function(){
+      if(suCamStream){suCamStream.getTracks().forEach(function(t){t.stop()});suCamStream=null}
+      if(v.parentNode)v.parentNode.removeChild(v);
+      if(btn.parentNode)btn.parentNode.removeChild(btn);
+      if(xbtn.parentNode)xbtn.parentNode.removeChild(xbtn);
+    };
+    xbtn.onclick=cleanup;
+    btn.onclick=async function(){
+      var c=document.createElement('canvas');c.width=640;c.height=480;
+      var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);
+      var data=c.toDataURL('image/jpeg',0.9);
+      try{var mod=await checkImageModeration(data);if(mod.flagged){showToast('Image flagged: '+mod.reason);return}}catch(e){}
+      document.getElementById('su-photo-data').value=data;
+      var img=document.getElementById('su-photo-img');var place=document.getElementById('su-photo-placeholder');
+      if(img){img.src=data;img.style.display='block';}
+      if(place)place.style.display='none';
+      document.getElementById('su-photo-retake').style.display='inline-flex';
+      cleanup();
+      showToast('Photo captured!');
+    };
+  }catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}}
+};
+window.retakeSignupPhoto=function(){
+  document.getElementById('su-photo-data').value='';
+  var img=document.getElementById('su-photo-img');var place=document.getElementById('su-photo-placeholder');
+  if(img){img.src='';img.style.display='none';}
+  if(place)place.style.display='block';
+  document.getElementById('su-photo-retake').style.display='none';
+};window.previewFont=function(){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';var sel=$(prefix+'pc-font').value;var inp=$(prefix+'pc-t');inp.className=sel};window.pickFont=function(sel,font){var isProfile=$('pg-profile').classList.contains('active');var prefix=isProfile?'pp-':'';$(prefix+'pc-font').value=font;previewFont()};window.tPostCmt=function(){var isProfile=$('pg-profile').classList.contains('active');var id=isProfile?'pp-t-post-cmt':'t-post-cmt';var el=$(id);if(!el)return;el.classList.toggle('on');var knob=el.querySelector('div');if(!knob)return;if(el.classList.contains('on')){knob.style.left='3px'}else{knob.style.left='19px'}};window.showPremiumModal=function(){if(cu&&isUserPremium(cu.id)){showToast('You are already a Premium Link!');return}setPremiumTab('monthly');$('m-premium').classList.add('on');document.body.style.overflow='hidden';var trialBtn=$('trial-btn');var trialStatus=$('trial-status');var trialSection=$('premium-trial-section');if(trialBtn&&cu){var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){trialSection.style.display='none'}else{trialSection.style.display='block'}}setTimeout(function(){renderPremiumPayPalButtons()},300)};window.setPremiumTab=function(tab){var moBtn=$('pm-tab-mo');var yrBtn=$('pm-tab-yr');var priceEl=$('pm-price');var ctaBtn=$('pm-subscribe-btn');if(tab==='annual'){return}if(moBtn)moBtn.classList.add('active');if(priceEl)priceEl.innerHTML='$10.99<span>/month</span>';if(ctaBtn)ctaBtn.setAttribute('data-plan','monthly')};window.startPayPalCheckout=function(){var plan=$('pm-subscribe-btn').getAttribute('data-plan')||'monthly';var amount=plan==='annual'?109.99:10.99;showToast('Redirecting to PayPal...');console.log('[PayPal] Initiating checkout for $'+amount+' ('+plan+')')};window.startFreeTrial=function(){if(!cu){showToast('Sign in to start trial');return}var hasTrial=localStorage.getItem('cl_trial_start_'+cu.id);var isPaid=localStorage.getItem('cl_premium_'+cu.id);if(hasTrial||isPaid){showToast('You already used your free trial');return}var paypalEmail=localStorage.getItem('cl_paypal_email_'+cu.id);if(!paypalEmail){showToast('Connect your PayPal first to start the free trial');connectPayPal();return}if(!confirm('By starting your 7-day free trial, you authorize MyChainLink to begin a $10.99/month subscription after the trial period ends. You can cancel anytime in your PayPal account. Continue?')){return}localStorage.setItem('cl_trial_start_'+cu.id,new Date().toISOString());showToast('🎉 7-day free trial activated!');renderProfile();var trialSection=$('premium-trial-section');if(trialSection){trialSection.innerHTML='<div style="padding:16px 0;text-align:center"><p style="color:#FFD700;font-size:15px;margin-bottom:8px">✅ Trial activated!</p><p style="font-size:15px;color:#888;margin-bottom:12px">To keep Premium after 7 days, complete your subscription below.</p></div>'}renderPremiumPayPalButtons();};
 window.pickColor=function(btn,color){var isPremium=isUserPremium(cu?cu.id:'');if(!isPremium){showPremiumModal();return}var isProfile=$('pg-profile').classList.contains('active');var isMain=$('pg-main').classList.contains('active');var pickerId=isProfile?'pp-color-picker':(isMain?'main-color-picker':'color-picker');document.querySelectorAll('#'+pickerId+' .font-opt').forEach(function(b){b.classList.remove('a');b.style.boxShadow='none'});if(btn.classList)btn.classList.add('a');if(btn.style)btn.style.boxShadow='0 0 0 2px var(--gold)';var prefix=isProfile?'pp-':(isMain?'main-':'');$(prefix+'pc-color').value=color};window.pickCamFont=function(sel,font){$('cam-font-picker').value=font;$('cam-cap').className='cam-cap-textarea '+font};window.pickCamColor=function(btn,color){var isPremium=isUserPremium(cu?cu.id:'');if(!isPremium){showPremiumModal();return}document.querySelectorAll('#cam-color-picker .font-opt').forEach(function(b){b.classList.remove('a');b.style.boxShadow='none'});if(btn.classList)btn.classList.add('a');if(btn.style)btn.style.boxShadow='0 0 0 2px var(--gold)';$('cam-cap').setAttribute('data-color',color);$('cam-cap').style.color=color};;window.linkHashtags=function(t){if(!t)return t;return t.replace(/#([a-zA-Z0-9_]+)/g,'<span style="color:#FFD700;cursor:pointer" onclick="searchTag(\'$1\')">#$1</span>')};window.searchTag=function(tag){$('p-sch').value='#'+tag;navTo('explore');schPpl('#'+tag)};
 
 // ==================== CAMERA ====================
