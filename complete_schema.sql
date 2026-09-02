@@ -85,7 +85,34 @@ CREATE INDEX IF NOT EXISTS idx_profiles_handle ON profiles(handle);
 CREATE INDEX IF NOT EXISTS idx_profiles_display_name ON profiles(display_name);
 
 -- ============================================================
--- 2. POSTS TABLE
+-- 2. SONGS TABLE (music library for posts & profiles)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS songs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  artist TEXT NOT NULL,
+  album TEXT,
+  album_art_url TEXT,
+  duration_seconds INTEGER,
+  preview_url TEXT,
+  storage_path TEXT,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE songs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read songs" ON songs FOR SELECT USING (true);
+CREATE POLICY "Authenticated can upload songs" ON songs FOR INSERT WITH CHECK (auth.uid() = created_by);
+CREATE POLICY "Users can delete own songs" ON songs FOR DELETE USING (auth.uid() = created_by);
+
+CREATE INDEX IF NOT EXISTS idx_songs_title ON songs(title);
+CREATE INDEX IF NOT EXISTS idx_songs_artist ON songs(artist);
+CREATE INDEX IF NOT EXISTS idx_songs_created_at ON songs(created_at DESC);
+
+-- ============================================================
+-- 3. POSTS TABLE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -105,6 +132,8 @@ CREATE TABLE IF NOT EXISTS posts (
   likes UUID[] DEFAULT '{}',
   dislikes UUID[] DEFAULT '{}',
   comments JSONB DEFAULT '[]',
+  song_id UUID REFERENCES songs(id) ON DELETE SET NULL,
+  thread_parent_id UUID REFERENCES posts(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -117,9 +146,22 @@ CREATE POLICY "Users can delete own posts" ON posts FOR DELETE USING (auth.uid()
 
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts (user_id);
+CREATE INDEX IF NOT EXISTS idx_posts_thread_parent ON posts (thread_parent_id);
+CREATE INDEX IF NOT EXISTS idx_posts_song_id ON posts (song_id);
+
+-- Add missing columns if table already exists
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'song_id') THEN
+    ALTER TABLE posts ADD COLUMN song_id UUID REFERENCES songs(id) ON DELETE SET NULL;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'thread_parent_id') THEN
+    ALTER TABLE posts ADD COLUMN thread_parent_id UUID REFERENCES posts(id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 -- ============================================================
--- 3. LIKES TABLE (proper relational likes)
+-- 4. LIKES TABLE (proper relational likes)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS likes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -139,7 +181,7 @@ CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
 
 -- ============================================================
--- 4. COMMENTS TABLE (proper relational comments)
+-- 5. COMMENTS TABLE (proper relational comments)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -161,7 +203,7 @@ CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at DESC);
 
 -- ============================================================
--- 5. FOLLOWS TABLE (connects)
+-- 6. FOLLOWS TABLE (connects)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS follows (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -181,7 +223,7 @@ CREATE INDEX IF NOT EXISTS idx_follows_follower ON follows(follower_id);
 CREATE INDEX IF NOT EXISTS idx_follows_followed ON follows(followed_id);
 
 -- ============================================================
--- 6. CONVERSATIONS TABLE
+-- 7. CONVERSATIONS TABLE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS conversations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -203,7 +245,7 @@ CREATE INDEX IF NOT EXISTS idx_conv_user2 ON conversations(user2_id);
 CREATE INDEX IF NOT EXISTS idx_conv_updated ON conversations(updated_at DESC);
 
 -- ============================================================
--- 7. MESSAGES TABLE
+-- 8. MESSAGES TABLE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -224,7 +266,7 @@ CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id
 CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at DESC);
 
 -- ============================================================
--- 8. NOTIFICATIONS TABLE
+-- 9. NOTIFICATIONS TABLE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -247,7 +289,7 @@ CREATE INDEX IF NOT EXISTS idx_notif_read ON notifications(user_id, read);
 CREATE INDEX IF NOT EXISTS idx_notif_created ON notifications(created_at DESC);
 
 -- ============================================================
--- 9. TRANSACTIONS TABLE (PayPal/subscription payments)
+-- 10. TRANSACTIONS TABLE (PayPal/subscription payments)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
