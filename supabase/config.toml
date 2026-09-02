@@ -1,0 +1,18 @@
+# Supabase Edge Functions Config
+project_id = "pvtliggkbiwdzedmguag"
+
+[functions]
+[functions.verify-premium]
+verify_jwt = true
+
+[functions.send-email]
+verify_jwt = true
+
+[functions.image-moderate]
+verify_jwt = true
+
+[functions.push-notify]
+verify_jwt = true
+
+[functions.paypal-webhook]
+verify_jwt = false  # PayPal calls this directly, no JWT
