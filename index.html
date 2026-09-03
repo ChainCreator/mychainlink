@@ -1869,7 +1869,7 @@ window.showAuth = function(tab) {
         <div style="cursor:pointer;color:#888" onclick="backToConv()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7l-7-7 7-7"/></svg></div>
         <div class="av" style="width:40px;height:40px" id="th-av">?</div>
         <div style="flex:1"><div style="font-weight:700;font-size:16px" id="th-name">User</div><div style="font-size:15px;color:#888" id="th-status">Online</div></div>
-        <button class="btn btn-primary btn-sm" style="width:40px;height:40px;border-radius:50%;padding:0" onclick="startVideoCall()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+        <button class="btn btn-primary btn-sm" style="width:40px;height:40px;border-radius:50%;padding:0" onclick="startVideoCall(window.dmTargetUserId)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></button>
       </div>
       <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px" id="msg-bubbles"></div>
       <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid #2A2A2A;background:#222;align-items:center">
@@ -2387,7 +2387,7 @@ window.showAuth = function(tab) {
 <div class="modal-overlay" id="m-terms" onclick="if(event.target===this)closeModal('m-terms')"><div class="modal-box"><h3 style="color:#FFD700">Terms of Service</h3><p>By using <span style="color:#fff">My </span><span style="color:#FFD700">Chain</span><span style="color:#fff"> Link</span>, you agree to be respectful, not post harmful content, not harass others, and follow community guidelines.</p><button class="btn btn-primary" onclick="closeModal('m-terms')">I Understand</button></div></div>
 <div class="modal-overlay" id="m-harass" onclick="if(event.target===this)closeModal('m-harass')"><div class="modal-box"><h3 style="color:#FFD700">Anti-Harassment Policy</h3><p>Zero tolerance for harassment, bullying, hate speech, or unwanted contact. Violations result in immediate account termination.</p><button class="btn btn-primary" onclick="closeModal('m-harass')">I Understand</button></div></div>
 <div class="modal-overlay" id="m-del" onclick="if(event.target===this)closeModal('m-del')"><div class="modal-box"><h3>Delete Account</h3><p>This will permanently delete your account and all data. This cannot be undone.</p><div class="fg" style="margin:16px 0"><label>Type "DELETE" to confirm</label><input type="text" id="del-confirm" placeholder="DELETE" style="border-color:#FF3366"></div><div class="modal-row"><button class="btn btn-outline" style="flex:1" onclick="closeModal('m-del')">Cancel</button><button class="btn btn-danger" style="flex:1" onclick="delAccount()">Delete</button></div></div></div>
-<div class="modal-overlay" id="m-edit" onclick="if(event.target===this)closeModal('m-edit')"><div class="modal-box"><h3>Edit Profile</h3><div class="fg"><label>Display Name</label><input type="text" id="ep-n" placeholder="Your name"></div><div class="fg"><label>Handle</label><input type="text" id="ep-h" placeholder="username" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'').toLowerCase()"></div><div class="fg"><label>Bio</label><textarea id="ep-b" placeholder="Tell us about yourself..."></textarea></div><div class="fg"><label>Profile Photo</label><div id="ep-cam-wrap" style="display:none"><video id="ep-cam-v" style="width:100%;max-height:220px;border-radius:12px;object-fit:cover;background:#1C1C1C;transform:scaleX(-1)" autoplay playsinline muted></video><canvas id="ep-cam-c" style="display:none"></canvas><div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button class="btn btn-primary btn-sm" onclick="snapProfilePhoto()">📸 Snap</button><button class="btn btn-outline btn-sm" onclick="closeProfileCam()">Cancel</button></div></div><div id="ep-cam-actions" style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn btn-primary" onclick="openProfileCam()">📸 Take Photo</button></div><div class="hint">Camera only — no gallery uploads</div></div><div id="ep-a-preview-wrap" style="display:none;text-align:center;margin:10px 0"><div id="ep-a-preview" style="width:80px;height:80px;margin:0 auto;border-radius:50%;overflow:hidden"><img id="ep-a-img" style="width:100%;height:100%;object-fit:cover"></div><button class="btn btn-outline btn-sm" onclick="retakeProfilePhoto()" style="margin-top:8px;font-size:15px;padding:2px 8px">Retake</button></div><div class="fg" id="ep-sub-w" style="display:none"><label>Subscription Price (CAD/month)</label><input type="number" id="ep-sub-price" placeholder="10" min="1" step="1" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:15px;width:100%"><div class="hint">What fans pay monthly to access your exclusive content. You keep 100%.</div></div><div class="fg" id="ep-song-w"><label>Profile Song</label><div id="ep-song-current" style="display:none;margin-bottom:8px;padding:8px 12px;background:#2A2A2A;border-radius:8px"><span style="color:#FFD700">🎵</span> <span id="ep-song-name" style="color:#F0F0F0"></span> <span style="color:#888">—</span> <span id="ep-song-artist" style="color:#888"></span></div><input type="text" id="ep-song-title" placeholder="Song title" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:15px;width:100%;margin-bottom:8px"><input type="text" id="ep-song-artist" placeholder="Artist" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:15px;width:100%;margin-bottom:8px"><input type="file" id="ep-song-file" accept="audio/*" style="color:#888;font-size:15px;margin-bottom:8px"><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" id="ep-song-del" style="display:none;color:#FF3366" onclick="deleteProfileSong()">Remove Song</button></div></div>
+<div class="modal-overlay" id="m-edit" onclick="if(event.target===this)closeModal('m-edit')"><div class="modal-box"><h3>Edit Profile</h3><div class="fg"><label>Display Name</label><input type="text" id="ep-n" placeholder="Your name"></div><div class="fg"><label>Handle</label><input type="text" id="ep-h" placeholder="username" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'').toLowerCase()"></div><div class="fg"><label>Bio</label><textarea id="ep-b" placeholder="Tell us about yourself..."></textarea></div><div class="fg"><label>Profile Photo</label><div id="ep-cam-wrap" style="display:none"><video id="ep-cam-v" style="width:100%;max-height:220px;border-radius:12px;object-fit:cover;background:#1C1C1C;transform:scaleX(-1)" autoplay playsinline muted></video><canvas id="ep-cam-c" style="display:none"></canvas><div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button class="btn btn-primary btn-sm" onclick="snapProfilePhoto()">📸 Snap</button><button class="btn btn-outline btn-sm" onclick="closeProfileCam()">Cancel</button></div></div><div id="ep-cam-actions" style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn btn-primary" onclick="openProfileCam()">📸 Take Photo</button></div><div class="hint">Camera only — no gallery uploads</div></div><div id="ep-a-preview-wrap" style="display:none;text-align:center;margin:10px 0"><div id="ep-a-preview" style="width:80px;height:80px;margin:0 auto;border-radius:50%;overflow:hidden"><img id="ep-a-img" style="width:100%;height:100%;object-fit:cover"></div><button class="btn btn-outline btn-sm" onclick="retakeProfilePhoto()" style="margin-top:8px;font-size:15px;padding:2px 8px">Retake</button></div><div class="fg" id="ep-sub-w" style="display:none"><label>Subscription Price (CAD/month)</label><input type="number" id="ep-sub-price" placeholder="10" min="1" step="1" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:15px;width:100%"><div class="hint">What fans pay monthly to access your exclusive content. You keep 100%.</div></div><div class="fg" id="ep-song-w"><label>Profile Song</label><div id="ep-song-current" style="display:none;margin-bottom:8px;padding:8px 12px;background:#2A2A2A;border-radius:8px"><span style="color:#FFD700">🎵</span> <span id="ep-song-name" style="color:#F0F0F0"></span> <span style="color:#888">—</span> <span id="ep-song-artist" style="color:#888"></span></div><input type="text" id="ep-song-title" placeholder="Song title" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:15px;width:100%;margin-bottom:8px"><input type="text" id="ep-song-artist" placeholder="Artist" style="background:#2A2A2A;border:1px solid #3A3A3A;border-radius:12px;padding:10px 14px;color:#F0F0F0;font-size:15px;width:100%;margin-bottom:8px"><div class="hint" style="color:#888;font-size:15px;margin-bottom:8px">🎵 Camera-only app — song uploads disabled. Enter title & artist only.</div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" id="ep-song-del" style="display:none;color:#FF3366" onclick="deleteProfileSong()">Remove Song</button></div></div>
     <div class="fg" id="ep-conv-theme-w" style="display:none">
       <label>Conversation Theme <span style="color:#FFD700;font-size:15px">⭐ Premium</span></label>
       <div style="font-size:15px;color:#888;margin-bottom:8px">Bubble Color</div>
@@ -3196,7 +3196,7 @@ window.showTerms=function(){$('m-terms').classList.add('on')};
 window.showHarassment=function(){$('m-harass').classList.add('on')};
 window.closeModal=function(id){$(id).classList.remove('on');if(id==='m-premium'){document.body.style.overflow=''}if(id==='m-pp-checkout'){var feeDiv=$('pp-fee-breakdown');if(feeDiv)feeDiv.innerHTML='';var btnContainer=$('paypal-button-container');if(btnContainer)btnContainer.innerHTML=''}if(id==='m-edit'){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}epCamData=''}};window.pendingLoginUser=null;window.showTwoFactorModal=function(){$('fa-code').value='';$('fa-er').classList.remove('show');$('m-2fa').classList.add('on')};window.verify2FA=function(){var code=$('fa-code').value.trim();if(!code){$('fa-er').textContent='Enter your PIN';$('fa-er').classList.add('show');return}if(!window.pendingLoginUser){closeModal('m-2fa');return}if(window.pendingLoginUser.twoFactorPIN!==code){$('fa-er').textContent='Invalid PIN';$('fa-er').classList.add('show');return}$('fa-er').classList.remove('show');cu=syncLocalUserToCu(window.pendingLoginUser);svu();window.pendingLoginUser=null;var stay=window.pendingStayConnected!==false;if(stay){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');closeModal('m-2fa');showApp();showToast('Signed in (2FA verified)');};
 
-window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');var stayConnected=$('li-stay')?$('li-stay').checked:true;window.pendingStayConnected=stayConnected;if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();syncPremiumFromSupabase();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
+window.li=async function(){var e=$('li-e').value.trim(),p=$('li-p').value;if(!e||!p){$('li-er').textContent='Fill all fields';$('li-er').classList.add('show');return}$('li-s').classList.add('show');var stayConnected=$('li-stay')?$('li-stay').checked:true;window.pendingStayConnected=stayConnected;if(sb&&supabaseOnline){try{var r=await sb.auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;cu=r.data.user;svu();var meta=cu.user_metadata||{};if(meta.display_name||meta.handle){try{await sb.from('profiles').upsert({id:cu.id,display_name:meta.display_name||'',handle:meta.handle||''},{onConflict:'id'})}catch(pe){console.log('profile sync on login skipped',pe)}}var existing=localUsers.find(function(u){return u.id===cu.id||u.email===e});if(!existing){var supabaseUser={id:cu.id,name:meta.display_name||'User',email:e,password:p,handle:meta.handle||'@user',bio:meta.bio||'',avatar:meta.avatar||'',securityQuestion:'',securityAnswer:'',twoFactorPIN:''};saveLocalUser(supabaseUser);var allUsersStore2=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');if(!allUsersStore2.find(function(u){return u.id===cu.id})){allUsersStore2.push({id:cu.id,email:e,name:meta.display_name||'User',handle:meta.handle||'@user',avatar:meta.avatar||''});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore2))}}if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();syncPremiumFromSupabase();setupCallListener();return}catch(err){console.log('Supabase login failed, trying local')}}var lu=findLocalUser(e,p);if(lu){if(lu.twoFactorPIN){$('li-s').classList.remove('show');window.pendingLoginUser=lu;showTwoFactorModal();return}cu=syncLocalUserToCu(lu);svu();if(stayConnected){saveAccount(cu);localStorage.setItem('cl_stay_logged_in','true');}else{localStorage.setItem('cl_stay_logged_in','false');}sessionStorage.setItem('cl_active_session','1');$('li-s').classList.remove('show');showApp();showToast('Signed in (local mode)');return}$('li-s').classList.remove('show');$('li-er').textContent='Invalid email or password';$('li-er').classList.add('show')};
 
 window.su=async function(){
   var er=document.getElementById('su-er');
@@ -3358,8 +3358,8 @@ function claimPendingPayPal(){
   }
 }
 
-window.og=async function(){if(!sb){showToast('Auth service unavailable');return}try{await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/auth/callback',flowType:'pkce'}})}catch(err){console.log('Google auth error',err);showToast('Google sign-in failed: '+err.message)}};
-window.ofb=async function(){if(!sb){showToast('Auth service unavailable');return}try{await sb.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:location.origin+'/auth/callback',flowType:'pkce'}})}catch(err){showToast('Facebook sign-in unavailable. Try email/password instead.')}};
+window.og=async function(){if(!sb){showToast('Auth service unavailable');return}try{await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/auth/callback',flowType:'pkce',scopes:'openid email profile'}})}catch(err){console.log('Google auth error',err);showToast('Google sign-in failed: '+err.message)}};
+window.ofb=async function(){if(!sb){showToast('Auth service unavailable');return}try{await sb.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:location.origin+'/auth/callback',flowType:'pkce',scopes:'email public_profile'}})}catch(err){console.log('Facebook auth error',err);showToast('Facebook sign-in failed: '+err.message)}};
 
 window.loadSecurityQuestion=function(){
   var e=$('fg-e').value.trim();
@@ -3668,7 +3668,7 @@ window.togglePostComments=function(id){var p=posts.find(function(x){return x.id=
 document.addEventListener('click',function(e){if(e.target.closest('.post-menu'))return;document.querySelectorAll('.post-menu-drp').forEach(function(d){d.classList.remove('on')})});
 window.sp=function(id){var p=posts.find(function(x){return x.id===id});if(navigator.share){navigator.share({title:'My Chain Link',text:p?p.t:'',url:location.href})}else{showToast('Link copied!');if(navigator.clipboard)navigator.clipboard.writeText(location.href)}};
 window.addCmt=function(id){if(!cu){showToast('Sign in to comment');return}var p=posts.find(function(x){return x.id===id});if(!p||p.c===false){showToast('Comments disabled on this post');return}var inp=$('cm-'+id);if(!inp)return;var t=inp.value.trim();if(!t)return;if(!p.cm)p.cm=[];p.cm.push({un:cu.user_metadata&&cu.user_metadata.display_name?cu.user_metadata.display_name:'User',x:t,ts:Date.now(),lk:[],dk:[]});svp();renderFeed();var el=$('cmts-'+id);if(el)el.classList.add('on');if(p.uid&&p.uid!==cu.id){addNotification('comment',p.uid,'commented: "'+t.substring(0,60)+(t.length>60?'...':'')+'"',p.id)}};
-window.previewProfilePhoto=function(input){var file=input.files[0];if(!file)return;if(file.size>5*1024*1024){showToast('Image too large. Max 5MB.');input.value='';return}var reader=new FileReader();reader.onload=function(e){var img=$('ep-a-img');img.src=e.target.result;var wrap=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';$('ep-a').setAttribute('data-url',e.target.result);$('ep-a').setAttribute('data-file',file.name)};reader.readAsDataURL(file)};var epCamStream=null;var epCamData='';window.openProfileCam=async function(){if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';if(actions)actions.style.display='none';if(preview)preview.style.display='none';try{var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});epCamStream=s;var v=$('ep-cam-v');v.srcObject=s;v.play()}catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}closeProfileCam()}};window.closeProfileCam=function(){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');if(wrap)wrap.style.display='none';if(actions)actions.style.display='flex'};window.snapProfilePhoto=async function(){var v=$('ep-cam-v');var c=$('ep-cam-c');if(!v||!c||!epCamStream)return;c.width=640;c.height=480;var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.9);var mod=await checkImageModeration(data);if(mod.flagged){showToast('Image flagged: '+mod.reason);return}epCamData=data;if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');var img=$('ep-a-img');if(wrap)wrap.style.display='none';if(actions)actions.style.display='none';if(preview)preview.style.display='block';if(img)img.src=epCamData};window.retakeProfilePhoto=function(){epCamData='';var preview=$('ep-a-preview-wrap');var actions=$('ep-cam-actions');if(preview)preview.style.display='none';if(actions)actions.style.display='flex'};
+window.previewProfilePhoto=function(input){showToast('Gallery uploads are disabled. Use the camera instead.');input.value='';return;};var epCamStream=null;var epCamData='';window.openProfileCam=async function(){if(location.protocol!=='https:'&&location.hostname!=='localhost'){showToast('Camera requires HTTPS');return}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');if(wrap)wrap.style.display='block';if(actions)actions.style.display='none';if(preview)preview.style.display='none';try{var s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});epCamStream=s;var v=$('ep-cam-v');v.srcObject=s;v.play()}catch(e){var msg=e.message||'';if(msg.indexOf('Permission')>-1||msg.indexOf('permission')>-1){showToast('Camera blocked. Check browser permissions.')}else{showToast('Camera error: '+msg)}closeProfileCam()}};window.closeProfileCam=function(){if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');if(wrap)wrap.style.display='none';if(actions)actions.style.display='flex'};window.snapProfilePhoto=async function(){var v=$('ep-cam-v');var c=$('ep-cam-c');if(!v||!c||!epCamStream)return;c.width=640;c.height=480;var ctx=c.getContext('2d');ctx.translate(c.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,c.width,c.height);var data=c.toDataURL('image/jpeg',0.9);var mod=await checkImageModeration(data);if(mod.flagged){showToast('Image flagged: '+mod.reason);return}epCamData=data;if(epCamStream){epCamStream.getTracks().forEach(function(t){t.stop()});epCamStream=null}var wrap=$('ep-cam-wrap');var actions=$('ep-cam-actions');var preview=$('ep-a-preview-wrap');var img=$('ep-a-img');if(wrap)wrap.style.display='none';if(actions)actions.style.display='none';if(preview)preview.style.display='block';if(img)img.src=epCamData};window.retakeProfilePhoto=function(){epCamData='';var preview=$('ep-a-preview-wrap');var actions=$('ep-cam-actions');if(preview)preview.style.display='none';if(actions)actions.style.display='flex'};
 
 // ==================== SIGNUP PROFILE PHOTO CAMERA ====================
 var suCamStream=null;
@@ -4110,36 +4110,169 @@ var liveViewerInterval = null;
 var liveChatInterval = null;
 
 // ==================== VIDEO CALLS ====================
-window.startVideoCall = async function() {
+/* ============ VIDEO CALLS (WebRTC via Supabase Realtime) ============ */
+var callStream = null;
+var callTimer = null;
+var callSeconds = 0;
+var callPc = null;
+var callChannel = null;
+var callTargetId = null;
+var callRole = null; // 'caller' or 'receiver'
+
+window.startVideoCall = async function(targetUserId) {
   if (!cu) { showToast('Please sign in first'); return; }
+  if (!targetUserId && window.dmTargetUserId) targetUserId = window.dmTargetUserId;
+  if (!targetUserId) { showToast('No user to call'); return; }
+  callTargetId = targetUserId;
+  callRole = 'caller';
   $('call-o').classList.add('on');
   $('call-status').textContent = 'Calling...';
   try {
     var s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
     $('call-local-v').srcObject = s;
     callStream = s;
-    setTimeout(function() {
-      $('call-status').textContent = 'In call · 0:00';
-      callSeconds = 0;
-      callTimer = setInterval(function() {
-        callSeconds++;
-        var m = Math.floor(callSeconds / 60);
-        var s = callSeconds % 60;
-        $('call-status').textContent = 'In call · ' + m + ':' + (s < 10 ? '0' : '') + s;
-      }, 1000);
-    }, 2000);
+    // Setup WebRTC
+    callPc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    callStream.getTracks().forEach(function(t) { callPc.addTrack(t, callStream); });
+    callPc.ontrack = function(e) {
+      var rv = $('call-remote-v');
+      if (rv && e.streams[0]) { rv.srcObject = e.streams[0]; rv.muted = false; rv.play(); }
+    };
+    callPc.onicecandidate = function(e) {
+      if (e.candidate && callChannel) {
+        callChannel.send({ type: 'broadcast', event: 'call-signal', payload: { type: 'ice', to: callTargetId, from: cu.id, candidate: e.candidate } });
+      }
+    };
+    // Subscribe to call channel
+    callChannel = sb.channel('calls');
+    callChannel.on('broadcast', { event: 'call-signal' }, function(msg) {
+      var p = msg.payload;
+      if (!p) return;
+      if (p.to !== cu.id && p.from !== callTargetId) return; // not for us
+      if (p.type === 'answer' && p.from === callTargetId) {
+        callPc.setRemoteDescription(new RTCSessionDescription(p.sdp));
+        $('call-status').textContent = 'In call · 0:00';
+        callSeconds = 0;
+        callTimer = setInterval(function() {
+          callSeconds++;
+          var m = Math.floor(callSeconds / 60);
+          var s2 = callSeconds % 60;
+          $('call-status').textContent = 'In call · ' + m + ':' + (s2 < 10 ? '0' : '') + s2;
+        }, 1000);
+      }
+      if (p.type === 'ice' && p.from === callTargetId) {
+        callPc.addIceCandidate(new RTCIceCandidate(p.candidate));
+      }
+      if (p.type === 'reject' && p.from === callTargetId) {
+        showToast('Call rejected'); endCall();
+      }
+      if (p.type === 'end' && p.from === callTargetId) {
+        showToast('Call ended'); endCall();
+      }
+    }).subscribe(function(status) {
+      // Send offer after channel ready
+      callPc.createOffer().then(function(offer) {
+        return callPc.setLocalDescription(offer);
+      }).then(function() {
+        callChannel.send({ type: 'broadcast', event: 'call-signal', payload: { type: 'offer', to: callTargetId, from: cu.id, sdp: callPc.localDescription } });
+      });
+    });
   } catch (e) { showToast('Camera error: ' + e.message); endCall(); }
 };
+
+window.acceptCall = async function(fromUserId) {
+  callTargetId = fromUserId;
+  callRole = 'receiver';
+  $('call-o').classList.add('on');
+  $('call-status').textContent = 'Connecting...';
+  try {
+    var s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
+    $('call-local-v').srcObject = s;
+    callStream = s;
+    callPc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    callStream.getTracks().forEach(function(t) { callPc.addTrack(t, callStream); });
+    callPc.ontrack = function(e) {
+      var rv = $('call-remote-v');
+      if (rv && e.streams[0]) { rv.srcObject = e.streams[0]; rv.muted = false; rv.play(); }
+    };
+    callPc.onicecandidate = function(e) {
+      if (e.candidate && callChannel) {
+        callChannel.send({ type: 'broadcast', event: 'call-signal', payload: { type: 'ice', to: callTargetId, from: cu.id, candidate: e.candidate } });
+      }
+    };
+    callChannel = sb.channel('calls');
+    callChannel.on('broadcast', { event: 'call-signal' }, function(msg) {
+      var p = msg.payload;
+      if (!p) return;
+      if (p.to !== cu.id && p.from !== callTargetId) return;
+      if (p.type === 'offer' && p.from === callTargetId) {
+        callPc.setRemoteDescription(new RTCSessionDescription(p.sdp)).then(function() {
+          return callPc.createAnswer();
+        }).then(function(answer) {
+          return callPc.setLocalDescription(answer);
+        }).then(function() {
+          callChannel.send({ type: 'broadcast', event: 'call-signal', payload: { type: 'answer', to: callTargetId, from: cu.id, sdp: callPc.localDescription } });
+          $('call-status').textContent = 'In call · 0:00';
+          callSeconds = 0;
+          callTimer = setInterval(function() {
+            callSeconds++;
+            var m = Math.floor(callSeconds / 60);
+            var s2 = callSeconds % 60;
+            $('call-status').textContent = 'In call · ' + m + ':' + (s2 < 10 ? '0' : '') + s2;
+          }, 1000);
+        });
+      }
+      if (p.type === 'ice' && p.from === callTargetId) {
+        callPc.addIceCandidate(new RTCIceCandidate(p.candidate));
+      }
+      if (p.type === 'end' && p.from === callTargetId) {
+        showToast('Call ended'); endCall();
+      }
+    }).subscribe();
+  } catch (e) { showToast('Camera error: ' + e.message); endCall(); }
+};
+
+window.rejectCall = function(fromUserId) {
+  if (callChannel && fromUserId) {
+    callChannel.send({ type: 'broadcast', event: 'call-signal', payload: { type: 'reject', to: fromUserId, from: cu.id } });
+  }
+  endCall();
+};
+
 window.endCall = function() {
+  if (callChannel && callTargetId) {
+    callChannel.send({ type: 'broadcast', event: 'call-signal', payload: { type: 'end', to: callTargetId, from: cu.id } });
+  }
   $('call-o').classList.remove('on');
   if (callStream) { callStream.getTracks().forEach(function(t) { t.stop(); }); callStream = null; }
   if (callTimer) { clearInterval(callTimer); callTimer = null; }
+  if (callPc) { callPc.close(); callPc = null; }
+  if (callChannel) { callChannel.unsubscribe(); callChannel = null; }
+  callTargetId = null; callRole = null; callSeconds = 0;
   $('call-status').textContent = 'Calling...';
+  var rv = $('call-remote-v'); if (rv) rv.srcObject = null;
   showToast('Call ended');
 };
-var callStream = null;
-var callTimer = null;
-var callSeconds = 0;
+
+// Listen for incoming calls
+function setupCallListener() {
+  if (!sb || !cu) return;
+  var listenChannel = sb.channel('calls');
+  listenChannel.on('broadcast', { event: 'call-signal' }, function(msg) {
+    var p = msg.payload;
+    if (!p || p.to !== cu.id) return;
+    if (p.type === 'offer') {
+      // Incoming call
+      var caller = getUserData(p.from);
+      var callerName = caller ? caller.name : 'Someone';
+      if (confirm(callerName + ' is calling you. Accept?')) {
+        acceptCall(p.from);
+      } else {
+        rejectCall(p.from);
+      }
+    }
+  }).subscribe();
+}
 
 // ==================== MESSAGES ====================
 window.openWallPostModal=function(){if(!cu||!vu){showToast('Sign in to post');return}$('wall-target-name').textContent=vu.name||'User';$('wall-t').value='';$('m-wall-post').classList.add('on')};
@@ -4157,7 +4290,7 @@ window.sendMediaMsg=function(){if(!cu){showToast('Sign in first');return}if(!act
 window.addEventListener('offline',function(){showToast('You are offline. Some features may not work.')});window.addEventListener('online',function(){showToast('You are back online!')});
 window.addEventListener('pageshow',function(e){if(e.persisted){window.location.reload()}});
 // ==================== OAUTH CALLBACK ====================
-async function handleOAuthCallback(){var url=new URL(location.href);var code=url.searchParams.get('code');if(code&&sb&&supabaseOnline){try{var r=await sb.auth.exchangeCodeForSession(code);if(r.error){console.log('OAuth callback error',r.error);showToast('Sign-in failed. Please try again.');return}if(r.data&&r.data.session){cu=r.data.session.user;svu();var meta=cu.user_metadata||{};var isNewUser=!meta.display_name||!meta.handle||meta.display_name===cu.email||meta.handle==='@user_'+cu.id.slice(0,8);if(!isNewUser&&sb&&supabaseOnline){try{var pr=await sb.from('profiles').select('display_name,handle,terms_agreed_at').eq('id',cu.id).single();if(pr.data){if(!pr.data.display_name||!pr.data.handle)isNewUser=true}}catch(e){}}if(isNewUser){console.log('[OAuth] New user detected, starting onboarding');window.oauthOnboarding=true;window.oauthProvider=cu.app_metadata&&cu.app_metadata.provider?cu.app_metadata.provider:'google';showAuth('up');resetSignupWizard();if(cu.email){var suE=$('su-e');if(suE){suE.value=cu.email;suE.readOnly=true;suE.style.opacity='0.7'}}var suN=$('su-n');if(suN&&meta.full_name)suN.value=meta.full_name;if(meta.avatar_url){window.oauthAvatarUrl=meta.avatar_url}showToast('Welcome! Complete your profile to continue.');history.replaceState(null,'',location.pathname);return true}else{cu=r.data.session.user;svu();showApp();loadAllFollows();syncPremiumFromSupabase();showToast('Signed in!');history.replaceState(null,'',location.pathname);return true}}}catch(e){console.log('OAuth exchange error',e);showToast('Sign-in failed. Please try again.')}}return false}
+async function handleOAuthCallback(){var url=new URL(location.href);var code=url.searchParams.get('code');if(code&&sb&&supabaseOnline){try{var r=await sb.auth.exchangeCodeForSession(code);if(r.error){console.log('OAuth callback error',r.error);showToast('Sign-in failed. Please try again.');return}if(r.data&&r.data.session){cu=r.data.session.user;svu();var meta=cu.user_metadata||{};var isNewUser=!meta.display_name||!meta.handle||meta.display_name===cu.email||meta.handle==='@user_'+cu.id.slice(0,8);if(!isNewUser&&sb&&supabaseOnline){try{var pr=await sb.from('profiles').select('display_name,handle,terms_agreed_at').eq('id',cu.id).single();if(pr.data){if(!pr.data.display_name||!pr.data.handle)isNewUser=true}}catch(e){}}if(isNewUser){console.log('[OAuth] New user detected, starting onboarding');window.oauthOnboarding=true;window.oauthProvider=cu.app_metadata&&cu.app_metadata.provider?cu.app_metadata.provider:'google';showAuth('up');resetSignupWizard();if(cu.email){var suE=$('su-e');if(suE){suE.value=cu.email;suE.readOnly=true;suE.style.opacity='0.7'}}var suN=$('su-n');if(suN&&meta.full_name)suN.value=meta.full_name;if(meta.avatar_url){window.oauthAvatarUrl=meta.avatar_url}showToast('Welcome! Complete your profile to continue.');history.replaceState(null,'',location.pathname);return true}else{cu=r.data.session.user;svu();showApp();loadAllFollows();syncPremiumFromSupabase();setupCallListener();showToast('Signed in!');history.replaceState(null,'',location.pathname);return true}}}catch(e){console.log('OAuth exchange error',e);showToast('Sign-in failed. Please try again.')}}return false}
 // ==================== PASSWORD RESET ====================
 window.handlePasswordReset=async function(){
   var hash=location.hash;
