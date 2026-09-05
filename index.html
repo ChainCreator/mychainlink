@@ -1029,7 +1029,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity:1}
 .sub-blur::after{content:'SUBSCRIBERS ONLY';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;letter-spacing:.18em;background:rgba(15,15,15,.68);color:var(--gold)}
 
 /* === SEARCH ================================================= */
-.sch-wrap{position:sticky;top:56px;z-index:50;padding:12px 0;background:linear-gradient(180deg,var(--bg) 72%,transparent)}
+.sch-wrap{position:relative;position:sticky;top:56px;z-index:50;padding:12px 0;background:linear-gradient(180deg,var(--bg) 72%,transparent)}
 .sch-wrap input{
   background:var(--surf-2);border:1px solid var(--line);border-radius:var(--r-pill);
   padding:12px 18px 12px 42px;font-size:15px;
@@ -1494,7 +1494,11 @@ window.showAuth = function(tab) {
       <div class="or" id="su-or">or</div>
       <button class="btn btn-g" id="su-google" onclick="og()">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Sign up with Google <span style="font-size:15px;color:#888;margin-left:4px">(Coming Soon)</span>
+        Sign up with Google
+      </button>
+      <button class="btn btn-f" style="margin-top:10px" onclick="ofb()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Sign up with Facebook
       </button>
     </div>
 
@@ -2126,7 +2130,7 @@ window.showAuth = function(tab) {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7l-7-7 7-7"/></svg>
         Back
       </button>
-      <h2 style="font-size:23px">✨ Premium Coming Soon</h2>
+      <h2 style="font-size:23px">✨ Premium Features</h2>
     </div>
 
     <div class="s-group">
@@ -2215,7 +2219,7 @@ window.showAuth = function(tab) {
       <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap">
         <button class="btn btn-outline btn-sm" id="vu-fbtn" onclick="toggleFollowVU()">Connect</button>
         <button class="btn btn-outline btn-sm" onclick="navTo('messages');openThread(vu.id)">Message</button>
-        <button class="btn btn-gold btn-sm" id="vu-sbtn" onclick="navTo('coming-soon')">✨ Coming Soon</button>
+        <button class="btn btn-gold btn-sm" id="vu-sbtn" onclick="showPremiumModal()">✨ Subscribe</button>
         <button class="btn btn-outline btn-sm" id="vu-bbtn" onclick="toggleBlock()" style="border-color:#FF3366;color:#FF3366">Block</button>
         <button class="btn btn-outline btn-sm" id="vu-rbtn" onclick="reportProfile(vu.id)" style="border-color:#FF9933;color:#FF9933;display:none">🚩 Report</button>
         <button class="btn btn-outline btn-sm" id="vu-wall-btn" onclick="openWallPostModal()" style="display:none">📝 Write on wall</button>
@@ -2223,7 +2227,7 @@ window.showAuth = function(tab) {
       <div id="vu-premium-promo" style="display:none;background:linear-gradient(135deg,rgba(230,201,106,0.1),rgba(230,201,106,0.05));border:1px solid rgba(230,201,106,0.3);border-radius:16px;padding:16px;margin-top:16px;text-align:center">
         <div style="font-size:15px;color:#FFD700;margin-bottom:8px">🔒 Premium Content</div>
         <div style="font-size:15px;color:#888;margin-bottom:12px" id="vu-premium-promo-text">Become a Premium Link to watch this user's live content and unlock exclusive posts</div>
-        <button class="btn btn-gold btn-sm" onclick="navTo('coming-soon')">✨ Become Premium</button>
+        <button class="btn btn-gold btn-sm" onclick="showPremiumModal()">✨ Become Premium</button>
       </div>
     </div>
     <div style="display:flex;gap:0;margin:0 -16px 16px;border-bottom:1px solid var(--line)" id="vu-tabs">
@@ -2470,7 +2474,7 @@ window.showAuth = function(tab) {
     </div>
     <div class="pm-toggle">
       <button id="pm-tab-mo" class="active" onclick="setPremiumTab('monthly')">Monthly</button>
-      <button id="pm-tab-yr" style="opacity:0.4;cursor:not-allowed" disabled>Annual <span style="color:var(--ink-4);font-size:15px">Coming Soon</span></button>
+      <button id="pm-tab-yr" style="opacity:0.4;cursor:not-allowed" disabled>Annual <span style="color:var(--ink-4);font-size:15px">(Soon)</span></button>
     </div>
     <div class="pm-card">
       <span class="badge">Premium</span>
@@ -3817,48 +3821,159 @@ window.fetchUserFromSupabase=async function(id){if(!id||!sb||!supabaseOnline)ret
 window.findUserIdByHandle=function(handle){var h=handle.toLowerCase().replace(/^@/,'');if(cu&&cu.user_metadata&&cu.user_metadata.handle&&cu.user_metadata.handle.toLowerCase().replace(/^@/,'')===h)return cu.id;var lu=localUsers.find(function(u){return(u.handle||'').toLowerCase().replace(/^@/,'')===h});if(lu)return lu.id;var allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');var fromAll=allUsersStore.find(function(u){return(u.handle||'').toLowerCase().replace(/^@/,'')===h});if(fromAll)return fromAll.id;var fromPost=posts.find(function(p){return(p.uh||'').toLowerCase().replace(/^@/,'')===h});if(fromPost)return fromPost.uid;return null};
 window.linkMentions=function(t){if(!t)return t;return t.replace(/@([a-zA-Z0-9_]+)/g,'<span style="color:#FFD700;cursor:pointer;font-weight:700" onclick="var uid=findUserIdByHandle(\'@$1\');if(uid)viewUser(uid)">@$1</span>')};
 window.renderPeople=async function(){var list=$('ppl-list');var clearBtn=$('p-sch-clear');if(clearBtn)clearBtn.style.display='none';list.innerHTML='<div style="text-align:center;padding:40px"><div class="spin show"></div><p style="color:#666;margin-top:12px;font-size:15px">Loading users...</p></div>';var allUsers=[];var allUsersMap={};function addUser(u){if(!u||!u.id)return;if(cu&&u.id===cu.id)return;if(allUsersMap[u.id]){var existing=allUsers.find(function(x){return x.id===u.id});if(existing){if(!existing.name&&u.name)existing.name=u.name;if(!existing.handle&&u.handle)existing.handle=u.handle;if(!existing.avatar&&u.avatar)existing.avatar=u.avatar}return}allUsersMap[u.id]=true;allUsers.push(u)}if(sb&&supabaseOnline){try{var {data:profiles,error}=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').limit(200);if(!error&&profiles){profiles.forEach(function(u){if(u.id!==(cu&&cu.id)){addUser({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}});var allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]');profiles.forEach(function(u){if(!allUsersStore.find(function(x){return x.id===u.id})){allUsersStore.push({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}});localStorage.setItem('cl_allUsers',JSON.stringify(allUsersStore))}}catch(e){console.log('renderPeople fetch error',e)}}var allUsersStore=[];try{allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]')}catch(e){allUsersStore=[]}allUsersStore.forEach(function(u){addUser(u)});var localUsersSafe=[];try{localUsersSafe=JSON.parse(localStorage.getItem('cl_localUsers')||'[]')}catch(e){localUsersSafe=[]}localUsersSafe.forEach(function(u){addUser({id:u.id,name:u.name||u.user_metadata&&u.user_metadata.display_name||'User',handle:u.handle||u.user_metadata&&u.user_metadata.handle||'@user',avatar:u.avatar||u.user_metadata&&u.user_metadata.avatar||''})});posts.forEach(function(p){if(p.uid&&p.uid!==(cu&&cu.id)&&!allUsersMap[p.uid]){addUser({id:p.uid,name:p.un||'User',handle:p.uh||'@user',avatar:p.ua||''})}});if(!allUsers.length){list.innerHTML='<div class="empty"><h3>No users yet</h3><p>Be the first to join the chain.</p></div>';return}var h='';allUsers.forEach(function(u){var isFollowing=follows[u.id]&&follows[u.id].following;h+='<div class="p-card">';h+='<div class="av">'+(u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?'))+'</div>';h+='<div class="info"><div class="n">'+esc(u.name)+'</div><div class="h">'+esc(u.handle)+'</div></div>';h+='<div class="actions">';h+='<button class="btn btn-outline btn-sm" onclick="viewUser('+(u.id?"'"+u.id+"'":'')+')">View</button>';if(cu&&u.id!==cu.id){h+='<button class="btn btn-outline btn-sm" onclick="navTo(\'messages\');openThread('+(u.id?"'"+u.id+"'":'')+')">Message</button>';h+='<button class="btn '+(isFollowing?'btn-outline':'btn-primary')+' btn-sm" onclick="toggleFollowId('+(u.id?"'"+u.id+"'":'')+');renderPeople()">'+(isFollowing?'Disconnect':'Connect')+'</button>'}h+='</div>';h+='</div>'});list.innerHTML=h};
-var _schTimer=null;window.debounceSchPpl=function(v){if(_schTimer)clearTimeout(_schTimer);_schTimer=setTimeout(function(){var fresh=$('p-sch').value.trim();schPpl(fresh)},250)};
-window.schPpl=async function(v){console.log('[search] start:',v);var list=$('ppl-list');var clearBtn=$('p-sch-clear');if(clearBtn)clearBtn.style.display=v?'block':'none';if(!v){renderPeople();return}var term=v.toLowerCase();list.innerHTML='<div style="text-align:center;padding:40px"><div class="spin show"></div><p style="color:#666;margin-top:12px;font-size:15px">Searching...</p></div>';
+var _schTimer=null;window.debounceSchPpl=function(v){if(_schTimer)clearTimeout(_schTimer);_schTimer=setTimeout(function(){var fresh=$('p-sch').value.trim();schPpl(fresh)},150)};
+window.schPpl=async function(v){
+  console.log('[search] start:',v);
+  var list=$('ppl-list');
+  var clearBtn=$('p-sch-clear');
+  if(clearBtn)clearBtn.style.display=v?'block':'none';
+  if(!v){renderPeople();return}
+  var term=v.toLowerCase();
+  var termNoAt=term.replace(/^@/,'');
 
-// ====== MERGED SEARCH: DB + Local ======
-var allUsers=[];var allUsersMap={};
-function addUser(u){if(!u||!u.id)return;if(cu&&u.id===cu.id)return;if(allUsersMap[u.id]){var existing=allUsers.find(function(x){return x.id===u.id});if(existing){if(!existing.name&&u.name)existing.name=u.name;if(!existing.handle&&u.handle)existing.handle=u.handle;if(!existing.avatar&&u.avatar)existing.avatar=u.avatar}return}allUsersMap[u.id]=true;allUsers.push(u)}
+  // ====== BUILD LOCAL CANDIDATES FIRST (instant) ======
+  var allUsers=[];var allUsersMap={};
+  function addUser(u){
+    if(!u||!u.id)return;
+    if(cu&&u.id===cu.id)return;
+    if(allUsersMap[u.id]){
+      var existing=allUsers.find(function(x){return x.id===u.id});
+      if(existing){
+        if(!existing.name&&u.name)existing.name=u.name;
+        if(!existing.handle&&u.handle)existing.handle=u.handle;
+        if(!existing.avatar&&u.avatar)existing.avatar=u.avatar;
+      }
+      return;
+    }
+    allUsersMap[u.id]=true;allUsers.push(u);
+  }
 
-var dbErrorMsg='';
+  // Local sources (always available)
+  var localUsersSafe=[];
+  try{localUsersSafe=JSON.parse(localStorage.getItem('cl_localUsers')||'[]')}catch(e){localUsersSafe=[]}
+  localUsersSafe.forEach(function(u){
+    addUser({id:u.id,name:u.name||u.user_metadata&&u.user_metadata.display_name||'User',handle:u.handle||u.user_metadata&&u.user_metadata.handle||'@user',avatar:u.avatar||u.user_metadata&&u.user_metadata.avatar||''});
+  });
+  var allUsersStore=[];
+  try{allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]')}catch(e){allUsersStore=[]}
+  allUsersStore.forEach(function(u){addUser(u)});
+  posts.forEach(function(p){
+    if(p.uid&&p.uid!==(cu&&cu.id)&&!allUsersMap[p.uid]){
+      addUser({id:p.uid,name:p.un||'User',handle:p.uh||'@user',avatar:p.ua||''});
+    }
+  });
 
-// 1. Query Supabase FIRST
-if(sb&&supabaseOnline){try{
-  var ilike='%'+v+'%';
-  console.log('[search] querying display_name ilike:',ilike);
-  var r1=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').ilike('display_name',ilike).limit(50);
-  if(r1.error){console.log('[search] display_name error:',r1.error);dbErrorMsg=r1.error.message||'DB error'}
-  else if(r1.data){console.log('[search] display_name found:',r1.data.length);r1.data.forEach(function(u){if(u.id!==(cu&&cu.id)){addUser({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}})}
-  
-  console.log('[search] querying handle ilike:',ilike);
-  var r2=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').ilike('handle',ilike).limit(50);
-  if(r2.error){console.log('[search] handle error:',r2.error);dbErrorMsg=r2.error.message||'DB error'}
-  else if(r2.data){console.log('[search] handle found:',r2.data.length);r2.data.forEach(function(u){if(u.id!==(cu&&cu.id)){addUser({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''})}})}
-}catch(e){console.log('[search] supabase exception:',e);dbErrorMsg=e.message||'Exception'}
-}else{dbErrorMsg='Supabase offline';console.log('[search] sb offline')}
+  // Filter locals immediately
+  var filtered=allUsers.filter(function(u){
+    var nameMatch=(u.name||'').toLowerCase().indexOf(term)>-1||(u.name||'').toLowerCase().indexOf(termNoAt)>-1;
+    var handleMatch=(u.handle||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().replace(/^@/,'').indexOf(termNoAt)>-1;
+    return nameMatch||handleMatch;
+  });
 
-// 2. ALWAYS merge local users (regardless of DB result)
-var localUsersSafe=[];try{localUsersSafe=JSON.parse(localStorage.getItem('cl_localUsers')||'[]')}catch(e){localUsersSafe=[]}
-localUsersSafe.forEach(function(u){addUser({id:u.id,email:u.email||'',name:u.name||u.user_metadata&&u.user_metadata.display_name||'User',handle:u.handle||u.user_metadata&&u.user_metadata.handle||'@user',avatar:u.avatar||u.user_metadata&&u.user_metadata.avatar||''})});
-var allUsersStore=[];try{allUsersStore=JSON.parse(localStorage.getItem('cl_allUsers')||'[]')}catch(e){allUsersStore=[]}
-allUsersStore.forEach(function(u){addUser(u)});
-posts.forEach(function(p){if(p.uid&&p.uid!==(cu&&cu.id)&&!allUsersMap[p.uid]){addUser({id:p.uid,email:'',name:p.un||'User',handle:p.uh||'@user',avatar:p.ua||''})}});
+  // Show local results immediately if we have them
+  var dbErrorMsg='';
+  var hasDbResults=false;
 
-// 3. Filter all merged results
-var filtered=allUsers.filter(function(u){return(u.name||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().indexOf(term)>-1});
+  function renderResults(users,msg){
+    if(!users.length){
+      list.innerHTML='<div class="empty"><h3>No results</h3><p>'+(msg||'No users match "'+esc(v)+'"')+'</p></div>';
+      return;
+    }
+    var h='';
+    users.forEach(function(u){
+      var isFollowing=follows[u.id]&&follows[u.id].following;
+      h+='<div class="p-card">';
+      h+='<div class="av">'+(u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?'))+'</div>';
+      h+='<div class="info"><div class="n">'+esc(u.name)+'</div><div class="h">'+esc(u.handle)+'</div></div>';
+      h+='<div class="actions">';
+      h+='<button class="btn btn-outline btn-sm" onclick="viewUser('+(u.id?"'"+u.id+"'":'')+')">View</button>';
+      if(cu&&u.id!==cu.id){
+        h+='<button class="btn btn-outline btn-sm" onclick="navTo(\'messages\');openThread('+(u.id?"'"+u.id+"'":'')+')">Message</button>';
+        h+='<button class="btn '+(isFollowing?'btn-outline':'btn-primary')+' btn-sm" onclick="toggleFollowId('+(u.id?"'"+u.id+"'":'')+');schPpl(\''+v.replace(/'/g,"\\'")+'\')">'+(isFollowing?'Disconnect':'Connect')+'</button>';
+      }
+      h+='</div>';
+      h+='</div>';
+    });
+    list.innerHTML=h;
+  }
 
-// 4. Tag search (always local)
-if(term.indexOf('#')===0){var tagPosts=posts.filter(function(p){return p.tags&&p.tags.toLowerCase().indexOf(term)>-1});tagPosts.forEach(function(p){if(p.uid&&p.uid!==(cu&&cu.id)){var u=getUserData(p.uid);if(u)addUser(u)}});filtered=allUsers.filter(function(u){return(u.name||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().indexOf(term)>-1||(u.tags||'').toLowerCase().indexOf(term)>-1})}
+  // Render locals immediately
+  if(filtered.length){
+    renderResults(filtered,'');
+  }else{
+    list.innerHTML='<div style="text-align:center;padding:40px"><div class="spin show"></div><p style="color:#666;margin-top:12px;font-size:15px">Searching...</p></div>';
+  }
 
-console.log('[search] rendering',filtered.length,'results');
-if(!filtered.length){var msg=dbErrorMsg?'Search error: '+dbErrorMsg+'. Showing local results only.':'No users match "'+esc(v)+'"';list.innerHTML='<div class="empty"><h3>No results</h3><p>'+msg+'</p></div>';return}
+  // ====== QUERY SUPABASE IN BACKGROUND ======
+  if(sb&&supabaseOnline){
+    try{
+      var ilike='%'+v+'%';
+      // Try combined search with OR
+      var r=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').or('display_name.ilike.'+ilike+',handle.ilike.'+ilike).limit(50);
+      if(r.error){
+        console.log('[search] combined error:',r.error);
+        dbErrorMsg=r.error.message||'DB error';
+        // Fallback: try display_name only
+        try{
+          r=await sb.from('profiles').select('id,display_name,handle,avatar_url,bio').ilike('display_name',ilike).limit(50);
+        }catch(e2){}
+      }
+      if(r.data&&r.data.length){
+        console.log('[search] DB found:',r.data.length);
+        r.data.forEach(function(u){
+          if(u.id!==(cu&&cu.id)){
+            addUser({id:u.id,name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''});
+          }
+        });
+        hasDbResults=true;
+        // Save to local cache
+        var cache=[];
+        try{cache=JSON.parse(localStorage.getItem('cl_allUsers')||'[]')}catch(e){cache=[]}
+        r.data.forEach(function(u){
+          if(!cache.find(function(x){return x.id===u.id})){
+            cache.push({id:u.id,email:'',name:u.display_name||'User',handle:u.handle||'@user',avatar:u.avatar_url||'',bio:u.bio||''});
+          }
+        });
+        localStorage.setItem('cl_allUsers',JSON.stringify(cache));
+      }
+    }catch(e){
+      console.log('[search] supabase exception:',e);
+      dbErrorMsg=e.message||'Exception';
+    }
+  }else{
+    dbErrorMsg='Supabase offline';
+    console.log('[search] sb offline');
+  }
 
-// 5. Render
-var h='';filtered.forEach(function(u){var isFollowing=follows[u.id]&&follows[u.id].following;h+='<div class="p-card">';h+='<div class="av">'+(u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?'))+'</div>';h+='<div class="info"><div class="n">'+esc(u.name)+'</div><div class="h">'+esc(u.handle)+'</div></div>';h+='<div class="actions">';h+='<button class="btn btn-outline btn-sm" onclick="viewUser('+(u.id?"'"+u.id+"'":'')+')">View</button>';if(cu&&u.id!==cu.id){h+='<button class="btn btn-outline btn-sm" onclick="navTo(\'messages\');openThread('+(u.id?"'"+u.id+"'":'')+')">Message</button>';h+='<button class="btn '+(isFollowing?'btn-outline':'btn-primary')+' btn-sm" onclick="toggleFollowId('+(u.id?"'"+u.id+"'":'')+');schPpl(\''+v.replace(/'/g,"\\'")+'\')">'+(isFollowing?'Disconnect':'Connect')+'</button>'}h+='</div>';h+='</div>'});list.innerHTML=h;console.log('[search] done');};
+  // Re-filter with merged results
+  filtered=allUsers.filter(function(u){
+    var nameMatch=(u.name||'').toLowerCase().indexOf(term)>-1||(u.name||'').toLowerCase().indexOf(termNoAt)>-1;
+    var handleMatch=(u.handle||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().replace(/^@/,'').indexOf(termNoAt)>-1;
+    return nameMatch||handleMatch;
+  });
+
+  // Tag search (always local)
+  if(term.indexOf('#')===0){
+    var tagPosts=posts.filter(function(p){return p.tags&&p.tags.toLowerCase().indexOf(term)>-1});
+    tagPosts.forEach(function(p){
+      if(p.uid&&p.uid!==(cu&&cu.id)){
+        var u=getUserData(p.uid);
+        if(u)addUser(u);
+      }
+    });
+    filtered=allUsers.filter(function(u){
+      var nameMatch=(u.name||'').toLowerCase().indexOf(term)>-1;
+      var handleMatch=(u.handle||'').toLowerCase().indexOf(term)>-1||(u.handle||'').toLowerCase().replace(/^@/,'').indexOf(termNoAt)>-1;
+      var tagMatch=(u.tags||'').toLowerCase().indexOf(term)>-1;
+      return nameMatch||handleMatch||tagMatch;
+    });
+  }
+
+  console.log('[search] rendering',filtered.length,'results');
+  var msg=dbErrorMsg&&!hasDbResults?'Search error: '+dbErrorMsg+'. Showing local results only.':null;
+  renderResults(filtered,msg);
+  console.log('[search] done');
+};
 window.viewUser=async function(id){if(!id)return;var u=getUserData(id);if(!u){u=await fetchUserFromSupabase(id)}if(!u){showToast('User not found');return}vu=u;var isMe=cu&&u.id===cu.id;var myPosts=posts.filter(function(p){return p.uid===u.id});$('vu-av').innerHTML=u.avatar?'<img src="'+u.avatar+'">':(u.name?u.name[0].toUpperCase():'?');$('vu-name').textContent=u.name||'User';$('vu-h').textContent=u.handle||'@user';$('vu-b').textContent=u.bio||'No bio yet';$('vu-sp').textContent=myPosts.length;var uFollowing=0;var uFollowers=0;var uSubscribers=0;var hasSong=false;var songCard=$('vu-song-card');if(songCard)songCard.style.display='none';if(sb&&supabaseOnline){try{var {data:songData}=await sb.from('user_songs').select('*').eq('user_id',u.id).eq('is_active',true).single();if(songData){hasSong=true;if($('vu-song-title'))$('vu-song-title').textContent=songData.title||'Untitled';if($('vu-song-artist'))$('vu-song-artist').textContent=songData.artist||'Unknown artist';if($('vu-audio')&&songData.song_url){$('vu-audio').src=songData.song_url}if(songCard)songCard.style.display='block'}}catch(e){}}if(!hasSong){var localSong=localStorage.getItem('cl_song_'+u.id);if(localSong){try{var s=JSON.parse(localSong);if($('vu-song-title'))$('vu-song-title').textContent=s.title||'Untitled';if($('vu-song-artist'))$('vu-song-artist').textContent=s.artist||'Unknown artist';if($('vu-audio')){if(s.url)$('vu-audio').src=s.url;else if(s.data)$('vu-audio').src=s.data}if(songCard)songCard.style.display='block'}catch(e){}}}if(songCard&&songCard.style.display!=='none'){var canListen=canListenToMusic(u.id);var playBtn=$('vu-play-btn');if(!canListen&&playBtn){playBtn.innerHTML='🔒';playBtn.title='Premium Connects only';playBtn.onclick=function(){showToast('Upgrade to Premium to listen to profile music')}}else if(playBtn){playBtn.innerHTML='▶';playBtn.title='Play';playBtn.onclick=toggleVUSong}}function finishViewUser(){$('vu-fl').textContent=uFollowers;$('vu-fg').textContent=uFollowing;var isPremium=isUserPremium(u.id);if(isPremium){$('vu-premium').style.display='block';$('vu-premium').innerHTML='⭐';$('vu-premium').style.color='#FFD700'}else{$('vu-premium').style.display='none'};var promo=$('vu-premium-promo');if(promo){var myPremium=isUserPremium(cu?cu.id:'');if(isPremium&&!myPremium){promo.style.display='block';$('vu-premium-promo-text').textContent='Become a Premium Link to watch '+esc(u.name||'User')+'\'s live content and unlock exclusive posts'}else{promo.style.display='none'}};$('vu-fbtn').textContent=follows[u.id]&&follows[u.id].following?'Disconnect':'Connect';$('vu-bbtn').textContent=blocks.indexOf(u.id)!==-1?'Unblock':'Block';$('vu-bbtn').style.display=isMe?'none':'inline-flex';$('vu-sbtn').style.display=isMe?'none':'inline-flex';$('vu-fbtn').style.display=isMe?'none':'inline-flex';$('vu-rbtn').style.display=isMe?'none':'inline-flex';switchVUTab('posts');navTo('user')}if(sb&&supabaseOnline){sb.from('follows').select('*').eq('following_id',u.id).then(function(r){var ids=[];(r.data||[]).forEach(function(f){ids.push(f.follower_id);if(f.subscribed)uSubscribers++});uFollowers=ids.length;var localFl=JSON.parse(localStorage.getItem('cl_followers')||'{}');localFl[u.id]=ids;localStorage.setItem('cl_followers',JSON.stringify(localFl));sb.from('follows').select('*').eq('follower_id',u.id).then(function(r2){var followingIds=[];(r2.data||[]).forEach(function(f){followingIds.push(f.following_id)});uFollowing=followingIds.length;var localFg=JSON.parse(localStorage.getItem('cl_following')||'{}');localFg[u.id]=followingIds;localStorage.setItem('cl_following',JSON.stringify(localFg));finishViewUser()}).catch(function(){finishViewUser()})}).catch(function(){finishViewUser()})}else{finishViewUser()}};
 window.toggleFollowVU=function(){if(!cu||!vu)return;if(!follows[vu.id])follows[vu.id]={following:false,subscribed:false};var wasFollowing=follows[vu.id].following;follows[vu.id].following=!follows[vu.id].following;svf();saveFollowSupabase(vu.id,follows[vu.id].following);var allFollowers=JSON.parse(localStorage.getItem('cl_followers')||'{}');if(!allFollowers[vu.id])allFollowers[vu.id]=[];var myIdx=allFollowers[vu.id].indexOf(cu.id);if(follows[vu.id].following){if(myIdx===-1)allFollowers[vu.id].push(cu.id);if(vu.id!==cu.id&&!wasFollowing){addNotification('follow',vu.id,'connected with you')}}else{if(myIdx>-1)allFollowers[vu.id].splice(myIdx,1)}localStorage.setItem('cl_followers',JSON.stringify(allFollowers));$('vu-fbtn').textContent=follows[vu.id].following?'Disconnect':'Connect';showToast(follows[vu.id].following?'Connected!':'Disconnected')};
 window.toggleFollow=function(){if(!cu)return};
